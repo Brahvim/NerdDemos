@@ -24,19 +24,19 @@ You've downloaded only ~`90` MiB so far. And that's all there is! 🎉
 Copy all of that into... let's say, `Dependencies/Processing` inside this repository's directory.
 
 - Then find `modes/java/libraries` in that very Processing installation directory.  
-...Copy all'a that into `Dependencies/Processing/Libraries`! Except...  
+...Copy all'a that into `Dependencies/Processing/libraries` (yes, with a *small* `l`)! Except...  
 You could totally be saving disk space using a symlink instead for this one.  
 In fact, you could do that for both of these directories!  
 *That's:*
 
 ```bash
-ln -s modes/java/libraries/ Dependencies/Processing/Libraries
+ln -s modes/java/libraries/ Dependencies/Processing/libraries
 ```
 
 ..on macOS and GNU-Linux. *And:*
 
 ```batch
-mklink /D modes/java/libraries/ Dependencies/Processing/Libraries
+mklink /D modes/java/libraries/ Dependencies/Processing/libraries
 ```
 
 ..on Microsoft Windows. Reversed paths on the latter one.
