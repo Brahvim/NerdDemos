@@ -77,12 +77,9 @@ public class TcpDemoScene extends NerdJava2dScene {
 	protected void setup(final NerdSceneState p_state) {
 		super.GRAPHICS.textSize(25);
 		super.GENERIC_WINDOW.fullscreen = true;
-		// GRAPHICS.getCurrentCamera().getPos().z = 500;
 		this.textHeight = super.GRAPHICS.textHeight() * 1.5f;
 		this.logsBeginY = super.GRAPHICS.textHeight() * 8;
 		// ^^^ Why times `8`? Because that's the *number of lines*, plus `1`!
-		// ^^^ Why times `15`? Because that's twice the number of lines, plus `1`!
-		// I'm too lazy to write code to count that stuff dynamically, ugh-huh...
 	}
 
 	@Override
@@ -92,7 +89,6 @@ public class TcpDemoScene extends NerdJava2dScene {
 		super.GRAPHICS.text(TcpDemoScene.MESSAGE, 0, 0);
 
 		final int numLines = this.NET_TEST_LOGS.size();
-		// System.out.println(numLines);
 		for (int i = 0; i < numLines; i++)
 			super.GRAPHICS.text(this.NET_TEST_LOGS.get(i),
 					0, this.logsBeginY + (i * this.textHeight));
@@ -105,7 +101,9 @@ public class TcpDemoScene extends NerdJava2dScene {
 	}
 
 	private void netTest() {
-		this.NET_TEST_LOGS.clear();
+		if (this.NET_TEST_LOGS.isEmpty())
+			this.SKETCH.exit();
+
 		System.out.println("""
 				========================
 				Nerd TCP Networking Test""");
@@ -169,7 +167,7 @@ public class TcpDemoScene extends NerdJava2dScene {
 			e.printStackTrace();
 		}
 
-		// this.SKETCH.exit();
+		this.SKETCH.exit();
 	}
 
 	private synchronized void netTestLog(final String p_logString) {

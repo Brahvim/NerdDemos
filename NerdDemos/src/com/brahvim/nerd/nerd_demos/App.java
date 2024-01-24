@@ -1,10 +1,20 @@
 package com.brahvim.nerd.nerd_demos;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings;
-import com.brahvim.nerd.nerd_demos.scenes.net_demo_scenes.TcpDemoScene;
-import com.brahvim.nerd.processing_wrapper.sketch_builders.NerdJava2dSketchBuilder;
+import com.brahvim.nerd.nerd_demos.scenes.TestGlScene;
+import com.brahvim.nerd.processing_wrapper.sketch_builders.NerdP3dSketchBuilder;
 
 public class App {
+
+    public static void main(final String[] p_args) {
+        // new NerdJava2dSketchBuilder()
+        new NerdP3dSketchBuilder()
+                .canResize()
+                // .startFullscreenInitially()
+                .setWindowIconPath("Images/SunglassesNerd.png")
+                .setNerdModuleSettings(new NerdScenesModuleSettings(TestGlScene.class))
+                .build(p_args);
+    }
 
     // Ye' Old Big TODOs!:
     /*
@@ -21,15 +31,5 @@ public class App {
      * - ECS wrapper for Processing!
      * - Dyn4j / Javacpp LiquidFun ECS wrapper!
      */
-
-    public static void main(final String[] p_args) {
-        new NerdJava2dSketchBuilder()
-                // new NerdP3dSketchBuilder()
-                .canResize()
-                // .startFullscreenInitially()
-                .setWindowIconPath("Images/SunglassesNerd.png")
-                .setNerdModuleSettings(new NerdScenesModuleSettings(TcpDemoScene.class))
-                .build(p_args);
-    }
 
 }
