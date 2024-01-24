@@ -1,0 +1,14 @@
+package com.brahvim.nerd.nerd_demos.scenes.ecs_demo_scene;
+
+import java.util.Set;
+
+import com.brahvim.nerd.framework.ecs.NerdEcsSystem;
+
+public class EcsDemoSystem extends NerdEcsSystem<EcsDemoComponent> {
+
+	@Override
+	public void mouseClicked(final Set<EcsDemoComponent> p_components) {
+		p_components.forEach(System.out::println);
+	}
+
+}

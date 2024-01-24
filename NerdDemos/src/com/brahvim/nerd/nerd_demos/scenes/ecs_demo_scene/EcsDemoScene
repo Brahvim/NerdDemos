@@ -1,0 +1,85 @@
+package com.brahvim.nerd.nerd_demos.scenes.ecs_demo_scene;
+
+import java.io.File;
+
+import com.brahvim.nerd.framework.ecs.NerdEcsEntity;
+import com.brahvim.nerd.framework.ecs.NerdEcsModule;
+import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
+import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
+import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdGenericScene;
+
+import processing.core.PConstants;
+import processing.core.PGraphics;
+import processing.event.MouseEvent;
+
+public class EcsDemoScene extends NerdGenericScene {
+
+	protected EcsDemoScene(final NerdScenesModule<PGraphics> p_sceneMan) {
+		super(p_sceneMan);
+	}
+
+	private static final File SAVE_FILE = new File("data/Nerd EcsDemoScene Serial Data.sav");
+
+	private NerdEcsModule ecs;
+	private NerdEcsEntity entity;
+	private EcsDemoComponent component;
+
+	@Override
+	public void setup(final NerdSceneState p_state) {
+		this.ecs = new NerdEcsModule(super.SKETCH);
+		this.ecs.setSystemsOrder(EcsDemoSystem.class);
+
+		this.entity = this.ecs.createEntity("Test!");
+		this.component = this.entity.attachComponent(EcsDemoComponent.class);
+		// this.component.message = "Yo! This message didn't need"
+		// + "to be changed but I did it anyway, haha.";
+
+		for (int i = 0; i < 5; i++)
+			this.ecs.createEntity();
+
+		this.ecs.forEachEntity(e -> System.out.println(this.ecs.getNameFromEntity(e)));
+	}
+
+	@Override
+	public void draw() {
+		if (this.component != null)
+			super.GRAPHICS.background(this.component.grey);
+		else
+			super.GRAPHICS.background(0);
+	}
+
+	@Override
+	public void mouseClicked() {
+		// Entity addition and removal test:
+		// switch (INPUT.mouseButton) {
+		// case PConstants.LEFT -> {
+		// // Add the component:
+		// if (!this.entity.hasComponent(this.component)) {
+		// this.component = this.entity.attachComponent(EcsDemoComponent.class) ;
+		// System.out.println("Component added.");
+		// }
+		// }
+
+		// case PConstants.RIGHT -> {
+		// // Remove the component:
+		// if (this.entity.hasComponent(this.component)) {
+		// this.entity.removeComponent(this.component.getClass()) ;
+		// this.component = null ;
+		// System.out.println("Component removed.");
+		// }
+		// }
+		// }
+
+		// ECS serialization test:
+		switch (this.INPUT.mouseButton) {
+			case PConstants.LEFT -> this.ecs.loadState(EcsDemoScene.SAVE_FILE);
+			case PConstants.RIGHT -> this.ecs.saveState(EcsDemoScene.SAVE_FILE);
+		}
+	}
+
+	@Override
+	public void mouseWheel(final MouseEvent p_mouseEvent) {
+		this.entity.hasComponent(this.component, c -> c.grey += p_mouseEvent.getCount() * 3.5f);
+	}
+
+}
