@@ -1,7 +1,7 @@
 {
     "java.project.referencedLibraries": [
         "Dependencies/**/*.jar",
-        "Dependencies/libraries/**/*.jar",
+        "Dependencies/libraries/**/*.jar"
     ],
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms128M -Xmx1024M",
     "cSpell.words": [
@@ -42,5 +42,6 @@
         "winz"
     ],
     "java.saveActions.organizeImports": true,
-    "formatFiles.runOrganizeImports": true
+    "formatFiles.runOrganizeImports": true,
+    "java.dependency.packagePresentation": "hierarchical"
 }
