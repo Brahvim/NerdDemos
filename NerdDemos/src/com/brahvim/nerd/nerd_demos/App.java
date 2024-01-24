@@ -24,6 +24,7 @@ public class App {
 
     public static void main(final String[] p_args) {
         new NerdJava2dSketchBuilder()
+                // new NerdP3dSketchBuilder()
                 .canResize()
                 // .startFullscreenInitially()
                 .setWindowIconPath("Images/SunglassesNerd.png")

@@ -5,5 +5,17 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
-    ]
+    ],
+    "java.cleanup.actionsOnSave": [
+        // "qualifyMembers", // `NerdScene`s won't like this!
+        "addOverride",
+        "invertEquals",
+        "addDeprecated",
+        "tryWithResource",
+        "lambdaExpression",
+        "addFinalModifier",
+        "qualifyStaticMembers",
+        "instanceofPatternMatch",
+        "stringConcatToTextBlock",
+    ],
 }

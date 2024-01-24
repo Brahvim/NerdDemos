@@ -43,5 +43,5 @@
     ],
     "java.saveActions.organizeImports": true,
     "formatFiles.runOrganizeImports": true,
-    "java.dependency.packagePresentation": "hierarchical"
+    "java.dependency.packagePresentation": "hierarchical",
 }
