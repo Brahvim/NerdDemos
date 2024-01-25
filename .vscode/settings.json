@@ -45,4 +45,16 @@
     "java.saveActions.organizeImports": true,
     "formatFiles.runOrganizeImports": true,
     "java.dependency.packagePresentation": "hierarchical",
+    "java.cleanup.actionsOnSave": [
+        "addOverride",
+        "invertEquals",
+        "addDeprecated",
+        "qualifyMembers",
+        "tryWithResource",
+        "lambdaExpression",
+        "addFinalModifier",
+        "qualifyStaticMembers",
+        "instanceofPatternMatch",
+        "stringConcatToTextBlock",
+    ],
 }
