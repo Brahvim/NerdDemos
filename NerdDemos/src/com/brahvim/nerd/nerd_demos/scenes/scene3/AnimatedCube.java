@@ -1,8 +1,7 @@
 package com.brahvim.nerd.nerd_demos.scenes.scene3;
 
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
-import com.brahvim.nerd.math.easings.built_in_easings.NerdSineEase;
-import com.brahvim.nerd.openal.AlBuffer;
+import com.brahvim.nerd.math.easings_old.built_in_easings_old.NerdSineEaseOld;
 import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PConstants;
@@ -19,7 +18,7 @@ public class AnimatedCube extends TestEulerBody {
 	public int fillColor = Integer.MAX_VALUE, strokeColor = 0;
 
 	private boolean visible = true;
-	private final NerdSineEase plopWave;
+	private final NerdSineEaseOld PLOP_WAVE;
 	// private AlSource popSrc;
 	// endregion
 
@@ -51,8 +50,8 @@ public class AnimatedCube extends TestEulerBody {
 				super.SKETCH.random(-0.0001f, 0.0001f),
 				super.SKETCH.random(-0.0001f, 0.0001f));
 
-		this.plopWave = new NerdSineEase(super.SKETCH);
-		this.plopWave.inactValue = 1;
+		this.PLOP_WAVE = new NerdSineEaseOld(super.SKETCH);
+		this.PLOP_WAVE.inactValue = 1;
 	}
 
 	// region Getters and setters for superclass stuff!:
@@ -97,28 +96,28 @@ public class AnimatedCube extends TestEulerBody {
 	}
 	// endregion
 
-	public AnimatedCube plopIn(final AlBuffer<?> p_popAudioBuffer) {
-		if (p_popAudioBuffer == null)
-			return this;
-
-		// this.popSrc = new AlSource(App.openAl, p_popAudioBuffer);
-		// this.popSrc.setPosition(super.pos.array());
-		// this.popSrc.setGain(500);
-		// this.popSrc.playThenDispose();
-
-		return this.plopIn();
-	}
+	// public AnimatedCube plopIn(final AlBuffer<?> p_popAudioBuffer) {
+	// if (p_popAudioBuffer == null)
+	// return this;
+	//
+	// // this.popSrc = new AlSource(App.openAl, p_popAudioBuffer);
+	// // this.popSrc.setPosition(super.pos.array());
+	// // this.popSrc.setGain(500);
+	// // this.popSrc.playThenDispose();
+	//
+	// return this.plopIn();
+	// }
 
 	public AnimatedCube plopIn() {
 		this.visible = true;
-		this.plopWave.parameterCoef = 0.015f;
-		this.plopWave.endWhenAngleIncrementsBy(PConstants.HALF_PI).start();
+		this.PLOP_WAVE.parameterCoef = 0.015f;
+		this.PLOP_WAVE.endWhenAngleIncrementsBy(PConstants.HALF_PI).start();
 		return this;
 	}
 
 	public AnimatedCube plopOut(final Runnable p_runnable) {
-		this.plopWave.parameterCoef = 0.00001f;
-		this.plopWave.endWhenAngleIncrementsBy(PConstants.HALF_PI)
+		this.PLOP_WAVE.parameterCoef = 0.00001f;
+		this.PLOP_WAVE.endWhenAngleIncrementsBy(PConstants.HALF_PI)
 				.start(270, () -> {
 					p_runnable.run();
 					this.visible = false;
@@ -148,7 +147,7 @@ public class AnimatedCube extends TestEulerBody {
 		g.push();
 		g.translate(super.pos);
 		g.rotate(super.rot);
-		g.scale(this.size * this.plopWave.get());
+		g.scale(this.size * this.PLOP_WAVE.get());
 
 		// Performance drop + doesn't work!:
 		// for (int i = 0; i < p_shape.getVertexCount(); i++)

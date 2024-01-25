@@ -20,33 +20,34 @@ import processing.opengl.PGraphics3D;
 
 public class DemoScene3 extends NerdP3dScene {
 
+	// region Fields.
+	private PImage bgImage;
+	private CubeManager cubeMan;
+	private SmoothCamera camera;
+	private NerdAmbientLight light;
+	// endregion
+
 	protected DemoScene3(final NerdScenesModule<PGraphics3D> p_sceneMan) {
 		super(p_sceneMan);
 	}
 
-	// region Fields.
-	private PImage bgImage;
-	private SmoothCamera CAMERA;
-	private CubeManager cubeMan;
-	private NerdAmbientLight light;
-	// endregion
-
-	@Override
-	protected synchronized void preload() {
-		// for (int i = 1; i != 5; i++)
-		// this.ASSETS.addAsset(new OggBufferDataAsset("data/Pops/Pop" + i + ".ogg"));
-	}
+	// @Override
+	// protected synchronized void preload() {
+	// for (int i = 1; i != 5; i++)
+	// this.ASSETS.addAsset(new OggBufferDataAsset("data/Pops/Pop" + i +
+	// ".ogg"));
+	// }
 
 	@Override
 	protected void setup(final NerdSceneState p_state) {
-		super.MANAGER
-				.getScenesModuleSettings().drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
+		super.MANAGER.getScenesModuleSettings().drawFirstCaller
+		/*   */ = NerdSceneLayerCallbackOrder.SCENE;
 		super.SCENE.addLayer(CinematicBarsLayer.class);
 		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
 
-		this.CAMERA = new SmoothCamera(this.GRAPHICS);
-		this.CAMERA.fov = PApplet.radians(75);
-		super.GRAPHICS.setCurrentCamera(this.CAMERA);
+		this.camera = new SmoothCamera(super.GRAPHICS);
+		this.camera.fov = PApplet.radians(75);
+		super.GRAPHICS.setCurrentCamera(this.camera);
 		// SKETCH.frameRate(90);
 
 		// final AlBuffer<?>[] alBuffers = new AlBuffer<?>[4];
@@ -55,7 +56,7 @@ public class DemoScene3 extends NerdP3dScene {
 
 		this.cubeMan = new CubeManager(this /* , alBuffers */);
 		this.light = new NerdAmbientLight(
-				this.GRAPHICS, new PVector(0, 0, 0),
+				super.GRAPHICS, new PVector(0, 0, 0),
 				// new PVector(255, 255, 0), // Yellow.
 				// new PVector(224, 152, 27), // The orange at the top.
 				// new PVector(228, 117, 111), // The color in the middle.
@@ -63,7 +64,7 @@ public class DemoScene3 extends NerdP3dScene {
 		);
 
 		this.bgImage = this.createBackgroundImage();
-		// GRAPHICS.background(this.bgImage);
+		// super.GRAPHICS.background(this.bgImage);
 	}
 
 	@Override
@@ -71,26 +72,27 @@ public class DemoScene3 extends NerdP3dScene {
 		// Stress test!:
 		// this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 
-		this.GRAPHICS.tint(255, 100);
-		this.GRAPHICS.background(this.bgImage);
+		super.GRAPHICS.tint(255, 100);
+		super.GRAPHICS.background(this.bgImage);
 
 		// Faster in `draw()`:
 		if (super.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
 			super.MANAGER.restartScene();
 
-		this.GRAPHICS.lights();
+		super.GRAPHICS.lights();
 		this.light.apply();
 		this.cubeMan.draw();
 
-		// GRAPHICS.tint(255, 150);
-		this.GRAPHICS.image(super.SKETCH.getGraphics(), 1000, 1000);
+		super.GRAPHICS.tint(255, 150);
+		super.GRAPHICS.image(super.SKETCH.getGraphics(), 1000, 1000);
 	}
 
 	private PImage createBackgroundImage() {
-		final int color1 = super.SKETCH.color(224, 152, 27),
+		final int
+		/*   */ color1 = super.SKETCH.color(224, 152, 27),
 				color2 = super.SKETCH.color(232, 81, 194);
-		final PImage toRet = super.SKETCH.createImage(this.DISPLAY.displayWidth, this.DISPLAY.displayHeight,
-				PConstants.RGB);
+		final PImage toRet = super.SKETCH.createImage(
+				this.DISPLAY.displayWidth, this.DISPLAY.displayHeight, PConstants.RGB);
 
 		toRet.loadPixels();
 
@@ -100,7 +102,6 @@ public class DemoScene3 extends NerdP3dScene {
 						color1, color2, PApplet.map(y, 0, toRet.height, 0, 1));
 
 		toRet.updatePixels();
-
 		return toRet;
 	}
 
@@ -108,7 +109,7 @@ public class DemoScene3 extends NerdP3dScene {
 	@Override
 	public void mouseClicked() {
 		switch (super.INPUT.mouseButton) {
-			case PConstants.CENTER -> this.CAMERA.setRoll(0);
+			case PConstants.CENTER -> this.camera.setRoll(0);
 			case PConstants.RIGHT -> super.MANAGER.startScene(TestGlScene.class); // startScene(DemoScene4.class);
 			case PConstants.LEFT -> {
 				this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
@@ -122,14 +123,14 @@ public class DemoScene3 extends NerdP3dScene {
 	public void keyPressed() {
 		if (super.INPUT.keyCode == KeyEvent.VK_F) {
 			this.WINDOW.cursorVisible = !this.WINDOW.cursorVisible;
-			this.CAMERA.holdMouse = !this.CAMERA.holdMouse;
+			this.camera.holdMouse = !this.camera.holdMouse;
 		}
 	}
 
 	@Override
 	public void mouseWheel(final MouseEvent p_mouseEvent) {
-		this.CAMERA.fov -= p_mouseEvent.getCount() * 0.1f;
-		this.CAMERA.fov = PApplet.constrain(this.CAMERA.fov, 0, 130);
+		this.camera.fov -= p_mouseEvent.getCount() * 0.1f;
+		this.camera.fov = PApplet.constrain(this.camera.fov, 0, 130);
 	}
 
 	@Override
@@ -137,8 +138,8 @@ public class DemoScene3 extends NerdP3dScene {
 		this.cubeMan.removeAll(); // REALLY helps the GC out!
 		System.gc(); // Surprisingly, this is an effective hint to the GC.
 
-		// GRAPHICS.tint(255);
-		// GRAPHICS.background(this.bgImage);
+		// super.GRAPHICS.tint(255);
+		// super.GRAPHICS.background(this.bgImage);
 	}
 	// endregion
 

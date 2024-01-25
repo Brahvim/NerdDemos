@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
-import com.brahvim.nerd.openal.AlBuffer;
 import com.brahvim.nerd.processing_wrapper.sketches.NerdP3dSketch;
 
 import processing.core.PConstants;
@@ -20,7 +19,7 @@ public class CubeManager {
 	private final NerdP3dSketch SKETCH;
 	private final NerdP3dScene SCENE;
 
-	private AlBuffer<?>[] popAudios;
+	// private AlBuffer<?>[] popAudios;
 	private PShape cubeShape;
 	private int cubesToAdd;
 	// endregion
@@ -40,22 +39,23 @@ public class CubeManager {
 		this.cubeShape = p_cubeShape;
 	}
 
-	public CubeManager(final NerdP3dScene p_scene, final AlBuffer<?>[] p_buffers) {
-		this.SCENE = Objects.requireNonNull(p_scene);
-		this.SKETCH = (NerdP3dSketch) this.SCENE.getSketch();
-		this.popAudios = p_buffers;
+	// public CubeManager(final NerdP3dScene p_scene, final AlBuffer<?>[] p_buffers)
+	// {
+	// this.SCENE = Objects.requireNonNull(p_scene);
+	// this.SKETCH = (NerdP3dSketch) this.SCENE.getSketch();
+	// this.popAudios = p_buffers;
+	//
+	// this.cubeShape = this.SKETCH.createShape(PConstants.BOX, 1);
+	// this.cubeShape.setStrokeWeight(0.28f);
+	// }
 
-		this.cubeShape = this.SKETCH.createShape(PConstants.BOX, 1);
-		this.cubeShape.setStrokeWeight(0.28f);
-	}
-
-	public CubeManager(final NerdP3dScene p_scene,
-			final PShape p_cubeShape, final AlBuffer<?>[] p_buffers) {
-		this.SCENE = Objects.requireNonNull(p_scene);
-		this.SKETCH = (NerdP3dSketch) this.SCENE.getSketch();
-		this.cubeShape = p_cubeShape;
-		this.popAudios = p_buffers;
-	}
+	// public CubeManager(final NerdP3dScene p_scene,
+	// final PShape p_cubeShape, final AlBuffer<?>[] p_buffers) {
+	// this.SCENE = Objects.requireNonNull(p_scene);
+	// this.SKETCH = (NerdP3dSketch) this.SCENE.getSketch();
+	// this.cubeShape = p_cubeShape;
+	// this.popAudios = p_buffers;
+	// }
 	// endregion
 
 	public void draw() {
@@ -64,12 +64,13 @@ public class CubeManager {
 				if (--this.cubesToAdd == 0)
 					break;
 
-				if (this.popAudios == null)
-					this.CUBES.add(new AnimatedCube(this.SCENE).plopIn(null));
-				else {
-					final AlBuffer<?> randomPop = this.popAudios[(int) this.SKETCH.random(this.popAudios.length)];
-					this.CUBES.add(new AnimatedCube(this.SCENE).plopIn(randomPop));
-				}
+				// if (this.popAudios == null)
+				this.CUBES.add(new AnimatedCube(this.SCENE).plopIn(/* null */));
+				// else {
+				// final AlBuffer<?> randomPop = this.popAudios[(int)
+				// this.SKETCH.random(this.popAudios.length)];
+				// this.CUBES.add(new AnimatedCube(this.SCENE).plopIn(randomPop));
+				// }
 			}
 
 		for (int i = this.CUBES.size() - 1; i != -1; i--) {
@@ -87,7 +88,7 @@ public class CubeManager {
 			// }
 
 			if (cube.lifetime - this.SKETCH.millis() < 0) {
-				final int cubeId = i;
+				final int cubeId = i; // For clarity :>
 				cube.plopOut(() -> this.CUBES.remove(cubeId));
 			}
 		}
@@ -114,6 +115,7 @@ public class CubeManager {
 	}
 
 	public void emitCubes(final int p_howMany) {
+		// System.out.println("Emitting `" + p_howMany + "` cubes!");
 		this.cubesToAdd += p_howMany;
 	}
 
