@@ -1,4 +1,4 @@
-package com.brahvim.nerd.nerd_demos;
+package com.brahvim.nerd.nerd_demos.scenes.scene3;
 
 import java.awt.event.KeyEvent;
 import java.util.Objects;
@@ -110,11 +110,11 @@ public class SmoothCamera extends NerdFlyCamera {
 
             // super.front.set(this.circumAmbPos);
 
-            super.pos.x += PApplet.sin(SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.pos.z += PApplet.cos(SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.pos.x += PApplet.sin(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.pos.z += PApplet.cos(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
 
-            super.front.x = PApplet.sin(-SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.front.z = PApplet.cos(-SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.front.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.front.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
         }
 
         if (this.INPUT.keyIsPressed(KeyEvent.VK_E)) {
@@ -123,11 +123,11 @@ public class SmoothCamera extends NerdFlyCamera {
 
             // super.front.set(this.circumAmbPos);
 
-            super.pos.x += PApplet.sin(-SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.pos.z += PApplet.cos(-SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.pos.x += PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.pos.z += PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
 
-            super.front.x = PApplet.sin(-SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.front.z = PApplet.cos(-SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.front.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.front.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
         }
         // endregion
 

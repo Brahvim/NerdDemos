@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
-import com.brahvim.nerd.nerd_demos.SmoothCamera;
+import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 
 import processing.core.PApplet;
 import processing.event.MouseEvent;
