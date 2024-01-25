@@ -6,16 +6,16 @@ import java.util.function.Consumer;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdJava2dScene;
+import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdGenericGraphicsScene;
 import com.brahvim.nerd.io.net.tcp.abstracts.NerdAbstractTcpServer;
 import com.brahvim.nerd.io.net.tcp.abstracts.NerdAbstractTcpServer.NerdClientSentTcpPacket;
 import com.brahvim.nerd.io.net.tcp.implementations.no_ssl.NerdTcpNoSslClient;
 import com.brahvim.nerd.io.net.tcp.implementations.no_ssl.NerdTcpNoSslServer;
 import com.brahvim.nerd.utils.NerdByteSerialUtils;
 
-import processing.awt.PGraphicsJava2D;
+import processing.core.PGraphics;
 
-public class TcpDemoScene extends NerdJava2dScene {
+public class TcpDemoScene extends NerdGenericGraphicsScene { // extends NerdJava2dScene {
 
 	// I'm not using JSON here, which is *the* standard for communication nowadays.
 	// Thanks to Processing, however, you can (using the `processing.data` package)!
@@ -34,7 +34,7 @@ public class TcpDemoScene extends NerdJava2dScene {
 	private float textHeight, logsBeginY;
 	private final List<String> NET_TEST_LOGS = new Vector<>(5);
 
-	protected TcpDemoScene(final NerdScenesModule<PGraphicsJava2D> p_sceneMan) {
+	protected TcpDemoScene(final NerdScenesModule<PGraphics> p_sceneMan) {
 		super(p_sceneMan);
 	}
 	// endregion

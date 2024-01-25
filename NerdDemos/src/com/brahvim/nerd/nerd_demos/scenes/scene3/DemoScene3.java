@@ -9,7 +9,7 @@ import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdS
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.nerd_demos.debug_layers.DebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.effect_layers.CinematicBarsLayer;
-import com.brahvim.nerd.nerd_demos.scenes.net_demo_scenes.TcpDemoScene;
+import com.brahvim.nerd.nerd_demos.scenes.TestGlScene;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -109,7 +109,7 @@ public class DemoScene3 extends NerdP3dScene {
 	public void mouseClicked() {
 		switch (super.INPUT.mouseButton) {
 			case PConstants.CENTER -> this.CAMERA.setRoll(0);
-			case PConstants.RIGHT -> super.MANAGER.startScene(TcpDemoScene.class); // startScene(DemoScene4.class);
+			case PConstants.RIGHT -> super.MANAGER.startScene(TestGlScene.class); // startScene(DemoScene4.class);
 			case PConstants.LEFT -> {
 				this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 				// if (this.cubeMan.numCubes() < 2)

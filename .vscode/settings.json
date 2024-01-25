@@ -57,4 +57,11 @@
         "instanceofPatternMatch",
         "stringConcatToTextBlock",
     ],
+    "java.dependency.syncWithFolderExplorer": true,
+    "java.project.sourcePaths": [
+        "Nerd/src",
+        "NerdDemos/src",
+        "NerdExtraModules/ScenesAndLayers",
+        "NerdExtraModules/ECS"
+    ],
 }

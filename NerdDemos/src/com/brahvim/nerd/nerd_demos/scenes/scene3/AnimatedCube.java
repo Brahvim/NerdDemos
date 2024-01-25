@@ -12,7 +12,7 @@ import processing.core.PVector;
 public class AnimatedCube extends TestEulerBody {
 
 	// region Fields.
-	public static int DEFAULT_LIFETIME = 8_000;
+	public static final int DEFAULT_LIFETIME = 8_000;
 
 	public float size = 40;
 	public int startTime, lifetime;

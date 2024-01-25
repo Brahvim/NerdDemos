@@ -38,6 +38,7 @@ public class DebugFpsGizmoLayer extends NerdP3dLayer {
 		super.GRAPHICS.translate(-xPos, 0);
 	}
 
+	@SuppressWarnings("unused")
 	private void showAxesGizmo() {
 		super.GRAPHICS.push();
 		super.GRAPHICS.noStroke();
