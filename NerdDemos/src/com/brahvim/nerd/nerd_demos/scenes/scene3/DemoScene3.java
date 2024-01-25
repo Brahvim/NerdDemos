@@ -45,8 +45,11 @@ public class DemoScene3 extends NerdP3dScene {
 		super.SCENE.addLayer(CinematicBarsLayer.class);
 		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
 
+		this.bgImage = this.createBackgroundImage();
+
 		this.camera = new SmoothCamera(super.GRAPHICS);
 		this.camera.fov = PApplet.radians(75);
+		this.camera.setClearImage(this.bgImage);
 		super.GRAPHICS.setCurrentCamera(this.camera);
 		// SKETCH.frameRate(90);
 
@@ -62,19 +65,14 @@ public class DemoScene3 extends NerdP3dScene {
 				// new PVector(228, 117, 111), // The color in the middle.
 				new PVector(232, 81, 194) // The pink at the bottom.
 		);
-
-		this.bgImage = this.createBackgroundImage();
-		// super.GRAPHICS.background(this.bgImage);
 	}
 
 	@Override
 	protected void draw() {
 		// Stress test! (`125` FPS at minimum for me! Max is `144`, the refresh rate):
-		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
+		// this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 
 		super.GRAPHICS.tint(255, 100);
-		// super.GRAPHICS.background(0);
-		super.GRAPHICS.background(this.bgImage);
 		this.camera.apply();
 
 		// Faster in `draw()`:
