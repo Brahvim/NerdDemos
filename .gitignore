@@ -5,3 +5,5 @@ NerdExtraModules
 
 # Files:
 .directory
+*.log
+# ^^^ Processing breaks native code when exiting sometimes, okay!?

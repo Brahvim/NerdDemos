@@ -154,8 +154,8 @@ public class AnimatedCube extends TestEulerBody {
 		// p_shape.setFill(i, SKETCH.color(255, PApplet.map(SKETCH.millis(),
 		// this.startTime, this.lifetime, 0, 255)));
 
-		super.SKETCH.shape(p_shape);
-		super.SKETCH.pop();
+		g.shape(p_shape);
+		g.pop();
 	}
 
 }

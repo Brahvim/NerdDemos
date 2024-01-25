@@ -69,11 +69,13 @@ public class DemoScene3 extends NerdP3dScene {
 
 	@Override
 	protected void draw() {
-		// Stress test!:
-		// this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
+		// Stress test! (`125` FPS at minimum for me! Max is `144`, the refresh rate):
+		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 
 		super.GRAPHICS.tint(255, 100);
+		// super.GRAPHICS.background(0);
 		super.GRAPHICS.background(this.bgImage);
+		this.camera.apply();
 
 		// Faster in `draw()`:
 		if (super.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))

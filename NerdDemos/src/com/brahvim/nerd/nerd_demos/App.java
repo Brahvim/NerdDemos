@@ -7,10 +7,9 @@ import com.brahvim.nerd.processing_wrapper.sketch_builders.NerdP3dSketchBuilder;
 public class App {
 
     public static void main(final String[] p_args) {
-        // new NerdJava2dSketchBuilder()
         new NerdP3dSketchBuilder()
                 .canResize()
-                // .startFullscreenInitially()
+                .closeOnPressingEscapeInitially()
                 .setWindowIconPath("Images/SunglassesNerd.png")
                 .setNerdModuleSettings(new NerdScenesModuleSettings(DemoScene3.class))
                 .build(p_args);
