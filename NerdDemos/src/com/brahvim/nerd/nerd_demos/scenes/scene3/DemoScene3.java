@@ -9,7 +9,7 @@ import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdS
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.nerd_demos.debug_layers.DebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.effect_layers.CinematicBarsLayer;
-import com.brahvim.nerd.nerd_demos.scenes.TestGlScene;
+import com.brahvim.nerd.nerd_demos.scenes.DemoScene4;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -48,7 +48,7 @@ public class DemoScene3 extends NerdP3dScene {
 		this.camera.setClearImage(bgImage);
 		this.camera.fov = PApplet.radians(75);
 		super.GRAPHICS.setCurrentCamera(this.camera);
-		// SKETCH.frameRate(90);
+		// super.SKETCH.frameRateMaximize();
 
 		// final AlBuffer<?>[] alBuffers = new AlBuffer<?>[4];
 		// for (int i = 1; i != 5; i++)
@@ -66,15 +66,19 @@ public class DemoScene3 extends NerdP3dScene {
 
 	@Override
 	protected void draw() {
-		// Stress test! (`125` FPS at minimum for me! Max is `144`, the refresh rate):
-		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
+		// Stress test!:
+		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick); // Nearly `1,000` cubes at once after sufficient time!
+		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
+		// (Max possible is `144`, the refresh rate).
 
 		super.GRAPHICS.tint(255, 100);
 		this.camera.apply();
 
 		// Faster in `draw()`:
-		if (super.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
+		if (super.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
+			System.out.printf("Number of cubes: `%d`.%n", this.cubeMan.numCubes());
 			super.MANAGER.restartScene();
+		}
 
 		super.GRAPHICS.lights();
 		this.light.apply();
@@ -104,23 +108,23 @@ public class DemoScene3 extends NerdP3dScene {
 
 	// region Event callbacks.
 	@Override
+	public void keyPressed() {
+		if (super.INPUT.keyCode == KeyEvent.VK_F) {
+			this.WINDOW.cursorVisible = !this.WINDOW.cursorVisible;
+			this.camera.holdMouse = !this.camera.holdMouse;
+		}
+	}
+
+	@Override
 	public void mouseClicked() {
 		switch (super.INPUT.mouseButton) {
 			case PConstants.CENTER -> this.camera.setRoll(0);
-			case PConstants.RIGHT -> super.MANAGER.startScene(TestGlScene.class); // startScene(DemoScene4.class);
+			case PConstants.RIGHT -> super.MANAGER.startScene(DemoScene4.class);
 			case PConstants.LEFT -> {
 				this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 				// if (this.cubeMan.numCubes() < 2)
 				// // this.cubeMan.emitCubes(1);
 			}
-		}
-	}
-
-	@Override
-	public void keyPressed() {
-		if (super.INPUT.keyCode == KeyEvent.VK_F) {
-			this.WINDOW.cursorVisible = !this.WINDOW.cursorVisible;
-			this.camera.holdMouse = !this.camera.holdMouse;
 		}
 	}
 

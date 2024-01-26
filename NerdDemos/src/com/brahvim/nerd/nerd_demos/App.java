@@ -1,17 +1,31 @@
 package com.brahvim.nerd.nerd_demos;
 
+import java.util.LinkedHashSet;
+import java.util.function.Function;
+
+import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings;
-import com.brahvim.nerd.nerd_demos.scenes.TestGlScene;
+import com.brahvim.nerd.nerd_demos.scenes.DemoScene2;
+import com.brahvim.nerd.processing_wrapper.NerdModule;
+import com.brahvim.nerd.processing_wrapper.NerdSketch;
 import com.brahvim.nerd.processing_wrapper.sketch_builders.NerdP3dSketchBuilder;
+
+import processing.opengl.PGraphics3D;
 
 public class App {
 
     public static void main(final String[] p_args) {
-        new NerdP3dSketchBuilder()
+        new NerdP3dSketchBuilder() {
+            @Override
+            protected void supplyUserDefinedModules(
+                    final LinkedHashSet<Function<NerdSketch<PGraphics3D>, NerdModule>> p_modulesSet) {
+                p_modulesSet.add(NerdScenesModule::new);
+            }
+        }
                 .canResize()
                 .closeOnPressingEscapeInitially()
                 .setWindowIconPath("Images/SunglassesNerd.png")
-                .setNerdModuleSettings(new NerdScenesModuleSettings(TestGlScene.class))
+                .setNerdModuleSettings(new NerdScenesModuleSettings(DemoScene2.class))
                 .build(p_args);
     }
 

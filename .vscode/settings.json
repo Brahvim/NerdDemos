@@ -42,6 +42,7 @@
         "pfocused",
         "pframe",
         "pfullscreen",
+        "PGRAPHICS",
         "pheight",
         "phold",
         "PJOGL",

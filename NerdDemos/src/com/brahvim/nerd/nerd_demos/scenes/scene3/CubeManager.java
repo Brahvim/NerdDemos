@@ -12,7 +12,8 @@ import processing.core.PShape;
 public class CubeManager {
 
 	// region Fields.
-	public int cubesPerClick = 7,
+	public int
+	/*   */ cubesPerClick = 7,
 			cubesPerFrame = 2;
 
 	private final ArrayList<AnimatedCube> CUBES = new ArrayList<>();
@@ -114,9 +115,8 @@ public class CubeManager {
 		}
 	}
 
-	public void emitCubes(final int p_howMany) {
-		// System.out.println("Emitting `" + p_howMany + "` cubes!");
-		this.cubesToAdd += p_howMany;
+	public int numCubes() {
+		return this.CUBES.size();
 	}
 
 	public void removeAll() {
@@ -124,8 +124,9 @@ public class CubeManager {
 		// this.cubesToRemove = this.CUBES.size() - 1; // I dunno how to do this.
 	}
 
-	public int numCubes() {
-		return this.CUBES.size();
+	public void emitCubes(final int p_howMany) {
+		// System.out.println("Emitting `" + p_howMany + "` cubes!");
+		this.cubesToAdd += p_howMany;
 	}
 
 	public void setShape(final PShape p_cubeShape) {
