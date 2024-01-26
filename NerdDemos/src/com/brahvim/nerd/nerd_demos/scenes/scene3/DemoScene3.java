@@ -21,7 +21,6 @@ import processing.opengl.PGraphics3D;
 public class DemoScene3 extends NerdP3dScene {
 
 	// region Fields.
-	private PImage bgImage;
 	private CubeManager cubeMan;
 	private SmoothCamera camera;
 	private NerdAmbientLight light;
@@ -31,12 +30,11 @@ public class DemoScene3 extends NerdP3dScene {
 		super(p_sceneMan);
 	}
 
-	// @Override
-	// protected synchronized void preload() {
-	// for (int i = 1; i != 5; i++)
-	// this.ASSETS.addAsset(new OggBufferDataAsset("data/Pops/Pop" + i +
-	// ".ogg"));
-	// }
+	@Override
+	protected synchronized void preload() {
+		// for (int i = 1; i != 5; i++)
+		// super.ASSETS.addAsset(new OggBufferDataAsset("data/Pops/Pop" + i + ".ogg"));
+	}
 
 	@Override
 	protected void setup(final NerdSceneState p_state) {
@@ -44,18 +42,17 @@ public class DemoScene3 extends NerdP3dScene {
 		/*   */ = NerdSceneLayerCallbackOrder.SCENE;
 		super.SCENE.addLayer(CinematicBarsLayer.class);
 		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
-
-		this.bgImage = this.createBackgroundImage();
+		final PImage bgImage = this.createBackgroundImage();
 
 		this.camera = new SmoothCamera(super.GRAPHICS);
+		this.camera.setClearImage(bgImage);
 		this.camera.fov = PApplet.radians(75);
-		this.camera.setClearImage(this.bgImage);
 		super.GRAPHICS.setCurrentCamera(this.camera);
 		// SKETCH.frameRate(90);
 
 		// final AlBuffer<?>[] alBuffers = new AlBuffer<?>[4];
 		// for (int i = 1; i != 5; i++)
-		// alBuffers[i - 1] = this.ASSETS.get("Pop" + i).getData();
+		// alBuffers[i - 1] = super.ASSETS.get("Pop" + i).getData();
 
 		this.cubeMan = new CubeManager(this /* , alBuffers */);
 		this.light = new NerdAmbientLight(
@@ -70,7 +67,7 @@ public class DemoScene3 extends NerdP3dScene {
 	@Override
 	protected void draw() {
 		// Stress test! (`125` FPS at minimum for me! Max is `144`, the refresh rate):
-		// this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
+		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 
 		super.GRAPHICS.tint(255, 100);
 		this.camera.apply();

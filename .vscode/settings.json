@@ -3,6 +3,24 @@
         "Dependencies/**/*.jar",
         "Dependencies/libraries/**/*.jar"
     ],
+    "java.project.sourcePaths": [
+        "Nerd/src",
+        "NerdDemos/src",
+        "NerdExtraModules/ScenesAndLayers",
+        "NerdExtraModules/ECS"
+    ],
+    // "java.cleanup.actionsOnSave": [
+    //     "addOverride",
+    //     "invertEquals",
+    //     "addDeprecated",
+    //     "qualifyMembers",
+    //     "tryWithResource",
+    //     "lambdaExpression",
+    //     "addFinalModifier",
+    //     "qualifyStaticMembers",
+    //     "instanceofPatternMatch",
+    //     "stringConcatToTextBlock",
+    // ],
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms128M -Xmx1024M",
     "cSpell.words": [
         "ARGB",
@@ -41,27 +59,5 @@
         "vres",
         "winx",
         "winz"
-    ],
-    "java.saveActions.organizeImports": true,
-    "formatFiles.runOrganizeImports": true,
-    "java.dependency.packagePresentation": "hierarchical",
-    "java.cleanup.actionsOnSave": [
-        "addOverride",
-        "invertEquals",
-        "addDeprecated",
-        "qualifyMembers",
-        "tryWithResource",
-        "lambdaExpression",
-        "addFinalModifier",
-        "qualifyStaticMembers",
-        "instanceofPatternMatch",
-        "stringConcatToTextBlock",
-    ],
-    "java.dependency.syncWithFolderExplorer": true,
-    "java.project.sourcePaths": [
-        "Nerd/src",
-        "NerdDemos/src",
-        "NerdExtraModules/ScenesAndLayers",
-        "NerdExtraModules/ECS"
     ],
 }
