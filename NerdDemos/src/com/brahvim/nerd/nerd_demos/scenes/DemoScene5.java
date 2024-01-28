@@ -4,17 +4,15 @@ import java.awt.event.KeyEvent;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.opengl.PGraphics3D;
 
-public class DemoScene5 extends NerdP3dScene {
+public class DemoScene5 extends AbstractDemoScene {
 
 	private final String TEXT = String.format(
-			"Welcome to `%s`!",
-			this.getClass().getSimpleName());
+			"Welcome to `%s`!", super.SCENE_NAME);
 
 	protected DemoScene5(final NerdScenesModule<PGraphics3D> p_sceneMan) {
 		super(p_sceneMan);
@@ -30,7 +28,7 @@ public class DemoScene5 extends NerdP3dScene {
 
 	@Override
 	protected void draw() {
-		if (super.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
+		if (super.INPUT.areKeysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
 			super.MANAGER.restartScene();
 
 		super.GRAPHICS.background(0x006699, PApplet.sin(super.getMillisSinceStart()));

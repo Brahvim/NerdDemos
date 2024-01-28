@@ -1,4 +1,4 @@
-package com.brahvim.nerd.nerd_demos.scenes.scene3;
+package com.brahvim.nerd.nerd_demos.scenes;
 
 import java.awt.event.KeyEvent;
 
@@ -6,10 +6,10 @@ import com.brahvim.nerd.framework.lights.NerdAmbientLight;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdSceneLayerCallbackOrder;
-import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.nerd_demos.debug_layers.DebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.effect_layers.CinematicBarsLayer;
-import com.brahvim.nerd.nerd_demos.scenes.DemoScene4;
+import com.brahvim.nerd.nerd_demos.scenes.scene3.CubeManager;
+import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -18,7 +18,7 @@ import processing.core.PVector;
 import processing.event.MouseEvent;
 import processing.opengl.PGraphics3D;
 
-public class DemoScene3 extends NerdP3dScene {
+public class DemoScene3 extends AbstractDemoScene {
 
 	// region Fields.
 	private CubeManager cubeMan;
@@ -74,12 +74,6 @@ public class DemoScene3 extends NerdP3dScene {
 		super.GRAPHICS.tint(255, 100);
 		this.camera.apply();
 
-		// Faster in `draw()`:
-		if (super.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
-			System.out.printf("Number of cubes: `%d`.%n", this.cubeMan.numCubes());
-			super.MANAGER.restartScene();
-		}
-
 		super.GRAPHICS.lights();
 		this.light.apply();
 		this.cubeMan.draw();
@@ -108,6 +102,11 @@ public class DemoScene3 extends NerdP3dScene {
 
 	// region Event callbacks.
 	@Override
+	protected void exit() {
+		System.out.printf("Number of cubes: `%d`.%n", this.cubeMan.numCubes());
+	}
+
+	@Override
 	public void keyPressed() {
 		if (super.INPUT.keyCode == KeyEvent.VK_F) {
 			this.WINDOW.cursorVisible = !this.WINDOW.cursorVisible;
@@ -117,9 +116,10 @@ public class DemoScene3 extends NerdP3dScene {
 
 	@Override
 	public void mouseClicked() {
+		super.mouseClicked();
+
 		switch (super.INPUT.mouseButton) {
 			case PConstants.CENTER -> this.camera.setRoll(0);
-			case PConstants.RIGHT -> super.MANAGER.startScene(DemoScene4.class);
 			case PConstants.LEFT -> {
 				this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 				// if (this.cubeMan.numCubes() < 2)

@@ -4,9 +4,7 @@ import java.awt.event.KeyEvent;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.nerd_demos.debug_layers.DebugFpsGizmoLayer;
-import com.brahvim.nerd.nerd_demos.scenes.scene3.DemoScene3;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 
 import processing.core.PApplet;
@@ -14,7 +12,7 @@ import processing.core.PConstants;
 import processing.event.MouseEvent;
 import processing.opengl.PGraphics3D;
 
-public class DemoScene2 extends NerdP3dScene {
+public class DemoScene2 extends AbstractDemoScene {
 
     private SmoothCamera camera;
 
@@ -31,7 +29,7 @@ public class DemoScene2 extends NerdP3dScene {
 
     @Override
     protected void draw() {
-        if (this.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
+        if (this.INPUT.areKeysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
             this.MANAGER.restartScene();
 
         super.GRAPHICS.clear();

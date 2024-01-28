@@ -4,7 +4,6 @@ import com.brahvim.nerd.framework.cameras.NerdBasicCamera;
 import com.brahvim.nerd.framework.cameras.NerdBasicCameraBuilder;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.io.class_loaders.NerdSceneClassLoader;
 import com.brahvim.nerd.processing_wrapper.NerdSketch;
 
@@ -14,7 +13,7 @@ import processing.core.PImage;
 import processing.event.MouseEvent;
 import processing.opengl.PGraphics3D;
 
-public class DemoScene4 extends NerdP3dScene {
+public class DemoScene4 extends AbstractDemoScene {
 
 	// region Fields!
 	private PImage nerd;

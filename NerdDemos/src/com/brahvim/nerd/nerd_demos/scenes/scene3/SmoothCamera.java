@@ -75,9 +75,9 @@ public class SmoothCamera extends NerdFlyCamera {
         this.accFrict = SmoothCamera.DEFAULT_ACC_FRICT;
         this.velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
 
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_CONTROL)) {
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_CONTROL)) {
             accMultiplier = SmoothCamera.FAST_SPEED;
-        } else if (this.INPUT.keyIsPressed(KeyEvent.VK_ALT)) {
+        } else if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
             accMultiplier = SmoothCamera.SLOW_SPEED;
             this.accFrict = this.velFrict = 0.95f;
         } else {
@@ -85,10 +85,10 @@ public class SmoothCamera extends NerdFlyCamera {
         }
 
         // region Roll.
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_Z))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
             super.up.x += SmoothCamera.NORMAL_SPEED * 0.1f;
 
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_C))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
             super.up.x += -SmoothCamera.NORMAL_SPEED * 0.1f;
 
         // if (super.up.x > PConstants.TAU || super.up.x < -PConstants.TAU)
@@ -96,16 +96,16 @@ public class SmoothCamera extends NerdFlyCamera {
         // endregion
 
         // region Elevation.
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_SPACE))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_SPACE))
             this.accVec.y += -accMultiplier;
 
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_SHIFT))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_SHIFT))
             this.accVec.y += accMultiplier;
         // endregion
 
         // region Circumambulation, id est "moving in circles".
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_Q)) {
-            if (!this.INPUT.keyWasPressed(KeyEvent.VK_Q))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Q)) {
+            if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_Q))
                 this.circumAmbPos.set(super.front); // PVector.sub(super.front, super.pos));
 
             // super.front.set(this.circumAmbPos);
@@ -117,8 +117,8 @@ public class SmoothCamera extends NerdFlyCamera {
             super.front.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
         }
 
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_E)) {
-            if (!this.INPUT.keyWasPressed(KeyEvent.VK_E))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_E)) {
+            if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_E))
                 this.circumAmbPos.set(super.front); // PVector.sub(super.front, super.pos));
 
             // super.front.set(this.circumAmbPos);
@@ -132,16 +132,16 @@ public class SmoothCamera extends NerdFlyCamera {
         // endregion
 
         // region `W`-`A`-`S`-`D` controls.
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_W))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_W))
             this.accVec.z += -accMultiplier;
 
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_A))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_A))
             this.accVec.x += -accMultiplier;
 
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_S))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_S))
             this.accVec.z += accMultiplier;
 
-        if (this.INPUT.keyIsPressed(KeyEvent.VK_D))
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_D))
             this.accVec.x += accMultiplier;
 
         this.accVec.mult(this.accFrict);
