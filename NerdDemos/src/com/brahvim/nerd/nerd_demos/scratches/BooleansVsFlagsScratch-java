@@ -1,0 +1,165 @@
+package com.brahvim.nerd.nerd_demos.scratches;
+
+import com.brahvim.nerd.math.timing.NerdNanosTimer;
+
+public class BooleansVsFlagsScratch {
+
+    public static final int NUM_TESTS = 8;
+    // public static final Random random = new Random();
+    public static final boolean[] TEST_VALUES = { true, false, true, false }; // NOSONAR
+
+    public static void main(final String[] args) {
+        for (int i = 0; i < BooleansVsFlagsScratch.NUM_TESTS; i++)
+            BooleansVsFlagsScratch.benchFlagger(new FlagsClass());
+
+        System.out.println();
+        for (int i = 0; i < BooleansVsFlagsScratch.NUM_TESTS; i++)
+            BooleansVsFlagsScratch.benchFlagger(new BooleansClass());
+    }
+
+    public static void benchFlagger(final Flagger p_flagger) {
+        try (final NerdNanosTimer nanosTimer = new NerdNanosTimer(
+                String.format("`%s`", p_flagger.getClass().getSimpleName()))) {
+
+            for (int i = 0; i < 1_000_000; i++)
+                switch (i % 4) {
+                    case 0 -> p_flagger.setFlagA(BooleansVsFlagsScratch.TEST_VALUES[0]);
+                    case 1 -> p_flagger.setFlagB(BooleansVsFlagsScratch.TEST_VALUES[1]);
+                    case 2 -> p_flagger.setFlagC(BooleansVsFlagsScratch.TEST_VALUES[2]);
+                    case 3 -> p_flagger.setFlagD(BooleansVsFlagsScratch.TEST_VALUES[3]);
+                }
+
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+
+interface Flagger {
+
+    public boolean getFlagA();
+
+    public boolean getFlagB();
+
+    public boolean getFlagC();
+
+    public boolean getFlagD();
+
+    public void setFlagA(boolean status);
+
+    public void setFlagB(boolean status);
+
+    public void setFlagC(boolean status);
+
+    public void setFlagD(boolean status);
+
+}
+
+class FlagsClass implements Flagger {
+
+    public static final int FLAG_A = 1;
+    public static final int FLAG_B = 2;
+    public static final int FLAG_C = 4;
+    public static final int FLAG_D = 8;
+
+    public int flags;
+
+    @Override
+    public boolean getFlagA() {
+        return (this.flags & FlagsClass.FLAG_A) != 0;
+    }
+
+    @Override
+    public boolean getFlagB() {
+        return (this.flags & FlagsClass.FLAG_B) != 0;
+    }
+
+    @Override
+    public boolean getFlagC() {
+        return (this.flags & FlagsClass.FLAG_C) != 0;
+    }
+
+    @Override
+    public boolean getFlagD() {
+        return (this.flags & FlagsClass.FLAG_D) != 0;
+    }
+
+    @Override
+    public void setFlagA(final boolean p_status) {
+        this.flags = p_status
+                ? (this.flags | FlagsClass.FLAG_A)
+                : (this.flags & ~FlagsClass.FLAG_A);
+    }
+
+    @Override
+    public void setFlagB(final boolean p_status) {
+        this.flags = p_status
+                ? (this.flags | FlagsClass.FLAG_B)
+                : (this.flags & ~FlagsClass.FLAG_B);
+    }
+
+    @Override
+    public void setFlagC(final boolean p_status) {
+        this.flags = p_status
+                ? (this.flags | FlagsClass.FLAG_C)
+                : (this.flags & ~FlagsClass.FLAG_C);
+    }
+
+    @Override
+    public void setFlagD(final boolean p_status) {
+        this.flags = p_status
+                ? (this.flags | FlagsClass.FLAG_D)
+                : (this.flags & ~FlagsClass.FLAG_D);
+    }
+
+}
+
+class BooleansClass implements Flagger {
+
+    private boolean flagA;
+    private boolean flagB;
+    private boolean flagC;
+    private boolean flagD;
+
+    @Override
+    public boolean getFlagA() {
+        return this.flagA;
+    }
+
+    @Override
+    public boolean getFlagB() {
+        return this.flagB;
+    }
+
+    @Override
+    public boolean getFlagC() {
+        return this.flagC;
+    }
+
+    @Override
+    public boolean getFlagD() {
+        return this.flagD;
+    }
+
+    @Override
+    public void setFlagA(final boolean p_status) {
+        this.flagA = p_status;
+    }
+
+    @Override
+    public void setFlagB(final boolean p_status) {
+        this.flagB = p_status;
+    }
+
+    @Override
+    public void setFlagC(final boolean p_status) {
+        this.flagC = p_status;
+    }
+
+    @Override
+    public void setFlagD(final boolean p_status) {
+        this.flagD = p_status;
+    }
+
+}
