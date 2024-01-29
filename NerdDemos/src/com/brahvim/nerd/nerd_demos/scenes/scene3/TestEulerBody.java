@@ -18,7 +18,7 @@ public class TestEulerBody {
 	}
 
 	public void integrate() {
-		final float deltaTime = this.SKETCH.getDeltaTime() * this.dtCoef;
+		final float deltaTime = this.SKETCH.getFrameTime() * this.dtCoef;
 
 		this.vel.add(this.acc);
 		this.rotVel.add(this.rotAcc);

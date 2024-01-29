@@ -35,8 +35,6 @@ public class DemoScene2 extends AbstractDemoScene {
             this.MANAGER.restartScene();
 
         super.GRAPHICS.clear();
-        this.camera.apply();
-
         super.GRAPHICS.pushMatrix();
         super.GRAPHICS.translateToCenter();
         // super.GRAPHICS.translate(super.GRAPHICS.getMouseInWorld());

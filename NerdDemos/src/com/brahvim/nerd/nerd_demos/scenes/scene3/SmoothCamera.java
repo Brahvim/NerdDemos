@@ -88,7 +88,7 @@ public class SmoothCamera extends NerdFlyCamera {
             accMultiplier = SmoothCamera.FAST_SPEED;
         } else if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
             accMultiplier = SmoothCamera.SLOW_SPEED;
-            this.accFrict = this.velFrict = 0.95f;
+            this.accFrict = this.velFrict = 0.7f;
         } else {
             accMultiplier = SmoothCamera.NORMAL_SPEED;
         }
@@ -152,15 +152,18 @@ public class SmoothCamera extends NerdFlyCamera {
 
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_D))
             this.accVec.x += accMultiplier;
+        // endregion
 
         this.accVec.mult(this.accFrict);
         this.velVec.add(this.accVec);
         this.velVec.mult(this.velFrict);
 
-        super.moveX(this.velVec.x);
-        super.moveY(this.velVec.y);
-        super.moveZ(this.velVec.z);
-        // endregion
+        final float deltaTime = super.SKETCH.getFrameTime() * 0.15f;
+        // this.velVec.mult(deltaTime);
+
+        super.moveX(this.velVec.x * deltaTime);
+        super.moveY(this.velVec.y * deltaTime);
+        super.moveZ(this.velVec.z * deltaTime);
     }
 
 }

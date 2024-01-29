@@ -21,6 +21,7 @@ import processing.opengl.PGraphics3D;
 public class DemoScene3 extends AbstractDemoScene {
 
 	// region Fields.
+	private PImage bgImage;
 	private CubeManager cubeMan;
 	private SmoothCamera camera;
 	private NerdAmbientLight light;
@@ -42,11 +43,13 @@ public class DemoScene3 extends AbstractDemoScene {
 		/*   */ = NerdSceneLayerCallbackOrder.SCENE;
 		super.SCENE.addLayer(CinematicBarsLayer.class);
 		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
-		final PImage bgImage = this.createBackgroundImage();
+		this.bgImage = this.createBackgroundImage();
 
 		this.camera = new SmoothCamera(super.GRAPHICS);
-		this.camera.setClearImage(bgImage);
+		// this.camera.setClearImage(this.bgImage);
 		this.camera.fov = PApplet.radians(75);
+		this.camera.near = 1.0f;
+		this.camera.far = 100_000.0f;
 		super.GRAPHICS.setCurrentCamera(this.camera);
 		// super.SKETCH.frameRateMaximize();
 
@@ -74,14 +77,19 @@ public class DemoScene3 extends AbstractDemoScene {
 		// (Max possible is `144`, the refresh rate).
 
 		super.GRAPHICS.tint(255, 100);
-		this.camera.apply();
+		super.GRAPHICS.background(this.bgImage);
 
 		super.GRAPHICS.lights();
 		this.light.apply();
 		this.cubeMan.draw();
 
-		super.GRAPHICS.tint(255, 150);
-		super.GRAPHICS.image(super.SKETCH.getGraphics(), 1000, 1000);
+		try (final var a = super.GRAPHICS.new MatrixPush()) {
+			super.GRAPHICS.tint(255, 150);
+			super.GRAPHICS.rotateY(PConstants.HALF_PI + PConstants.PI);
+			super.GRAPHICS.image(super.SKETCH.getGraphics(), 0, 0, 0);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private PImage createBackgroundImage() {
