@@ -4,8 +4,6 @@ import com.brahvim.nerd.framework.cameras.NerdBasicCamera;
 import com.brahvim.nerd.framework.cameras.NerdBasicCameraBuilder;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.io.class_loaders.NerdSceneClassLoader;
-import com.brahvim.nerd.processing_wrapper.NerdSketch;
 
 import processing.core.PConstants;
 import processing.core.PGraphics;
@@ -27,7 +25,7 @@ public class DemoScene4 extends AbstractDemoScene {
 	private float magScrollAcc, magScrollVel, magScroll = 1;
 	// endregion
 
-	protected DemoScene4(NerdScenesModule<PGraphics3D> p_sceneMan) {
+	protected DemoScene4(final NerdScenesModule<PGraphics3D> p_sceneMan) {
 		super(p_sceneMan);
 	}
 
@@ -72,9 +70,9 @@ public class DemoScene4 extends AbstractDemoScene {
 				&& super.MANAGER.getScenesModuleSettings().FIRST_SCENE_CLASS == DemoScene4.class)
 
 		{
-			WINDOW.fullscreen = false;
-			WINDOW.setSize(1600, 900);
-			WINDOW.centerWindow();
+			this.WINDOW.fullscreen = false;
+			this.WINDOW.setSize(1600, 900);
+			this.WINDOW.centerWindow();
 		} else { // Do not play `this.rubberDuck` if this is the first start!
 					// App.openAl.setListenerVelocity(0, 0, 0);
 					// App.openAl.setListenerPosition(0, 0, 500);
@@ -101,6 +99,8 @@ public class DemoScene4 extends AbstractDemoScene {
 
 	@Override
 	protected void draw() {
+		super.draw();
+
 		super.GRAPHICS.clear();
 		// super.GRAPHICS.translate(-WINDOW.cx, -WINDOW.cy);
 
@@ -133,12 +133,12 @@ public class DemoScene4 extends AbstractDemoScene {
 		// super.GRAPHICS.vertex(0, WINDOW.height, 0, WINDOW.height);
 
 		super.GRAPHICS.vertex(0, 0, this.nerdRotTime(), this.nerdRotTime());
-		super.GRAPHICS.vertex(WINDOW.width, 0, this.nerdRotTime() + WINDOW.width,
+		super.GRAPHICS.vertex(this.WINDOW.width, 0, this.nerdRotTime() + this.WINDOW.width,
 				this.nerdRotTime());
-		super.GRAPHICS.vertex(WINDOW.width, WINDOW.height,
-				this.nerdRotTime() + WINDOW.width, this.nerdRotTime() + WINDOW.height);
-		super.GRAPHICS.vertex(0, WINDOW.height, this.nerdRotTime(), this.nerdRotTime() +
-				WINDOW.height);
+		super.GRAPHICS.vertex(this.WINDOW.width, this.WINDOW.height,
+				this.nerdRotTime() + this.WINDOW.width, this.nerdRotTime() + this.WINDOW.height);
+		super.GRAPHICS.vertex(0, this.WINDOW.height, this.nerdRotTime(), this.nerdRotTime() +
+				this.WINDOW.height);
 
 		super.GRAPHICS.endShape();
 		// endregion
@@ -157,10 +157,10 @@ public class DemoScene4 extends AbstractDemoScene {
 	@Override
 	public void mouseClicked() {
 		switch (super.INPUT.mouseButton) {
-			case PConstants.LEFT -> MANAGER.restartScene();
-			case PConstants.RIGHT -> MANAGER.startScene(new NerdSceneClassLoader(
-					"file://" + NerdSketch.DATA_DIR_PATH + "/DemoScene5.class",
-					"com.brahvim.nerd.nerd_demos.scenes.DemoScene5").getLoadedClass());
+			case PConstants.LEFT -> this.MANAGER.restartScene();
+			// case PConstants.RIGHT -> this.MANAGER.startScene(new NerdSceneClassLoader(
+			// 		"file://" + NerdSketch.DATA_DIR_PATH + "/DemoScene5.class",
+			// 		"com.brahvim.nerd.nerd_demos.scenes.DemoScene5").getLoadedClass());
 		}
 	}
 

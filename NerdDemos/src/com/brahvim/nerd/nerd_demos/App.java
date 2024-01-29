@@ -18,14 +18,14 @@ public class App {
         new NerdP3dSketchBuilder() {
             @Override
             protected void supplyUserDefinedModules(
-                    final LinkedHashSet<Function<NerdSketch<PGraphics3D>, NerdModule>> p_modulesSet) {
-                p_modulesSet.add(NerdScenesModule::new);
+                    final LinkedHashSet<Function<NerdSketch<PGraphics3D>, NerdModule<PGraphics3D>>> p_modulesSet) {
+                p_modulesSet.add(NerdScenesModule<PGraphics3D>::new);
             }
         }
                 .canResize()
                 .closeOnPressingEscapeInitially()
                 .setWindowIconPath("Images/SunglassesNerd.png")
-                .setNerdModuleSettings(new NerdScenesModuleSettings(DemoScene2.class))
+                .setNerdModuleSettings(new NerdScenesModuleSettings<>(DemoScene2.class))
                 .build(p_args);
     }
 

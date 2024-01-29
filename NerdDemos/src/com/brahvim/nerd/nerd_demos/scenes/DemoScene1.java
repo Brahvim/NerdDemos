@@ -11,7 +11,9 @@ public class DemoScene1 extends AbstractDemoScene {
     }
 
     @Override
-    public void draw() {
+    protected void draw() {
+        super.draw();
+
         super.GRAPHICS.clear();
         super.GRAPHICS.text(super.SKETCH.frameRate);
         super.GRAPHICS.text(super.INPUT.getHeldKeysDebugString(), super.GENERIC_WINDOW.q3x, super.GENERIC_WINDOW.qy);

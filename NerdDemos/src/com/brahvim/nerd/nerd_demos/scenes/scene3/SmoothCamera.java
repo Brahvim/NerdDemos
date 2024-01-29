@@ -9,18 +9,27 @@ import com.brahvim.nerd.window_management.NerdInputModule;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import processing.opengl.PGraphics3D;
 
 public class SmoothCamera extends NerdFlyCamera {
 
     // region Fields.
-    public static final float DEFAULT_ACC_FRICT = 0.9f, DEFAULT_VEL_FRICT = 0.9f;
-    public static final float NORMAL_SPEED = 0.5f, FAST_SPEED = 2, SLOW_SPEED = 0.125f;
+    public static final float
+    /*   */ DEFAULT_ACC_FRICT = 0.9f,
+            DEFAULT_VEL_FRICT = 0.9f;
 
-    public float accFrict = SmoothCamera.DEFAULT_ACC_FRICT, velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
+    public static final float
+    /*   */ SLOW_SPEED = 0.125f,
+            NORMAL_SPEED = 0.5f,
+            FAST_SPEED = 2;
 
-    private final NerdInputModule INPUT;
-    private PVector accVec = new PVector(), velVec = new PVector();
+    public float
+    /*   */ accFrict = SmoothCamera.DEFAULT_ACC_FRICT,
+            velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
+
+    private final NerdInputModule<PGraphics3D> INPUT;
     private PVector circumAmbPos = new PVector();
+    private PVector accVec = new PVector(), velVec = new PVector();
     // endregion
 
     // region Construction.

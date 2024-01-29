@@ -35,7 +35,7 @@ public class UdpDemoScene extends NerdJava2dScene {
 	}
 
 	@Override
-	public void draw() {
+	protected void draw() {
 		super.GRAPHICS.background(0);
 		super.GRAPHICS.text(UdpDemoScene.MESSAGE, 0, 0);
 	}

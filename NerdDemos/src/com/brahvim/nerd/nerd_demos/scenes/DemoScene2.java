@@ -29,6 +29,8 @@ public class DemoScene2 extends AbstractDemoScene {
 
     @Override
     protected void draw() {
+        super.draw();
+
         if (this.INPUT.areKeysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
             this.MANAGER.restartScene();
 
@@ -57,7 +59,6 @@ public class DemoScene2 extends AbstractDemoScene {
     public void mouseClicked() {
         switch (super.INPUT.mouseButton) {
             case PConstants.CENTER -> this.camera.setRoll(0);
-            case PConstants.RIGHT -> super.MANAGER.startScene(DemoScene3.class);
         }
     }
 

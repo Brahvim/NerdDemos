@@ -6,7 +6,6 @@ import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 
 import processing.core.PApplet;
-import processing.core.PConstants;
 import processing.opengl.PGraphics3D;
 
 public class DemoScene5 extends AbstractDemoScene {
@@ -21,13 +20,16 @@ public class DemoScene5 extends AbstractDemoScene {
 	@Override
 	protected void setup(final NerdSceneState p_state) {
 		System.out.println(this.TEXT);
-		super.GRAPHICS.setCurrentCamera(null);
+		super.GRAPHICS.setCurrentCameraToDefault();
+		// super.GRAPHICS.getCurrentCamera().setClearColor(0x006699);
 		// super.GRAPHICS.getCurrentCamera().getPos().x = 500;
 		super.GRAPHICS.background(0x006699, PApplet.sin(super.getMillisSinceStart()));
 	}
 
 	@Override
 	protected void draw() {
+		super.draw();
+
 		if (super.INPUT.areKeysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
 			super.MANAGER.restartScene();
 
@@ -45,13 +47,6 @@ public class DemoScene5 extends AbstractDemoScene {
 		// super.INPUT.mouseX - this.WINDOW.cx,
 		// super.INPUT.mouseY - this.WINDOW.cy, 20);
 		super.GRAPHICS.circle(super.GRAPHICS.getMouseInWorld(), 20);
-	}
-
-	@Override
-	public void mousePressed() {
-		switch (super.INPUT.mouseButton) {
-			case PConstants.RIGHT -> super.MANAGER.startScene(DemoScene1.class);
-		}
 	}
 
 }

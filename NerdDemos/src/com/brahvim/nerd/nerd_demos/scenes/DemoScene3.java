@@ -66,6 +66,8 @@ public class DemoScene3 extends AbstractDemoScene {
 
 	@Override
 	protected void draw() {
+		super.draw();
+
 		// Stress test!:
 		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick); // Nearly `1,000` cubes at once after sufficient time!
 		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
