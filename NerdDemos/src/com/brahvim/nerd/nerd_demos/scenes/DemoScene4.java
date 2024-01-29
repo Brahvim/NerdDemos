@@ -159,8 +159,8 @@ public class DemoScene4 extends AbstractDemoScene {
 		switch (super.INPUT.mouseButton) {
 			case PConstants.LEFT -> this.MANAGER.restartScene();
 			// case PConstants.RIGHT -> this.MANAGER.startScene(new NerdSceneClassLoader(
-			// 		"file://" + NerdSketch.DATA_DIR_PATH + "/DemoScene5.class",
-			// 		"com.brahvim.nerd.nerd_demos.scenes.DemoScene5").getLoadedClass());
+			// "file://" + NerdSketch.DATA_DIR_PATH + "/DemoScene5.class",
+			// "com.brahvim.nerd.nerd_demos.scenes.DemoScene5").getLoadedClass());
 		}
 	}
 
