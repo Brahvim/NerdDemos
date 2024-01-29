@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdGenericGraphicsScene;
+import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdAbstractGraphicsScene;
 import com.brahvim.nerd.io.net.tcp.abstracts.NerdAbstractTcpServer;
 import com.brahvim.nerd.io.net.tcp.abstracts.NerdAbstractTcpServer.NerdClientSentTcpPacket;
 import com.brahvim.nerd.io.net.tcp.implementations.no_ssl.NerdTcpNoSslClient;
@@ -15,7 +15,7 @@ import com.brahvim.nerd.utils.NerdByteSerialUtils;
 
 import processing.core.PGraphics;
 
-public class TcpDemoScene extends NerdGenericGraphicsScene { // extends NerdJava2dScene {
+public class TcpDemoScene extends NerdAbstractGraphicsScene { // extends NerdJava2dScene {
 
 	// I'm not using JSON here, which is *the* standard for communication nowadays.
 	// Thanks to Processing, however, you can (using the `processing.data` package)!

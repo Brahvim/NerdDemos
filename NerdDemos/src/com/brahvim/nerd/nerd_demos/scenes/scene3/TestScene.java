@@ -2,11 +2,11 @@ package com.brahvim.nerd.nerd_demos.scenes.scene3;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdGenericGraphicsScene;
+import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdAbstractGraphicsScene;
 
 import processing.core.PGraphics;
 
-public class TestScene extends NerdGenericGraphicsScene {
+public class TestScene extends NerdAbstractGraphicsScene {
 
     // private float sineWave;
 
