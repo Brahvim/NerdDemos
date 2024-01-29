@@ -45,9 +45,9 @@ public class DebugFpsGizmoLayer extends NerdP3dLayer {
 		super.GRAPHICS.translate(super.WINDOW.cx, super.WINDOW.cy);
 
 		final NerdFlyCamera camera = super.GRAPHICS.getCurrentCamera();
-		final PVector camUp = camera.getUp();
+		final PVector camUp = camera.ORIENTATION;
 
-		final PVector rotDir = camera.front.copy().normalize();
+		final PVector rotDir = camera.FRONT.copy().normalize();
 		final float camRoll = camUp.x;
 		// final int axesBarsGap = 50;
 		super.GRAPHICS.rotateZ(camRoll);

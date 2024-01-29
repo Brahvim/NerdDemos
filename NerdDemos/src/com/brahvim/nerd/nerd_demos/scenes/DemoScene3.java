@@ -45,7 +45,6 @@ public class DemoScene3 extends AbstractDemoScene {
 		super.SCENE.addLayer(CinematicBarsLayer.class);
 		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
 
-		// super.GRAPHICS.enableLights();
 		this.bgImage = this.createBackgroundImage();
 
 		this.camera = new SmoothCamera(super.GRAPHICS);
@@ -57,8 +56,7 @@ public class DemoScene3 extends AbstractDemoScene {
 
 		this.cubeMan = new CubeManager(this);
 		this.light = new NerdAmbientLight(
-				super.GRAPHICS,
-				new PVector(), // this.camera.getPos(),
+				super.GRAPHICS, this.camera.POSITION,
 				// new PVector(255, 255, 0), // Yellow.
 				// new PVector(224, 152, 27), // The orange at the top.
 				// new PVector(228, 117, 111), // The color in the middle.

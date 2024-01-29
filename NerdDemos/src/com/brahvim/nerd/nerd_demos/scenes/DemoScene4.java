@@ -90,7 +90,7 @@ public class DemoScene4 extends AbstractDemoScene {
 		this.nerdGraphics = super.SKETCH.createGraphics(this.nerd.width, this.nerd.height);
 
 		super.GRAPHICS.noStroke();
-		super.GRAPHICS.getCurrentCamera().getPos().z = 500;
+		super.GRAPHICS.getCurrentCamera().POSITION.z = 500;
 		super.GRAPHICS.textureWrap(PConstants.REPEAT);
 
 		this.ncx = this.nerd.width * 0.5f;
@@ -105,7 +105,7 @@ public class DemoScene4 extends AbstractDemoScene {
 
 		this.magScrollVel += this.magScrollAcc *= DemoScene4.MAG_SCROLL_DECAY_ACC;
 		this.magScroll += this.magScrollVel *= DemoScene4.MAG_SCROLL_DECAY_VEL;
-		this.camera.getPos().z += this.magScrollVel;
+		this.camera.POSITION.z += this.magScrollVel;
 
 		super.GRAPHICS.begin2d();
 

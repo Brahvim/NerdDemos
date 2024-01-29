@@ -24,7 +24,7 @@ public class DemoScene2 extends AbstractDemoScene {
     protected void setup(final NerdSceneState p_state) {
         this.camera = super.GRAPHICS.setCurrentCamera(new SmoothCamera(super.GRAPHICS));
         super.addLayer(DebugFpsGizmoLayer.class);
-        this.camera.getPos().x = -450;
+        this.camera.POSITION.x = -450;
     }
 
     @Override

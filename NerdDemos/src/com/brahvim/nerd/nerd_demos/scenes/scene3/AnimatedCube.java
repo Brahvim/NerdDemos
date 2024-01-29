@@ -28,7 +28,7 @@ public class AnimatedCube extends TestEulerBody {
 		this.startTime = this.SKETCH.millis();
 		this.lifetime = this.startTime + AnimatedCube.DEFAULT_LIFETIME;
 
-		final PVector cameraPos = p_scene.GRAPHICS.getCurrentCamera().getPos();
+		final PVector cameraPos = p_scene.GRAPHICS.getCurrentCamera().POSITION;
 
 		super.pos.set(
 				cameraPos.x + super.SKETCH.random(-super.SKETCH.GENERIC_WINDOW.cx, super.SKETCH.GENERIC_WINDOW.cx),

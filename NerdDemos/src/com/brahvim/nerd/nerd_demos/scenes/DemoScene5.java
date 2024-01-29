@@ -20,7 +20,7 @@ public class DemoScene5 extends AbstractDemoScene {
 	protected void setup(final NerdSceneState p_state) {
 		System.out.println(this.TEXT);
 		super.GRAPHICS.getCurrentCamera().setClearColor(0x006699);
-		super.GRAPHICS.getCurrentCamera().getPos().x = 500;
+		super.GRAPHICS.getCurrentCamera().POSITION.x = 500;
 		// super.GRAPHICS.background(0x006699,
 		// PApplet.sin(super.getMillisSinceStart()));
 	}

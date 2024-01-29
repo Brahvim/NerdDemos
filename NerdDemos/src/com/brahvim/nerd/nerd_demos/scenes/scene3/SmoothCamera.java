@@ -95,10 +95,10 @@ public class SmoothCamera extends NerdFlyCamera {
 
         // region Roll.
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
-            super.up.x += SmoothCamera.DEFAULT_SPEED * 0.1f;
+            super.ORIENTATION.x += SmoothCamera.DEFAULT_SPEED * 0.1f;
 
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
-            super.up.x += -SmoothCamera.DEFAULT_SPEED * 0.1f;
+            super.ORIENTATION.x += -SmoothCamera.DEFAULT_SPEED * 0.1f;
 
         // if (super.up.x > PConstants.TAU || super.up.x < -PConstants.TAU)
         // super.up.x -= super.up.x;
@@ -115,28 +115,28 @@ public class SmoothCamera extends NerdFlyCamera {
         // region Circumambulation, id est "moving in circles".
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Q)) {
             if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_Q))
-                this.circumAmbPos.set(super.front); // PVector.sub(super.front, super.pos));
+                this.circumAmbPos.set(super.FRONT); // PVector.sub(super.front, super.pos));
 
             // super.front.set(this.circumAmbPos);
 
-            super.pos.x += PApplet.sin(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.pos.z += PApplet.cos(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.POSITION.x += PApplet.sin(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.POSITION.z += PApplet.cos(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
 
-            super.front.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.front.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.FRONT.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.FRONT.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
         }
 
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_E)) {
             if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_E))
-                this.circumAmbPos.set(super.front); // PVector.sub(super.front, super.pos));
+                this.circumAmbPos.set(super.FRONT); // PVector.sub(super.front, super.pos));
 
             // super.front.set(this.circumAmbPos);
 
-            super.pos.x += PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.pos.z += PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.POSITION.x += PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.POSITION.z += PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
 
-            super.front.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.front.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.FRONT.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+            super.FRONT.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
         }
         // endregion
 
