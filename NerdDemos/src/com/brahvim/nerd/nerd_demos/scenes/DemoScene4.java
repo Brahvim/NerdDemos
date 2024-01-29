@@ -98,8 +98,7 @@ public class DemoScene4 extends AbstractDemoScene {
 	}
 
 	@Override
-	protected void draw() {
-		super.draw();
+	protected void drawImpl() {
 
 		super.GRAPHICS.clear();
 		// super.GRAPHICS.translate(-WINDOW.cx, -WINDOW.cy);

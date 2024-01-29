@@ -28,10 +28,8 @@ public class DemoScene2 extends AbstractDemoScene {
     }
 
     @Override
-    protected void draw() {
-        super.draw();
-
-        if (this.INPUT.areKeysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
+    protected void drawImpl() {
+        if (this.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
             this.MANAGER.restartScene();
 
         super.GRAPHICS.clear();

@@ -13,6 +13,7 @@ import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.event.MouseEvent;
@@ -43,23 +44,20 @@ public class DemoScene3 extends AbstractDemoScene {
 		/*   */ = NerdSceneLayerCallbackOrder.SCENE;
 		super.SCENE.addLayer(CinematicBarsLayer.class);
 		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
+
+		super.GRAPHICS.enableLights();
 		this.bgImage = this.createBackgroundImage();
 
 		this.camera = new SmoothCamera(super.GRAPHICS);
-		// this.camera.setClearImage(this.bgImage);
-		this.camera.fov = PApplet.radians(75);
-		this.camera.near = 1.0f;
-		this.camera.far = 100_000.0f;
 		super.GRAPHICS.setCurrentCamera(this.camera);
-		// super.SKETCH.frameRateMaximize();
+		this.camera.setClearImage(this.bgImage);
+		this.camera.fov = PApplet.radians(75);
+		this.camera.setClearColor(255);
+		this.camera.far = 100_000_000.0f;
 
-		// final AlBuffer<?>[] alBuffers = new AlBuffer<?>[4];
-		// for (int i = 1; i != 5; i++)
-		// alBuffers[i - 1] = super.ASSETS.get("Pop" + i).getData();
-
-		this.cubeMan = new CubeManager(this /* , alBuffers */);
+		this.cubeMan = new CubeManager(this);
 		this.light = new NerdAmbientLight(
-				super.GRAPHICS, new PVector(0, 0, 0),
+				super.GRAPHICS, this.camera.getPos(),
 				// new PVector(255, 255, 0), // Yellow.
 				// new PVector(224, 152, 27), // The orange at the top.
 				// new PVector(228, 117, 111), // The color in the middle.
@@ -68,9 +66,7 @@ public class DemoScene3 extends AbstractDemoScene {
 	}
 
 	@Override
-	protected void draw() {
-		super.draw();
-
+	protected void drawImpl() {
 		// Stress test!:
 		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick); // Nearly `1,000` cubes at once after sufficient time!
 		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
@@ -79,8 +75,8 @@ public class DemoScene3 extends AbstractDemoScene {
 		super.GRAPHICS.tint(255, 100);
 		super.GRAPHICS.background(this.bgImage);
 
-		super.GRAPHICS.lights();
-		this.light.apply();
+		// super.GRAPHICS.lights();
+		// this.light.apply();
 		this.cubeMan.draw();
 
 		try (final var a = super.GRAPHICS.new MatrixPush()) {
@@ -96,14 +92,17 @@ public class DemoScene3 extends AbstractDemoScene {
 		final int
 		/*   */ color1 = super.SKETCH.color(224, 152, 27),
 				color2 = super.SKETCH.color(232, 81, 194);
-		final PImage toRet = super.SKETCH.createImage(
-				this.DISPLAY.displayWidth, this.DISPLAY.displayHeight, PConstants.RGB);
+
+		final PGraphics toRet = super.SKETCH
+				.createGraphics(this.DISPLAY.displayWidth, this.DISPLAY.displayHeight);
 
 		toRet.loadPixels();
 
 		for (int y = 0; y < toRet.height; y++)
 			for (int x = 0; x < toRet.width; x++)
-				toRet.pixels[x + y * toRet.width] = super.SKETCH.lerpColor(
+				/////////////////////////////////
+				toRet.pixels[x + y * toRet.width]
+				/*   */ = super.SKETCH.lerpColor(
 						color1, color2, PApplet.map(y, 0, toRet.height, 0, 1));
 
 		toRet.updatePixels();

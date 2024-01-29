@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings;
-import com.brahvim.nerd.nerd_demos.scenes.DemoScene2;
+import com.brahvim.nerd.nerd_demos.scenes.DemoScene1;
 import com.brahvim.nerd.processing_wrapper.NerdModule;
 import com.brahvim.nerd.processing_wrapper.NerdSketch;
 import com.brahvim.nerd.processing_wrapper.sketch_builders.NerdP3dSketchBuilder;
@@ -25,7 +25,7 @@ public class App {
                 .canResize()
                 .closeOnPressingEscapeInitially()
                 .setWindowIconPath("Images/SunglassesNerd.png")
-                .setNerdModuleSettings(new NerdScenesModuleSettings<>(DemoScene2.class))
+                .setNerdModuleSettings(new NerdScenesModuleSettings<>(DemoScene1.class))
                 .build(p_args);
     }
 

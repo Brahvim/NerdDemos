@@ -14,21 +14,26 @@ public abstract class AbstractDemoScene extends NerdP3dScene {
         super(p_sceneMan);
     }
 
+    protected void drawImpl() {
+    }
+
     @Override
-    protected void draw() {
+    protected final void draw() {
         // Faster in `draw()`:
-        if (super.INPUT.areKeysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
+        if (super.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
             super.MANAGER.restartScene();
+
+        this.drawImpl();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void mousePressed() {
+    public final void mousePressed() {
         if (super.INPUT.mouseButton != PConstants.RIGHT)
             return;
 
         try {
-            final int newSceneNumber = super.INPUT.keysGivenWerePressedLastFrame(KeyEvent.VK_SHIFT)
+            final int newSceneNumber = super.INPUT.keysGivenWerePressed(KeyEvent.VK_SHIFT)
                     ? this.getPreviousDemoSceneNumber()
                     : this.getNextDemoSceneNumber();
 
@@ -47,6 +52,9 @@ public abstract class AbstractDemoScene extends NerdP3dScene {
         // This had me for about 15 minutes till I...
         // ..Till I learnt about `Character.getNumericValue()`! 😂:
         return Character.getNumericValue(sceneName.charAt(sceneName.length() - 1));
+    }
+
+    protected void mousePressedImpl() {
     }
 
     private int getNextDemoSceneNumber() {

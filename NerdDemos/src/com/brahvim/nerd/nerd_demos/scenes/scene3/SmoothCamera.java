@@ -19,9 +19,8 @@ public class SmoothCamera extends NerdFlyCamera {
             DEFAULT_VEL_FRICT = 0.9f;
 
     public static final float
-    /*   */ SLOW_SPEED = 0.125f,
-            NORMAL_SPEED = 0.5f,
-            FAST_SPEED = 2;
+    /*   */ SLOW_SPEED = 0.05f,
+            DEFAULT_SPEED = 0.5f;
 
     public float
     /*   */ accFrict = SmoothCamera.DEFAULT_ACC_FRICT,
@@ -84,21 +83,22 @@ public class SmoothCamera extends NerdFlyCamera {
         this.accFrict = SmoothCamera.DEFAULT_ACC_FRICT;
         this.velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_CONTROL)) {
-            accMultiplier = SmoothCamera.FAST_SPEED;
-        } else if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
+        // if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_CONTROL)) {
+        // accMultiplier = SmoothCamera.FAST_SPEED;
+        // } else
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
             accMultiplier = SmoothCamera.SLOW_SPEED;
-            this.accFrict = this.velFrict = 0.7f;
+            this.accFrict = this.velFrict = 0.95f;
         } else {
-            accMultiplier = SmoothCamera.NORMAL_SPEED;
+            accMultiplier = SmoothCamera.DEFAULT_SPEED;
         }
 
         // region Roll.
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
-            super.up.x += SmoothCamera.NORMAL_SPEED * 0.1f;
+            super.up.x += SmoothCamera.DEFAULT_SPEED * 0.1f;
 
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
-            super.up.x += -SmoothCamera.NORMAL_SPEED * 0.1f;
+            super.up.x += -SmoothCamera.DEFAULT_SPEED * 0.1f;
 
         // if (super.up.x > PConstants.TAU || super.up.x < -PConstants.TAU)
         // super.up.x -= super.up.x;
