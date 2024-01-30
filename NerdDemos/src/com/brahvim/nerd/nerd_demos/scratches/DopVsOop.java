@@ -1,0 +1,394 @@
+package com.brahvim.nerd.nerd_demos.scratches;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import com.brahvim.nerd.utils.NerdReflectionUtils;
+
+/*
+ * Final results!
+ *
+ * ```bash
+ * ===========================================================================
+ * Test `DOP_MULTI_MAP` ran for `10` iterations with `1000000` entities/iteration.
+ * - Average `Runtime::totalMemory()` increment with each test was `131491430.4` bytes.
+ *     - (Average before test: `1082654720` bytes.)
+ *     - (Average after test: `1214146150.4` bytes.)
+ * - Average time taken per iteration was `165240853.8` ns.
+ * Thank you.
+ * ===========================================================================
+ *
+ * ===========================================================================
+ * Test `DOP_SINGLE_MAP` ran for `10` iterations with `1000000` entities/iteration.
+ * - Average `Runtime::totalMemory()` increment with each test was `129918566.4` bytes.
+ *     - (Average before test: `1406350131.2` bytes.)
+ *     - (Average after test: `1536268697.6` bytes.)
+ * - Average time taken per iteration was `227314818.6` ns.
+ * Thank you.
+ *
+ * ===========================================================================
+ * Test `OOP` ran for `10` iterations with `1000000` entities/iteration.
+ * - Average `Runtime::totalMemory()` increment with each test was `301360742.4` bytes.
+ *     - (Average before test: `20971520` bytes.)
+ *     - (Average after test: `322332262.4` bytes.)
+ * - Average time taken per iteration was `237549248.6` ns.
+ * Thank you.
+ * ===========================================================================
+ * ```
+ *
+ * We have a winner!
+ * AND HIS NAME IS *`DOP_MULTI_MAP`*.
+ * (*Yeah-* really! I used to not believe that the JVM was faster wth DOD, but now I know it IS.)
+ * (I spent the whole day watching the GC kill performance.)
+ *
+ */
+public class DopVsOop {
+
+    private enum Test {
+        OOP(),
+        DOP_MULTI_MAP(),
+        DOP_SINGLE_MAP(),
+    }
+
+    public static final Random RANDOM = new Random();
+    public static final Test TEST = Test.DOP_MULTI_MAP;
+
+    public static final int NUM_ITERS = 10;
+    public static final int ENTITIES_PER_ITER = 1_000_000;
+    public static final int ENTITIES_REMOVED_PER_ITR = 1;
+
+    public static final int TOTAL_ENTITIES
+    /*   */ = DopVsOop.ENTITIES_PER_ITER * DopVsOop.NUM_ITERS;
+
+    public static void main(final String[] p_args) {
+        int testItr = 0;
+        BigDecimal
+        /*   */ timeSum = BigDecimal.valueOf(0),
+                memDiffsSum = BigDecimal.valueOf(0),
+                memAfterTestSum = BigDecimal.valueOf(0),
+                memBeforeTestSum = BigDecimal.valueOf(0);
+        try {
+            for (; testItr < DopVsOop.NUM_ITERS; testItr++) {
+                /*
+                 * We should've to keep this VM agnostic...!
+                 * ...but it's just not possible now. Hah!
+                 * (Not calling `System.gc()` makes it GC agnostic too, but anyway.)
+                 */
+                switch (DopVsOop.TEST) {
+                    case OOP -> DopVsOop.callGcLikeCrazy();
+                    case DOP_MULTI_MAP -> MultiMapDataManager.clear();
+                    case DOP_SINGLE_MAP -> SingleMapDataManager.clear();
+                }
+
+                final long memoryUsageBeforeTest = Runtime.getRuntime().totalMemory();
+                memBeforeTestSum = memBeforeTestSum.add(BigDecimal.valueOf(memoryUsageBeforeTest));
+
+                final long timeTestTook = switch (DopVsOop.TEST) {
+                    case OOP -> DopVsOop.testOop();
+                    case DOP_MULTI_MAP -> DopVsOop.testDopMultiMap();
+                    case DOP_SINGLE_MAP -> DopVsOop.testDopSingleMap();
+                };
+
+                final long memoryUsageAfterTest = Runtime.getRuntime().totalMemory();
+                memAfterTestSum = memAfterTestSum.add(BigDecimal.valueOf(memoryUsageAfterTest));
+
+                final long currMemoryUsage = memoryUsageAfterTest - memoryUsageBeforeTest;
+                memDiffsSum = memDiffsSum.add(BigDecimal.valueOf(currMemoryUsage));
+                timeSum = timeSum.add(BigDecimal.valueOf(timeTestTook));
+
+                System.out.printf("""
+                        Ran test `%s` iteration `%s` with `%s` entities.
+                        `Runtime::totalMemory()` after test: `%s` bytes.
+                        Time taken: %s ns.
+                        """,
+                        DopVsOop.TEST.toString(),
+                        testItr + 1, DopVsOop.ENTITIES_PER_ITER,
+                        memoryUsageAfterTest, timeTestTook);
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        final BigDecimal testItrDecimal = BigDecimal.valueOf(testItr);
+        System.out.printf("""
+                ===========================================================================
+                Test `%s` ran for `%s` iterations with `%s` entities/iteration.
+                - Average `Runtime::totalMemory()` increment with each test was `%s` bytes.
+                    - (Average before test: `%s` bytes.)
+                    - (Average after test: `%s` bytes.)
+                - Average time taken per iteration was `%s` ns.
+                Thank you.
+                ===========================================================================
+                """,
+                DopVsOop.TEST.toString(),
+                testItr,
+                DopVsOop.ENTITIES_PER_ITER,
+                memDiffsSum.divide(testItrDecimal), // NOSONAR, `testItr` won't be `0`.
+                memBeforeTestSum.divide(testItrDecimal), // NOSONAR, `testItr` won't be `0`.
+                memAfterTestSum.divide(testItrDecimal), // NOSONAR, `testItr` won't be `0`.
+                timeSum.divide(testItrDecimal)); // NOSONAR, `testItr` won't be `0`.
+    }
+
+    public static void callGcLikeCrazy() {
+        // for (int i = 0; i < 10; i++) {
+        // System.gc();
+        // try {
+        // Thread.sleep(10);
+        // } catch (final InterruptedException e) {
+        // Thread.currentThread().interrupt();
+        // }
+        // }
+
+        // Thread.yield();
+
+        // Nope! None of this code!
+        // I set a breakpoint on the lne with the method's name
+        // and clicked "Perform GC" in VisualVM thrice in succession.
+        // Haha. Simulating 'realistic' test environments (of course the JVM won't go
+        // clearing the VERY FIRST allocation that my manual GCing killed!)
+    }
+
+    public static void cleanMap(final Map<?, ?> p_map) {
+        p_map.clear();
+
+        // final Collection<?> values = p_map.values();
+        // values.clear();
+
+        // final Set<?> keySet = p_map.keySet();
+        // keySet.clear();
+
+        // final Set<?> entrySet = p_map.entrySet();
+        // entrySet.clear();
+
+        DopVsOop.callGcLikeCrazy();
+    }
+
+    private static long testOop() {
+        final Map<Integer, Entity> map = new HashMap<>(DopVsOop.TOTAL_ENTITIES);
+
+        final long startTime = System.nanoTime();
+
+        for (int i = 0; i < DopVsOop.ENTITIES_PER_ITER; i++) {
+            final EntityObject entity = new EntityObject(
+                    DopVsOop.RANDOM.nextInt(100),
+                    DopVsOop.RANDOM.nextInt(100), "Type" + i);
+            entity.setPosition(DopVsOop.RANDOM.nextInt(100), DopVsOop.RANDOM.nextInt(100));
+            entity.getEntityType();
+            map.put(i, entity);
+
+            if (i > 80)
+                for (int j = 0; j < DopVsOop.ENTITIES_REMOVED_PER_ITR; j++) {
+                    final int toRemove = DopVsOop.RANDOM.nextInt(i - 1);
+                    map.remove(toRemove);
+                }
+        }
+
+        return System.nanoTime() - startTime;
+    }
+
+    private static long testDopMultiMap() {
+        final long startTime = System.nanoTime();
+
+        for (int i = 0; i < DopVsOop.ENTITIES_PER_ITER; i++) {
+            final long entity = SingleMapDataManager.addEntity(
+                    DopVsOop.RANDOM.nextInt(100),
+                    DopVsOop.RANDOM.nextInt(100), "Type" + i);
+            SingleMapDataManager.moveEntity(
+                    entity,
+                    DopVsOop.RANDOM.nextInt(100),
+                    DopVsOop.RANDOM.nextInt(100));
+            SingleMapDataManager.getEntityType(entity);
+
+            if (i > 80)
+                for (int j = 0; j < DopVsOop.ENTITIES_REMOVED_PER_ITR; j++) {
+                    final int toRemove = DopVsOop.RANDOM.nextInt(i - 1);
+                    SingleMapDataManager.removeEntity(toRemove);
+                }
+        }
+
+        return System.nanoTime() - startTime;
+    }
+
+    private static long testDopSingleMap() {
+        final long startTime = System.nanoTime();
+
+        for (int i = 0; i < DopVsOop.ENTITIES_PER_ITER; i++) {
+            final long entity = MultiMapDataManager.addEntity(
+                    DopVsOop.RANDOM.nextInt(100),
+                    DopVsOop.RANDOM.nextInt(100),
+                    "Type" + i);
+            MultiMapDataManager.moveEntity(entity,
+                    DopVsOop.RANDOM.nextInt(100),
+                    DopVsOop.RANDOM.nextInt(100));
+            MultiMapDataManager.getEntityType(entity);
+
+            if (i > 80)
+                for (int j = 0; j < DopVsOop.ENTITIES_REMOVED_PER_ITR; j++) {
+                    final int toRemove = DopVsOop.RANDOM.nextInt(i);
+                    MultiMapDataManager.removeEntity(toRemove);
+                }
+        }
+
+        return System.nanoTime() - startTime;
+    }
+
+}
+
+class EntityObject implements Entity {
+
+    private int positionX;
+    private int positionY;
+    private final String entityName;
+
+    public EntityObject(final int p_positionX, final int p_positionY, final String p_entityName) {
+        this.positionX = p_positionX;
+        this.positionY = p_positionY;
+        this.entityName = p_entityName;
+    }
+
+    public int getPositionX() {
+        return this.positionX;
+    }
+
+    public int getPositionY() {
+        return this.positionY;
+    }
+
+    public String getEntityType() {
+        return this.entityName;
+    }
+
+    public void setPosition(final int x, final int y) {
+        this.positionX = x;
+        this.positionY = y;
+    }
+
+}
+
+class EntityId implements Entity {
+
+    private final long value;
+
+    public EntityId(final long p_id) {
+        this.value = p_id;
+    }
+
+    public long getValue() {
+        return this.value;
+    }
+
+}
+
+interface Entity {
+
+}
+
+class EntityData {
+
+    public int positionX;
+    public int positionY;
+    public final String entityName;
+
+    protected EntityData(final int p_positionX, final int p_positionY, final String p_entityName) {
+        this.positionX = p_positionX;
+        this.positionY = p_positionY;
+        this.entityName = p_entityName;
+    }
+
+}
+
+class EntityPosition {
+
+    public int positionX;
+    public int positionY;
+
+    public EntityPosition(final int p_positionX, final int p_positionY) {
+        this.positionX = p_positionX;
+        this.positionY = p_positionY;
+    }
+
+}
+
+class MultiMapDataManager {
+
+    private static long lastId;
+    private static final Map<Long, String> NAMES_MAP = new HashMap<>(DopVsOop.TOTAL_ENTITIES);
+    private static final Map<Long, EntityPosition> POSITIONS_MAP = new HashMap<>(DopVsOop.TOTAL_ENTITIES);
+
+    private MultiMapDataManager() {
+        NerdReflectionUtils.rejectStaticClassInstantiationFor(this);
+    }
+
+    public static void clear() {
+        DopVsOop.cleanMap(MultiMapDataManager.NAMES_MAP);
+        DopVsOop.cleanMap(MultiMapDataManager.POSITIONS_MAP);
+    }
+
+    public static void removeEntity(final long p_id) {
+        MultiMapDataManager.NAMES_MAP.remove(p_id);
+        MultiMapDataManager.POSITIONS_MAP.remove(p_id);
+    }
+
+    public static String getEntityType(final long p_id) {
+        return MultiMapDataManager.NAMES_MAP.get(p_id);
+    }
+
+    public static void moveEntity(final long p_id, final int p_deltaX, final int p_deltaY) {
+        final EntityPosition entityData = MultiMapDataManager.POSITIONS_MAP.get(p_id);
+
+        if (entityData != null) {
+            entityData.positionX += p_deltaX;
+            entityData.positionY += p_deltaY;
+        }
+    }
+
+    public static long addEntity(final int p_positionX, final int p_positionY, final String p_entityName) {
+        ++MultiMapDataManager.lastId;
+        MultiMapDataManager.POSITIONS_MAP.put(MultiMapDataManager.lastId, new EntityPosition(p_positionX, p_positionY));
+        MultiMapDataManager.NAMES_MAP.put(MultiMapDataManager.lastId, p_entityName);
+        return MultiMapDataManager.lastId;
+    }
+
+}
+
+class SingleMapDataManager {
+
+    private static long lastId;
+    private static final Map<Long, EntityData> ENTITY_TO_DATA_MAP = new HashMap<>(DopVsOop.TOTAL_ENTITIES);
+
+    private SingleMapDataManager() {
+        NerdReflectionUtils.rejectStaticClassInstantiationFor(this);
+    }
+
+    public static void clear() {
+        DopVsOop.cleanMap(SingleMapDataManager.ENTITY_TO_DATA_MAP);
+    }
+
+    public static void removeEntity(final long p_id) {
+        SingleMapDataManager.ENTITY_TO_DATA_MAP.remove(p_id);
+    }
+
+    public static String getEntityType(final long p_id) {
+        final EntityData entityData = SingleMapDataManager.ENTITY_TO_DATA_MAP.get(p_id);
+        return entityData == null ? "" : entityData.entityName;
+    }
+
+    public static long addEntity(final int p_positionX, final int p_positionY, final String p_entityName) {
+        SingleMapDataManager.ENTITY_TO_DATA_MAP.put(++SingleMapDataManager.lastId,
+                new EntityData(p_positionX, p_positionY, p_entityName));
+        return SingleMapDataManager.lastId;
+    }
+
+    public static void moveEntity(final long p_id, final int p_deltaX, final int p_deltaY) {
+        final EntityData entityData = SingleMapDataManager.ENTITY_TO_DATA_MAP.get(p_id);
+
+        if (entityData == null)
+            return;
+
+        entityData.positionX += p_deltaX;
+        entityData.positionY += p_deltaY;
+    }
+
+}

@@ -65,4 +65,5 @@
         "winx",
         "winz"
     ],
+    "java.debug.settings.vmArgs": "-Xmx2G",
 }
