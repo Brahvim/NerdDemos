@@ -65,5 +65,5 @@
         "winx",
         "winz"
     ],
-    "java.debug.settings.vmArgs": "-Xmx2G",
+    // "java.debug.settings.vmArgs": "-Xmx2G", // Used this for `DopVsOop.java`! ":D!~
 }
