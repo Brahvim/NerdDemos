@@ -17,7 +17,7 @@ public class DemoScene5 extends AbstractDemoScene {
 	@Override
 	protected void setup(final NerdSceneState p_state) {
 		System.out.println(this.TEXT);
-		// TODO: Reset cam on new scene, make modules take settings in constructor.
+		// TODO: Reset the camera's settings when the scene is changed.
 		// super.GRAPHICS.getCurrentCamera().POSITION.x = 500;
 		super.GRAPHICS.getCurrentCamera().setClearColor(0x006699);
 	}

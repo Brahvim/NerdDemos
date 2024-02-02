@@ -40,8 +40,7 @@ public class DemoScene3 extends AbstractDemoScene {
 
 	@Override
 	protected void setup(final NerdSceneState p_state) {
-		super.MANAGER.getScenesModuleSettings().drawFirstCaller
-		/*   */ = NerdSceneLayerCallbackOrder.SCENE;
+		super.MANAGER.getScenesModuleSettings().drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
 		super.SCENE.addLayer(CinematicBarsLayer.class);
 		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
 
@@ -101,7 +100,8 @@ public class DemoScene3 extends AbstractDemoScene {
 				/////////////////////////////////
 				toRet.pixels[x + y * toRet.width]
 				/*   */ = super.SKETCH.lerpColor(
-						color1, color2, PApplet.map(y, 0, toRet.height, 0, 1));
+						color1, color2, // ...Linearly-interpolate between these two colors,
+						PApplet.map(y, 0, toRet.height, 0, 1)); // ...by this amount!
 
 		toRet.updatePixels();
 		return toRet;
