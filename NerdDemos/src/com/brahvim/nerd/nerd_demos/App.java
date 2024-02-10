@@ -11,10 +11,9 @@ public class App {
     public static void main(final String[] p_args) {
         new NerdP3dSketchBuilder()
                 .addNerdModule(NerdScenesModule.class, new NerdScenesModuleSettings<>(DemoScene1.class))
-                // .setNerdModuleSettings()
                 .setWindowIconPath("Images/SunglassesNerd.png")
                 .closeOnPressingEscapeInitially()
-                .canResize()
+                .canResizeWindow()
                 .build(p_args);
     }
 
