@@ -116,22 +116,16 @@ public class DemoScene3 extends AbstractDemoScene {
 	@Override
 	public void keyPressed() {
 		if (super.INPUT.keyCode == KeyEvent.VK_F) {
-			this.WINDOW.cursorVisible = !this.WINDOW.cursorVisible;
 			this.camera.holdMouse = !this.camera.holdMouse;
+			this.WINDOW.cursorVisible = !this.WINDOW.cursorVisible;
 		}
 	}
 
 	@Override
 	public void mouseClicked() {
-		super.mouseClicked();
-
 		switch (super.INPUT.mouseButton) {
 			case PConstants.CENTER -> this.camera.setRoll(0);
-			case PConstants.LEFT -> {
-				this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
-				// if (this.cubeMan.numCubes() < 2)
-				// // this.cubeMan.emitCubes(1);
-			}
+			case PConstants.LEFT -> this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 		}
 	}
 
@@ -145,9 +139,6 @@ public class DemoScene3 extends AbstractDemoScene {
 	protected void sceneChanged() {
 		this.cubeMan.removeAll(); // REALLY helps the GC out!
 		System.gc(); // Surprisingly, this is an effective hint to the GC.
-
-		// super.GRAPHICS.tint(255);
-		// super.GRAPHICS.background(this.bgImage);
 	}
 	// endregion
 

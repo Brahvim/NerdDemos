@@ -1,5 +1,7 @@
 package com.brahvim.nerd.nerd_demos;
 
+import com.brahvim.nerd.framework.ecs.NerdEcsModule;
+import com.brahvim.nerd.framework.ecs.NerdEcsModuleSettings;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings;
 import com.brahvim.nerd.nerd_demos.scenes.DemoScene1;
@@ -11,6 +13,7 @@ public class App {
     public static void main(final String[] p_args) {
         new NerdP3dSketchBuilder()
                 .addNerdModule(NerdScenesModule.class, new NerdScenesModuleSettings<>(DemoScene1.class))
+                .addNerdModule(NerdEcsModule.class, new NerdEcsModuleSettings<>())
                 .setWindowIconPath("Images/SunglassesNerd.png")
                 .closeOnPressingEscapeInitially()
                 .canResizeWindow()

@@ -27,6 +27,7 @@ public class SmoothCamera extends NerdFlyCamera {
             velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
 
     private final NerdInputModule<PGraphics3D> INPUT;
+
     private PVector circumAmbPos = new PVector();
     private PVector accVec = new PVector(), velVec = new PVector();
     // endregion
@@ -95,10 +96,10 @@ public class SmoothCamera extends NerdFlyCamera {
 
         // region Roll.
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
-            super.ORIENTATION.x += SmoothCamera.DEFAULT_SPEED * 0.1f;
+            super.ORIENTATION.x += SmoothCamera.DEFAULT_SPEED * 0.5f;
 
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
-            super.ORIENTATION.x += -SmoothCamera.DEFAULT_SPEED * 0.1f;
+            super.ORIENTATION.x += -SmoothCamera.DEFAULT_SPEED * 0.5f;
 
         // if (super.up.x > PConstants.TAU || super.up.x < -PConstants.TAU)
         // super.up.x -= super.up.x;
