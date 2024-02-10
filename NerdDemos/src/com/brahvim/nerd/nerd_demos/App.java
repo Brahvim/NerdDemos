@@ -3,17 +3,15 @@ package com.brahvim.nerd.nerd_demos;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings;
 import com.brahvim.nerd.nerd_demos.scenes.DemoScene1;
-import com.brahvim.nerd.processing_wrapper.NerdModule;
 import com.brahvim.nerd.processing_wrapper.sketch_builders.NerdP3dSketchBuilder;
-
-import processing.opengl.PGraphics3D;
 
 public class App {
 
+    @SuppressWarnings("unchecked")
     public static void main(final String[] p_args) {
         new NerdP3dSketchBuilder()
-                .addNerdModule((Class<? extends NerdModule<PGraphics3D>>) NerdScenesModule.class)
-                .setNerdModuleSettings(new NerdScenesModuleSettings<>(DemoScene1.class))
+                .addNerdModule(NerdScenesModule.class, new NerdScenesModuleSettings<>(DemoScene1.class))
+                // .setNerdModuleSettings()
                 .setWindowIconPath("Images/SunglassesNerd.png")
                 .closeOnPressingEscapeInitially()
                 .canResize()
