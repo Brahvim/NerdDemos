@@ -79,7 +79,7 @@ public class DemoScene3 extends AbstractDemoScene {
 		try (final var a = super.GRAPHICS.new MatrixPush()) {
 			super.GRAPHICS.tint(255, 150);
 			super.GRAPHICS.rotateY(PConstants.HALF_PI + PConstants.PI);
-			super.GRAPHICS.image(super.SKETCH.getGraphics(), 0, 0, 0);
+			super.GRAPHICS.image(super.GRAPHICS.getUnderlyingBuffer());
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
