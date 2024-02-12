@@ -6,8 +6,8 @@ import com.brahvim.nerd.framework.lights.NerdAmbientLight;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdSceneLayerCallbackOrder;
-import com.brahvim.nerd.nerd_demos.debug_layers.DebugFpsGizmoLayer;
-import com.brahvim.nerd.nerd_demos.effect_layers.CinematicBarsLayer;
+import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
+import com.brahvim.nerd.nerd_demos.effect_layers.DemoCinematicBarsLayer;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.CubeManager;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 
@@ -32,22 +32,22 @@ public class DemoScene3 extends AbstractDemoScene {
 		super(p_sceneMan);
 	}
 
-	@Override
-	protected synchronized void preload() {
-		// for (int i = 1; i != 5; i++)
-		// super.ASSETS.addAsset(new OggBufferDataAsset("data/Pops/Pop" + i + ".ogg"));
-	}
+	// @Override
+	// protected synchronized void preload() {
+	// for (int i = 1; i != 5; i++)
+	// super.ASSETS.addAsset(new OggBufferDataAsset("data/Pops/Pop" + i + ".ogg"));
+	// }
 
 	@Override
 	protected void setup(final NerdSceneState p_state) {
 		super.MANAGER.SETTINGS.drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
-		super.addLayer(CinematicBarsLayer.class);
-		super.addLayer(DebugFpsGizmoLayer.class);
+		super.addLayer(DemoCinematicBarsLayer.class);
+		super.addLayer(DemoDebugFpsGizmoLayer.class);
 
 		this.bgImage = this.createBackgroundImage();
+		this.camera = super.GRAPHICS
+				.setCurrentCamera(new SmoothCamera(super.GRAPHICS));
 
-		this.camera = new SmoothCamera(super.GRAPHICS);
-		super.GRAPHICS.setCurrentCamera(this.camera);
 		this.camera.setClearImage(this.bgImage);
 		this.camera.fov = PApplet.radians(75);
 		this.camera.setClearColor(255);

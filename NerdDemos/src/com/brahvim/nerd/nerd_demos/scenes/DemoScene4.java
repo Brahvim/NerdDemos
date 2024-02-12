@@ -1,9 +1,11 @@
 package com.brahvim.nerd.nerd_demos.scenes;
 
 import com.brahvim.nerd.framework.cameras.NerdBasicCamera;
-import com.brahvim.nerd.framework.cameras.NerdBasicCameraBuilder;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
+import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdSceneLayerCallbackOrder;
+import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
+import com.brahvim.nerd.nerd_demos.effect_layers.DemoCinematicBarsLayer;
 import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PConstants;
@@ -16,7 +18,7 @@ public class DemoScene4 extends AbstractDemoScene {
 	// region Fields!
 	private PImage tileImage;
 	private NerdBasicCamera camera;
-	private NerdP3dGraphics tileGraphic;
+	private NerdP3dGraphics tileGraphics;
 
 	private static final float MAG_SCROLL_ACC_MOD = 0.001f,
 			MAG_SCROLL_DECAY_ACC = 0.8f,
@@ -40,7 +42,10 @@ public class DemoScene4 extends AbstractDemoScene {
 		// "`DemoScene4::setup()` here, I was called `%d` times!%n",
 		// this.SCENE.getTimesLoaded());
 
-		this.camera = new NerdBasicCameraBuilder(super.GRAPHICS).build();
+		super.MANAGER.SETTINGS.drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
+		this.camera = super.GRAPHICS.setCurrentCameraToDefault();
+		super.addLayer(DemoCinematicBarsLayer.class);
+		super.addLayer(DemoDebugFpsGizmoLayer.class);
 
 		// region OpenAL Test.
 		// ..so the effects and filters wrk perfectly, but I just didn't want them in
@@ -84,50 +89,50 @@ public class DemoScene4 extends AbstractDemoScene {
 		}
 
 		this.tileImage = super.WINDOW.getIconImage();
-		this.tileGraphic = new NerdP3dGraphics(super.SKETCH //
-				, super.SKETCH.createGraphics(this.tileImage.width, this.tileImage.height)
-		/*   */ );
+		this.tileGraphics = new NerdP3dGraphics(
+				super.SKETCH, this.tileImage.width, this.tileImage.height);
 
 		super.GRAPHICS.noStroke();
-		super.GRAPHICS.textureWrap(PConstants.REPEAT);
-		super.GRAPHICS.getCurrentCamera().POSITION.z = 500;
+		this.camera.POSITION.z = 500;
 	}
 
 	@Override
 	protected void drawImpl() {
-		super.GRAPHICS.clear();
-
 		this.magScrollVel += this.magScrollAcc *= DemoScene4.MAG_SCROLL_DECAY_ACC;
 		this.magScroll += this.magScrollVel *= DemoScene4.MAG_SCROLL_DECAY_VEL;
 		this.camera.POSITION.z += this.magScrollVel;
 
-		// ...and unleash the nerds!:
+		// Draw the nerds!!!:
 		try (var a = super.GRAPHICS.new TwoDimensionalPush()) {
 			final float tileRotationTime = this.tileRotationTime();
-			this.drawNerdTileShapeTo(this.tileImage, this.tileGraphic, tileRotationTime);
-			this.drawInfiniteNerdTiles(tileRotationTime);
+			this.drawTileShapeTo(this.tileImage, this.tileGraphics, tileRotationTime);
+			this.drawInfiniteTiles(tileRotationTime, this.tileGraphics);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	// region Tile-drawing methods.
 	private float tileRotationTime() {
 		return super.getMillisSinceStart() * 0.1f;
 	}
 
-	private NerdP3dGraphics drawNerdTileShapeTo(
+	private NerdP3dGraphics drawTileShapeTo(
 			final PImage p_tileImage, final NerdP3dGraphics p_tileBuffer, final float p_time) {
-		p_tileBuffer.beginDraw();
-		p_tileBuffer.beginShape();
-		p_tileBuffer.imageMode(PConstants.CENTER);
-		p_tileBuffer.translate(p_tileBuffer.cx, p_tileBuffer.cy);
-		p_tileBuffer.rotateZ(p_time * 0.01f);
-		p_tileBuffer.image(
-				p_tileImage, 0, 0,
-				p_tileImage.width * this.magScroll,
-				p_tileImage.height * this.magScroll);
-		p_tileBuffer.endShape();
-		p_tileBuffer.endDraw();
+		try (var a = p_tileBuffer.new DrawCall()) {
+			try (var b = p_tileBuffer.new TwoDimensionalPush()) {
+				p_tileBuffer.imageMode(PConstants.CENTER);
+				p_tileBuffer.translate(p_tileImage.width * 0.5f, p_tileImage.height * 0.5f);
+				p_tileBuffer.rotateZ(p_time * 0.01f);
+				p_tileBuffer.image(
+						p_tileImage, 0, 0,
+						p_tileImage.width * this.magScroll,
+						p_tileImage.height * this.magScroll);
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
 		return p_tileBuffer;
 	}
 
@@ -143,35 +148,38 @@ public class DemoScene4 extends AbstractDemoScene {
 	 *      since it may be faster (though the JIT is still reliable - this
 	 *      non-parameterized overload exists for educational purposes.)
 	 */
-	private void drawInfiniteNerdTiles(final float p_time) {
-		super.GRAPHICS.beginShape();
-		super.GRAPHICS.texture(this.tileGraphic);
+	private void drawInfiniteTiles(final float p_time, final NerdP3dGraphics p_tileTexture) {
+		try (var a = super.GRAPHICS.new Shape()) {
+			super.GRAPHICS.textureWrap(PConstants.REPEAT);
+			super.GRAPHICS.texture(p_tileTexture);
 
-		super.GRAPHICS.vertex(0, 0, p_time, p_time);
+			super.GRAPHICS.vertex(0, 0, p_time, p_time);
 
-		super.GRAPHICS.vertex(
-				this.WINDOW.width,
-				0,
-				p_time + this.WINDOW.width,
-				p_time);
+			super.GRAPHICS.vertex(
+					this.WINDOW.width,
+					0,
+					p_time + this.WINDOW.width,
+					p_time);
 
-		super.GRAPHICS.vertex(
-				this.WINDOW.width,
-				this.WINDOW.height,
-				p_time + this.WINDOW.width,
-				p_time + this.WINDOW.height);
+			super.GRAPHICS.vertex(
+					this.WINDOW.width,
+					this.WINDOW.height,
+					p_time + this.WINDOW.width,
+					p_time + this.WINDOW.height);
 
-		super.GRAPHICS.vertex(
-				0,
-				this.WINDOW.height,
-				p_time,
-				p_time + this.WINDOW.height);
-		super.GRAPHICS.endShape();
+			super.GRAPHICS.vertex(
+					0,
+					this.WINDOW.height,
+					p_time,
+					p_time + this.WINDOW.height);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** For just infinite tiles (no scrolling!). */
 	// @SuppressWarnings("unused")
-	// private void drawInfiniteNerdTiles() {
+	// private void drawInfiniteTiles() {
 	// try (var a = super.GRAPHICS.new ClosedShape()) {
 	// super.GRAPHICS.vertex(0, 0, 0, 0);
 	//
@@ -190,15 +198,13 @@ public class DemoScene4 extends AbstractDemoScene {
 	// e.printStackTrace();
 	// }
 	// }
+	// endregion
 
 	// region Events.
 	@Override
 	public void mouseClicked() {
 		switch (super.INPUT.mouseButton) {
 			case PConstants.LEFT -> this.MANAGER.restartScene();
-			// case PConstants.RIGHT -> this.MANAGER.startScene(new NerdSceneClassLoader(
-			// "file://" + NerdSketch.DATA_DIR_PATH + "/DemoScene5.class",
-			// "com.brahvim.nerd.nerd_demos.scenes.DemoScene5").getLoadedClass());
 		}
 	}
 

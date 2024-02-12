@@ -4,7 +4,8 @@ import java.awt.event.KeyEvent;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.nerd_demos.debug_layers.DebugFpsGizmoLayer;
+import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdSceneLayerCallbackOrder;
+import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 
 import processing.core.PApplet;
@@ -23,31 +24,30 @@ public class DemoScene2 extends AbstractDemoScene {
     @Override
     protected void setup(final NerdSceneState p_state) {
         this.camera = super.GRAPHICS.setCurrentCamera(new SmoothCamera(super.GRAPHICS));
-        super.addLayer(DebugFpsGizmoLayer.class);
+        super.MANAGER.SETTINGS.drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
+        super.addLayer(DemoDebugFpsGizmoLayer.class);
+        this.camera.POSITION.y = super.GRAPHICS.cy;
         this.camera.POSITION.x = -450;
     }
 
     @Override
     protected void drawImpl() {
-        if (this.INPUT.keysPressedAreOrdered(KeyEvent.VK_CONTROL, KeyEvent.VK_R))
-            this.MANAGER.restartScene();
-
         super.GRAPHICS.clear();
         super.GRAPHICS.pushMatrix();
         super.GRAPHICS.translateFromCenter();
         // super.GRAPHICS.translate(super.GRAPHICS.getMouseInWorld());
-        // super.GRAPHICS.translateZ(PApplet.sin(this.SKETCH.millis() * 0.01f) * 250);
         super.GRAPHICS.rotateX(PApplet.sin(this.SKETCH.millis() * 0.001f));
         super.GRAPHICS.rotateZ(PApplet.cos(this.SKETCH.millis() * 0.001f));
         super.GRAPHICS.box(50);
         super.GRAPHICS.popMatrix();
     }
 
+    // region Events.
     @Override
     public void keyPressed() {
         if (this.INPUT.keyCode == KeyEvent.VK_F) {
-            super.WINDOW.cursorVisible = !super.WINDOW.cursorVisible;
             this.camera.holdMouse = !this.camera.holdMouse;
+            super.WINDOW.cursorVisible = !super.WINDOW.cursorVisible;
         }
     }
 
@@ -63,5 +63,6 @@ public class DemoScene2 extends AbstractDemoScene {
         this.camera.fov -= p_mouseEvent.getCount() * 0.1f;
         this.camera.fov = PApplet.constrain(this.camera.fov, 0, 130);
     }
+    // endregion
 
 }
