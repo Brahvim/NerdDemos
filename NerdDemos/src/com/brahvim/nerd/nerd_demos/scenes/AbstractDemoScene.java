@@ -18,9 +18,6 @@ public abstract class AbstractDemoScene extends NerdP3dScene {
         super(p_sceneMan);
     }
 
-    protected void drawImpl() {
-    }
-
     @Override
     protected final void draw() {
         // Faster in `draw()`:
@@ -28,6 +25,9 @@ public abstract class AbstractDemoScene extends NerdP3dScene {
             super.MANAGER.restartScene();
 
         this.drawImpl();
+    }
+
+    protected void drawImpl() {
     }
 
     @Override
@@ -44,7 +44,6 @@ public abstract class AbstractDemoScene extends NerdP3dScene {
             final Class<? extends AbstractDemoScene> newSceneClass
             /*   */ = switch (newSceneNumber) {
                 // case 5 -> this.obtainDemoScene5FromData();
-                case 5 -> this.obtainDemoScene5FromSource();
                 default -> this.obtainDemoSceneFromSource(newSceneNumber);
             };
 
@@ -57,34 +56,15 @@ public abstract class AbstractDemoScene extends NerdP3dScene {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private Class<? extends AbstractDemoScene> obtainDemoSceneFromSource(
-            final int p_newSceneNumber) throws ClassNotFoundException {
-        return (Class<? extends AbstractDemoScene>)
-        /*   */ Class.forName(this.getClass().getPackageName() + ".DemoScene" + p_newSceneNumber);
+    protected void mousePressedImpl() {
     }
 
-    @SuppressWarnings("unchecked")
-    private Class<? extends AbstractDemoScene> obtainDemoScene5FromSource() throws ClassNotFoundException {
-        return (Class<? extends AbstractDemoScene>)
-        /*   */ Class.forName(this.getClass().getPackageName() + ".DemoScene5");
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends AbstractDemoScene> obtainDemoScene5FromData() throws MalformedURLException {
-        return (Class<? extends AbstractDemoScene>) new NerdSceneClassLoader(
-                /*   */ new URL("file", "", NerdSketch.fromDataDir("DemoScene5.class")).toString(),
-                this.getClass().getPackageName() + ".DemoScene5").getLoadedClass();
-    }
-
+    // region Scene numberers.
     private int getDemoSceneNumber() {
         final String sceneName = super.SCENE_NAME;
         // This had me for about 15 minutes till I...
         // ..Till I learnt about `Character.getNumericValue()`! 😂:
         return Character.getNumericValue(sceneName.charAt(sceneName.length() - 1));
-    }
-
-    protected void mousePressedImpl() {
     }
 
     private int getNextDemoSceneNumber() {
@@ -102,5 +82,22 @@ public abstract class AbstractDemoScene extends NerdP3dScene {
             default -> --sceneNumberToRet;
         };
     }
+    // endregion
+
+    // region Obtaining scenes.
+    @SuppressWarnings("unchecked")
+    private Class<? extends AbstractDemoScene> obtainDemoSceneFromSource(
+            final int p_newSceneNumber) throws ClassNotFoundException {
+        return (Class<? extends AbstractDemoScene>)
+        /*   */ Class.forName(this.getClass().getPackageName() + ".DemoScene" + p_newSceneNumber);
+    }
+
+    @SuppressWarnings({ "unchecked", "unused" })
+    private Class<? extends AbstractDemoScene> obtainDemoScene5FromData() throws MalformedURLException {
+        return (Class<? extends AbstractDemoScene>) new NerdSceneClassLoader(
+                /*   */ new URL("file", "", NerdSketch.fromDataDir("DemoScene5.class")).toString(),
+                this.getClass().getPackageName() + ".DemoScene5").getLoadedClass();
+    }
+    // endregion
 
 }
