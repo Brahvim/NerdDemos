@@ -4,9 +4,9 @@ import com.brahvim.nerd.framework.cameras.NerdBasicCamera;
 import com.brahvim.nerd.framework.cameras.NerdBasicCameraBuilder;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
+import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PConstants;
-import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.event.MouseEvent;
 import processing.opengl.PGraphics3D;
@@ -14,10 +14,9 @@ import processing.opengl.PGraphics3D;
 public class DemoScene4 extends AbstractDemoScene {
 
 	// region Fields!
-	private PImage nerd;
-	private float ncx, ncy;
-	private PGraphics nerdGraphics;
+	private PImage tileImage;
 	private NerdBasicCamera camera;
+	private NerdP3dGraphics tileGraphic;
 
 	private static final float MAG_SCROLL_ACC_MOD = 0.001f,
 			MAG_SCROLL_DECAY_ACC = 0.8f,
@@ -66,8 +65,8 @@ public class DemoScene4 extends AbstractDemoScene {
 		// endregion
 
 		// Loaded this scene for the first time? Do this!:
-		if (this.SCENE.getTimesLoaded() == 1
-				&& super.MANAGER.getScenesModuleSettings().FIRST_SCENE_CLASS == DemoScene4.class) {
+		if (this.getTimesLoaded() == 1
+				&& super.MANAGER.SETTINGS.FIRST_SCENE_CLASS == DemoScene4.class) {
 			this.WINDOW.fullscreen = false;
 			this.WINDOW.setSize(1600, 900);
 			this.WINDOW.centerWindow();
@@ -84,86 +83,113 @@ public class DemoScene4 extends AbstractDemoScene {
 			// rubberDuck.play();
 		}
 
-		this.nerd = super.WINDOW.getIconImage();
-		this.nerdGraphics = super.SKETCH.createGraphics(this.nerd.width, this.nerd.height);
+		this.tileImage = super.WINDOW.getIconImage();
+		this.tileGraphic = new NerdP3dGraphics(super.SKETCH //
+				, super.SKETCH.createGraphics(this.tileImage.width, this.tileImage.height)
+		/*   */ );
 
 		super.GRAPHICS.noStroke();
 		super.GRAPHICS.textureWrap(PConstants.REPEAT);
 		super.GRAPHICS.getCurrentCamera().POSITION.z = 500;
-
-		this.ncx = this.nerd.width * 0.5f;
-		this.ncy = this.nerd.height * 0.5f;
 	}
 
 	@Override
 	protected void drawImpl() {
 		super.GRAPHICS.clear();
-		// super.GRAPHICS.translate(-WINDOW.cx, -WINDOW.cy);
 
 		this.magScrollVel += this.magScrollAcc *= DemoScene4.MAG_SCROLL_DECAY_ACC;
 		this.magScroll += this.magScrollVel *= DemoScene4.MAG_SCROLL_DECAY_VEL;
 		this.camera.POSITION.z += this.magScrollVel;
 
-		super.GRAPHICS.begin2d();
-
-		// region Draw the nerds!!!
-		super.GRAPHICS.beginShape();
-
-		this.nerdGraphics.beginDraw();
-		this.nerdGraphics.imageMode(PConstants.CENTER);
-		this.nerdGraphics.translate(this.ncx, this.ncy);
-		this.nerdGraphics.rotateZ(this.nerdRotTime() * 0.01f);
-		this.nerdGraphics.image(this.nerd, 0, 0,
-				this.nerd.width * this.magScroll,
-				this.nerd.height * this.magScroll);
-		this.nerdGraphics.endDraw();
-
-		// For just infinite tiles (no scrolling!):
-
-		// super.GRAPHICS.vertex(0, 0, 0, 0);
-		// super.GRAPHICS.vertex(WINDOW.width, 0, WINDOW.width, 0);
-		// super.GRAPHICS.vertex(WINDOW.width, WINDOW.height, WINDOW.width,
-		// WINDOW.height);
-		// super.GRAPHICS.vertex(0, WINDOW.height, 0, WINDOW.height);
-
-		super.GRAPHICS.textureWrap(PConstants.REPEAT);
-		super.GRAPHICS.texture(this.nerdGraphics);
-
-		super.GRAPHICS.vertex(
-				0,
-				0,
-				this.nerdRotTime(),
-				this.nerdRotTime());
-		super.GRAPHICS.vertex(
-				this.WINDOW.width, 0,
-				this.nerdRotTime() + this.WINDOW.width,
-				this.nerdRotTime());
-		super.GRAPHICS.vertex(
-				this.WINDOW.width,
-				this.WINDOW.height,
-				this.nerdRotTime() + this.WINDOW.width,
-				this.nerdRotTime() + this.WINDOW.height);
-		super.GRAPHICS.vertex(
-				0,
-				this.WINDOW.height,
-				this.nerdRotTime(),
-				this.nerdRotTime() + this.WINDOW.height);
-
-		super.GRAPHICS.endShape();
-		// endregion
-		super.GRAPHICS.end2d();
-
+		// ...and unleash the nerds!:
 		try (var a = super.GRAPHICS.new TwoDimensionalPush()) {
-			super.GRAPHICS.translate(super.GRAPHICS.getMouseInWorldAtZ(0));
-			super.GRAPHICS.circle(0, 0, 200);
+			final float tileRotationTime = this.tileRotationTime();
+			this.drawNerdTileShapeTo(this.tileImage, this.tileGraphic, tileRotationTime);
+			this.drawInfiniteNerdTiles(tileRotationTime);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private float nerdRotTime() {
-		return this.SCENE.getMillisSinceStart() * 0.1f;
+	private float tileRotationTime() {
+		return super.getMillisSinceStart() * 0.1f;
 	}
+
+	private NerdP3dGraphics drawNerdTileShapeTo(
+			final PImage p_tileImage, final NerdP3dGraphics p_tileBuffer, final float p_time) {
+		p_tileBuffer.beginDraw();
+		p_tileBuffer.beginShape();
+		p_tileBuffer.imageMode(PConstants.CENTER);
+		p_tileBuffer.translate(p_tileBuffer.cx, p_tileBuffer.cy);
+		p_tileBuffer.rotateZ(p_time * 0.01f);
+		p_tileBuffer.image(
+				p_tileImage, 0, 0,
+				p_tileImage.width * this.magScroll,
+				p_tileImage.height * this.magScroll);
+		p_tileBuffer.endShape();
+		p_tileBuffer.endDraw();
+		return p_tileBuffer;
+	}
+
+	/**
+	 * For infinite tiles with scrolling according to the time parameter.
+	 *
+	 * @param p_time is a parameter whose derivative defines how fast the tiles
+	 *               appear to scroll. If it is set to {@code 0}, no scrolling
+	 *               occurs.
+	 * @see
+	 *      {@linkplain DemoScene4#drawInfiniteNerdTiles()
+	 *      DemoScene4::drawInfiniteNerdTiles()} for when no scrolling is preferred,
+	 *      since it may be faster (though the JIT is still reliable - this
+	 *      non-parameterized overload exists for educational purposes.)
+	 */
+	private void drawInfiniteNerdTiles(final float p_time) {
+		super.GRAPHICS.beginShape();
+		super.GRAPHICS.texture(this.tileGraphic);
+
+		super.GRAPHICS.vertex(0, 0, p_time, p_time);
+
+		super.GRAPHICS.vertex(
+				this.WINDOW.width,
+				0,
+				p_time + this.WINDOW.width,
+				p_time);
+
+		super.GRAPHICS.vertex(
+				this.WINDOW.width,
+				this.WINDOW.height,
+				p_time + this.WINDOW.width,
+				p_time + this.WINDOW.height);
+
+		super.GRAPHICS.vertex(
+				0,
+				this.WINDOW.height,
+				p_time,
+				p_time + this.WINDOW.height);
+		super.GRAPHICS.endShape();
+	}
+
+	/** For just infinite tiles (no scrolling!). */
+	// @SuppressWarnings("unused")
+	// private void drawInfiniteNerdTiles() {
+	// try (var a = super.GRAPHICS.new ClosedShape()) {
+	// super.GRAPHICS.vertex(0, 0, 0, 0);
+	//
+	// super.GRAPHICS.vertex(
+	// this.WINDOW.width, 0,
+	// this.WINDOW.width, 0);
+	//
+	// super.GRAPHICS.vertex(
+	// this.WINDOW.width, this.WINDOW.height,
+	// this.WINDOW.width, this.WINDOW.height);
+	//
+	// super.GRAPHICS.vertex(
+	// 0, this.WINDOW.height,
+	// 0, this.WINDOW.height);
+	// } catch (final Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	// region Events.
 	@Override

@@ -34,7 +34,7 @@ public class DemoScene2 extends AbstractDemoScene {
 
         super.GRAPHICS.clear();
         super.GRAPHICS.pushMatrix();
-        super.GRAPHICS.translateToCenter();
+        super.GRAPHICS.translateFromCenter();
         // super.GRAPHICS.translate(super.GRAPHICS.getMouseInWorld());
         // super.GRAPHICS.translateZ(PApplet.sin(this.SKETCH.millis() * 0.01f) * 250);
         super.GRAPHICS.rotateX(PApplet.sin(this.SKETCH.millis() * 0.001f));

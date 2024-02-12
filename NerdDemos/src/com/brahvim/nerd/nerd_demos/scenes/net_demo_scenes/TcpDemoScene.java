@@ -109,7 +109,7 @@ public class TcpDemoScene extends NerdAbstractGraphicsScene { // extends NerdJav
 				Nerd TCP Networking Test""");
 
 		// Start a TCP server on the given port and check for clients to join!:
-		try (final NerdAbstractTcpServer server = new NerdTcpNoSslServer(8080)) {
+		try (NerdAbstractTcpServer server = new NerdTcpNoSslServer(8080)) {
 			server.setClientInvitationCallback(
 					// Yes, you can directly pass this lambda into the constructor!
 					// `c` holds the client object that wishes to join.

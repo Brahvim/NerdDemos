@@ -40,9 +40,9 @@ public class DemoScene3 extends AbstractDemoScene {
 
 	@Override
 	protected void setup(final NerdSceneState p_state) {
-		super.MANAGER.getScenesModuleSettings().drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
-		super.SCENE.addLayer(CinematicBarsLayer.class);
-		super.SCENE.addLayer(DebugFpsGizmoLayer.class);
+		super.MANAGER.SETTINGS.drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
+		super.addLayer(CinematicBarsLayer.class);
+		super.addLayer(DebugFpsGizmoLayer.class);
 
 		this.bgImage = this.createBackgroundImage();
 
@@ -76,7 +76,7 @@ public class DemoScene3 extends AbstractDemoScene {
 		this.light.apply();
 		this.cubeMan.draw();
 
-		try (final var a = super.GRAPHICS.new MatrixPush()) {
+		try (var a = super.GRAPHICS.new MatrixPush()) {
 			super.GRAPHICS.tint(255, 150);
 			super.GRAPHICS.rotateY(PConstants.HALF_PI + PConstants.PI);
 			super.GRAPHICS.image(super.GRAPHICS.getUnderlyingBuffer());
