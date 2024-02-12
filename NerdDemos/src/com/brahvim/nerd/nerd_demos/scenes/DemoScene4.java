@@ -67,9 +67,7 @@ public class DemoScene4 extends AbstractDemoScene {
 
 		// Loaded this scene for the first time? Do this!:
 		if (this.SCENE.getTimesLoaded() == 1
-				&& super.MANAGER.getScenesModuleSettings().FIRST_SCENE_CLASS == DemoScene4.class)
-
-		{
+				&& super.MANAGER.getScenesModuleSettings().FIRST_SCENE_CLASS == DemoScene4.class) {
 			this.WINDOW.fullscreen = false;
 			this.WINDOW.setSize(1600, 900);
 			this.WINDOW.centerWindow();
@@ -90,8 +88,8 @@ public class DemoScene4 extends AbstractDemoScene {
 		this.nerdGraphics = super.SKETCH.createGraphics(this.nerd.width, this.nerd.height);
 
 		super.GRAPHICS.noStroke();
-		super.GRAPHICS.getCurrentCamera().POSITION.z = 500;
 		super.GRAPHICS.textureWrap(PConstants.REPEAT);
+		super.GRAPHICS.getCurrentCamera().POSITION.z = 500;
 
 		this.ncx = this.nerd.width * 0.5f;
 		this.ncy = this.nerd.height * 0.5f;
@@ -99,7 +97,6 @@ public class DemoScene4 extends AbstractDemoScene {
 
 	@Override
 	protected void drawImpl() {
-
 		super.GRAPHICS.clear();
 		// super.GRAPHICS.translate(-WINDOW.cx, -WINDOW.cy);
 
@@ -121,8 +118,6 @@ public class DemoScene4 extends AbstractDemoScene {
 				this.nerd.height * this.magScroll);
 		this.nerdGraphics.endDraw();
 
-		super.GRAPHICS.texture(this.nerdGraphics);
-
 		// For just infinite tiles (no scrolling!):
 
 		// super.GRAPHICS.vertex(0, 0, 0, 0);
@@ -131,21 +126,39 @@ public class DemoScene4 extends AbstractDemoScene {
 		// WINDOW.height);
 		// super.GRAPHICS.vertex(0, WINDOW.height, 0, WINDOW.height);
 
-		super.GRAPHICS.vertex(0, 0, this.nerdRotTime(), this.nerdRotTime());
-		super.GRAPHICS.vertex(this.WINDOW.width, 0, this.nerdRotTime() + this.WINDOW.width,
+		super.GRAPHICS.textureWrap(PConstants.REPEAT);
+		super.GRAPHICS.texture(this.nerdGraphics);
+
+		super.GRAPHICS.vertex(
+				0,
+				0,
+				this.nerdRotTime(),
 				this.nerdRotTime());
-		super.GRAPHICS.vertex(this.WINDOW.width, this.WINDOW.height,
-				this.nerdRotTime() + this.WINDOW.width, this.nerdRotTime() + this.WINDOW.height);
-		super.GRAPHICS.vertex(0, this.WINDOW.height, this.nerdRotTime(), this.nerdRotTime() +
-				this.WINDOW.height);
+		super.GRAPHICS.vertex(
+				this.WINDOW.width, 0,
+				this.nerdRotTime() + this.WINDOW.width,
+				this.nerdRotTime());
+		super.GRAPHICS.vertex(
+				this.WINDOW.width,
+				this.WINDOW.height,
+				this.nerdRotTime() + this.WINDOW.width,
+				this.nerdRotTime() + this.WINDOW.height);
+		super.GRAPHICS.vertex(
+				0,
+				this.WINDOW.height,
+				this.nerdRotTime(),
+				this.nerdRotTime() + this.WINDOW.height);
 
 		super.GRAPHICS.endShape();
 		// endregion
-
-		super.GRAPHICS.translate(super.GRAPHICS.getMouseInWorld());
-		super.GRAPHICS.circle(0, 0, 200);
-
 		super.GRAPHICS.end2d();
+
+		try (var a = super.GRAPHICS.new TwoDimensionalPush()) {
+			super.GRAPHICS.translate(super.GRAPHICS.getMouseInWorldAtZ(0));
+			super.GRAPHICS.circle(0, 0, 200);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private float nerdRotTime() {
