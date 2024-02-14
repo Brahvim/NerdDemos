@@ -22,7 +22,7 @@ public class SmoothCamera extends NerdFlyCamera {
     /*   */ SLOW_SPEED = 0.05f,
             DEFAULT_SPEED = 0.5f;
 
-    public final float
+    public static final float
     /*   */ ROLL_MAX = 5,
             ROLL_SPEED = 0.1f;
 
