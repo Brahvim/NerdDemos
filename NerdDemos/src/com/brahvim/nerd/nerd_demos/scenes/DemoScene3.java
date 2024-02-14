@@ -134,12 +134,6 @@ public class DemoScene3 extends AbstractDemoScene {
 		this.camera.fov -= p_mouseEvent.getCount() * 0.1f;
 		this.camera.fov = PApplet.constrain(this.camera.fov, 0, 130);
 	}
-
-	@Override
-	protected void sceneChanged() {
-		this.cubeMan.removeAll(); // REALLY helps the GC out!
-		System.gc(); // Surprisingly, this is an effective hint to the GC.
-	}
 	// endregion
 
 }
