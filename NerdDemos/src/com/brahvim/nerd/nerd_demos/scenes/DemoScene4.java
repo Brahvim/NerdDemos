@@ -3,7 +3,6 @@ package com.brahvim.nerd.nerd_demos.scenes;
 import com.brahvim.nerd.framework.cameras.NerdBasicCamera;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdSceneLayerCallbackOrder;
 import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.effect_layers.DemoCinematicBarsLayer;
 import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
@@ -42,7 +41,6 @@ public class DemoScene4 extends AbstractDemoScene {
 		// "`DemoScene4::setup()` here, I was called `%d` times!%n",
 		// this.SCENE.getTimesLoaded());
 
-		super.MANAGER.SETTINGS.drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
 		this.camera = super.GRAPHICS.setCurrentCameraToDefault();
 		super.addLayer(DemoCinematicBarsLayer.class);
 		super.addLayer(DemoDebugFpsGizmoLayer.class);

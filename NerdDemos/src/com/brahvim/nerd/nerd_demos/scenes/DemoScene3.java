@@ -5,11 +5,12 @@ import java.awt.event.KeyEvent;
 import com.brahvim.nerd.framework.lights.NerdAmbientLight;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdSceneLayerCallbackOrder;
 import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.effect_layers.DemoCinematicBarsLayer;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.CubeManager;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
+import com.brahvim.nerd.processing_wrapper.NerdAbstractGraphics;
+import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -26,6 +27,7 @@ public class DemoScene3 extends AbstractDemoScene {
 	private CubeManager cubeMan;
 	private SmoothCamera camera;
 	private NerdAmbientLight light;
+	private boolean shouldAutomaticallyAddCubes;
 	// endregion
 
 	protected DemoScene3(final NerdScenesModule<PGraphics3D> p_sceneMan) {
@@ -40,17 +42,16 @@ public class DemoScene3 extends AbstractDemoScene {
 
 	@Override
 	protected void setup(final NerdSceneState p_state) {
-		super.MANAGER.SETTINGS.drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
 		super.addLayer(DemoCinematicBarsLayer.class);
 		super.addLayer(DemoDebugFpsGizmoLayer.class);
 
 		this.bgImage = this.createBackgroundImage();
-		this.camera = super.GRAPHICS
-				.setCurrentCamera(new SmoothCamera(super.GRAPHICS));
+		this.camera = super.GRAPHICS.setCurrentCamera(
+				new SmoothCamera(super.GRAPHICS));
 
-		this.camera.setClearImage(this.bgImage);
+		// super.GRAPHICS.setClearImage(this.bgImage);
+
 		this.camera.fov = PApplet.radians(75);
-		this.camera.setClearColor(255);
 		this.camera.far = 100_000_000.0f;
 
 		this.cubeMan = new CubeManager(this);
@@ -66,11 +67,14 @@ public class DemoScene3 extends AbstractDemoScene {
 	@Override
 	protected void drawImpl() {
 		// Stress test!:
-		this.cubeMan.emitCubes(this.cubeMan.cubesPerClick); // Nearly `1,000` cubes at once after sufficient time!
+		if (this.shouldAutomaticallyAddCubes || super.INPUT.mouseLeft)
+			this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
+
+		// Nearly `1,000` cubes at once after sufficient time!
 		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
 		// (Max possible is `144`, the refresh rate).
 
-		super.GRAPHICS.tint(255, 100);
+		// this.addTint(super.GRAPHICS);
 		super.GRAPHICS.background(this.bgImage);
 
 		this.light.apply();
@@ -79,10 +83,14 @@ public class DemoScene3 extends AbstractDemoScene {
 		try (var a = super.GRAPHICS.new MatrixPush()) {
 			super.GRAPHICS.tint(255, 150);
 			super.GRAPHICS.rotateY(PConstants.HALF_PI + PConstants.PI);
-			super.GRAPHICS.image(super.GRAPHICS.getUnderlyingBuffer());
+			super.GRAPHICS.image(super.GRAPHICS);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected void addTint(final NerdAbstractGraphics<?> p_graphics) {
+		p_graphics.tint(255, 50);
 	}
 
 	private PImage createBackgroundImage() {
@@ -90,10 +98,14 @@ public class DemoScene3 extends AbstractDemoScene {
 		/*   */ color1 = super.SKETCH.color(224, 152, 27),
 				color2 = super.SKETCH.color(232, 81, 194);
 
-		final PGraphics toRet = super.SKETCH
-				.createGraphics(this.DISPLAY.displayWidth, this.DISPLAY.displayHeight);
+		final PGraphics toRet = new NerdP3dGraphics(super.SKETCH).getUnderlyingBuffer();
+		// new NerdP3dGraphics(super.SKETCH,
+		// super.SKETCH.createGraphics(
+		// this.DISPLAY.displayWidth, this.DISPLAY.displayHeight);
+		// );
 
 		toRet.loadPixels();
+		// this.addTint(toRet);
 
 		for (int y = 0; y < toRet.height; y++)
 			for (int x = 0; x < toRet.width; x++)
@@ -110,22 +122,29 @@ public class DemoScene3 extends AbstractDemoScene {
 	// region Event callbacks.
 	@Override
 	protected void exit() {
-		System.out.printf("Number of cubes: `%d`.%n", this.cubeMan.numCubes());
+		final int numCubes = this.cubeMan.numCubes();
+		super.STATE.set("CubeCount", numCubes);
+		System.out.printf("Number of cubes: `%d`.%n", numCubes);
 	}
 
 	@Override
 	public void keyPressed() {
 		if (super.INPUT.keyCode == KeyEvent.VK_F) {
 			this.camera.holdMouse = !this.camera.holdMouse;
-			this.WINDOW.cursorVisible = !this.WINDOW.cursorVisible;
+			super.WINDOW.cursorVisible = !super.WINDOW.cursorVisible;
 		}
+
+		// Pressing `x` changes the state of cube emission.
+		this.shouldAutomaticallyAddCubes = super.INPUT.keyCode == KeyEvent.VK_X
+				? !this.shouldAutomaticallyAddCubes
+				: this.shouldAutomaticallyAddCubes;
 	}
 
 	@Override
 	public void mouseClicked() {
 		switch (super.INPUT.mouseButton) {
 			case PConstants.CENTER -> this.camera.setRoll(0);
-			case PConstants.LEFT -> this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
+			// case PConstants.LEFT -> this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 		}
 	}
 

@@ -18,18 +18,22 @@ public class DemoScene5 extends AbstractDemoScene {
 	@Override
 	protected void setup(final NerdSceneState p_state) {
 		System.out.println(this.TEXT);
+
 		// TODO: Reset the camera's settings when the scene is changed.
-		super.GRAPHICS.setCurrentCameraToDefault().setClearColor(0x006699);
 		super.addLayer(DemoDebugFpsGizmoLayer.class);
+		super.GRAPHICS.setCurrentCameraToDefault();
+		super.GRAPHICS.setClearColor(0x006699);
 	}
 
 	@Override
 	protected void drawImpl() {
 		super.GRAPHICS.background(0x006699, PApplet.sin(super.getMillisSinceStart()));
+
 		try (var a = super.GRAPHICS.new TwoDimensionalPush()) {
 			super.GRAPHICS.scale(2);
 			super.GRAPHICS.fill(233);
-			super.GRAPHICS.textAt2dCenter(this.TEXT);
+			super.GRAPHICS.translateFromCenter();
+			super.GRAPHICS.text(this.TEXT);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

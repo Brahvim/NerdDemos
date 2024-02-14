@@ -22,6 +22,10 @@ public class SmoothCamera extends NerdFlyCamera {
     /*   */ SLOW_SPEED = 0.05f,
             DEFAULT_SPEED = 0.5f;
 
+    public final float
+    /*   */ ROLL_MAX = 5,
+            ROLL_SPEED = 0.1f;
+
     public float
     /*   */ accFrict = SmoothCamera.DEFAULT_ACC_FRICT,
             velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
@@ -96,10 +100,17 @@ public class SmoothCamera extends NerdFlyCamera {
 
         // region Roll.
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
-            super.ORIENTATION.x += SmoothCamera.DEFAULT_SPEED * 0.5f;
+            super.ORIENTATION.z += this.ROLL_SPEED * 0.5f;
 
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
-            super.ORIENTATION.x += -SmoothCamera.DEFAULT_SPEED * 0.5f;
+            super.ORIENTATION.z -= this.ROLL_SPEED * 0.5f;
+
+        // TODO: Set the camera roll's boundary!
+        // if (super.ORIENTATION.z > ROLL_MAX)
+        // super.ORIENTATION.z = -ROLL_MAX;
+
+        // if (super.ORIENTATION.z < -ROLL_MAX)
+        // super.ORIENTATION.z = ROLL_MAX;
 
         // if (super.up.x > PConstants.TAU || super.up.x < -PConstants.TAU)
         // super.up.x -= super.up.x;
@@ -114,7 +125,9 @@ public class SmoothCamera extends NerdFlyCamera {
         // endregion
 
         // region Circumambulation, id est "moving in circles".
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Q)) {
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Q))
+
+        {
             if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_Q))
                 this.circumAmbPos.set(super.FRONT); // PVector.sub(super.front, super.pos));
 

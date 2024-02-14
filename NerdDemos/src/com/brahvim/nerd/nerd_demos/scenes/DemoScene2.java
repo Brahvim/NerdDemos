@@ -4,7 +4,6 @@ import java.awt.event.KeyEvent;
 
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
-import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings.NerdSceneLayerCallbackOrder;
 import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 
@@ -24,7 +23,6 @@ public class DemoScene2 extends AbstractDemoScene {
     @Override
     protected void setup(final NerdSceneState p_state) {
         this.camera = super.GRAPHICS.setCurrentCamera(new SmoothCamera(super.GRAPHICS));
-        super.MANAGER.SETTINGS.drawFirstCaller = NerdSceneLayerCallbackOrder.SCENE;
         super.addLayer(DemoDebugFpsGizmoLayer.class);
         this.camera.POSITION.y = super.GRAPHICS.cy;
         this.camera.POSITION.x = -450;
