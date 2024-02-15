@@ -100,10 +100,10 @@ public class SmoothCamera extends NerdFlyCamera {
 
         // region Roll.
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
-            super.ORIENTATION.z += this.ROLL_SPEED * 0.5f;
+            super.ORIENTATION.z += SmoothCamera.ROLL_SPEED * 0.5f;
 
         if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
-            super.ORIENTATION.z -= this.ROLL_SPEED * 0.5f;
+            super.ORIENTATION.z -= SmoothCamera.ROLL_SPEED * 0.5f;
 
         // TODO: Set the camera roll's boundary!
         // if (super.ORIENTATION.z > ROLL_MAX)

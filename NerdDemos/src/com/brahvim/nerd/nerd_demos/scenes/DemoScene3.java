@@ -27,7 +27,7 @@ public class DemoScene3 extends AbstractDemoScene {
 	private CubeManager cubeMan;
 	private SmoothCamera camera;
 	private NerdAmbientLight light;
-	private boolean shouldAutomaticallyAddCubes;
+	private boolean shouldAutomaticallyAddCubes = true;
 	// endregion
 
 	protected DemoScene3(final NerdScenesModule<PGraphics3D> p_sceneMan) {
@@ -69,20 +69,45 @@ public class DemoScene3 extends AbstractDemoScene {
 		// Stress test!:
 		if (this.shouldAutomaticallyAddCubes || super.INPUT.mouseLeft)
 			this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
+		else
+			this.cubeMan.cubesToAdd = 0;
 
 		// Nearly `1,000` cubes at once after sufficient time!
 		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
 		// (Max possible is `144`, the refresh rate).
 
-		// this.addTint(super.GRAPHICS);
-		super.GRAPHICS.background(this.bgImage);
-
+		// this.drawFaintBackground();
+		this.drawBackground();
 		this.light.apply();
 		this.cubeMan.draw();
+		this.drawScreen();
+		this.drawOverlay();
+	}
 
+	private void drawBackground() {
+		super.GRAPHICS.background(this.bgImage);
+	}
+
+	private void drawFaintBackground() {
+		this.addTint(super.GRAPHICS);
+		super.GRAPHICS.background(this.bgImage);
+	}
+
+	private void drawScreen() {
 		try (var a = super.GRAPHICS.new MatrixPush()) {
-			super.GRAPHICS.tint(255, 150);
+			super.GRAPHICS.tint(255, PApplet.map(
+					this.camera.POSITION.magSq(), this.camera.near, this.camera.far, 150, 0));
 			super.GRAPHICS.rotateY(PConstants.HALF_PI + PConstants.PI);
+			super.GRAPHICS.image(super.GRAPHICS);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void drawOverlay() {
+		try (var a = super.GRAPHICS.new TwoDimensionalPush()) {
+			super.GRAPHICS.tint(255, 150);
+			super.GRAPHICS.translateFromCenter();
 			super.GRAPHICS.image(super.GRAPHICS);
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -135,9 +160,8 @@ public class DemoScene3 extends AbstractDemoScene {
 		}
 
 		// Pressing `x` changes the state of cube emission.
-		this.shouldAutomaticallyAddCubes = super.INPUT.keyCode == KeyEvent.VK_X
-				? !this.shouldAutomaticallyAddCubes
-				: this.shouldAutomaticallyAddCubes;
+		if (super.INPUT.keyCode == KeyEvent.VK_X)
+			this.shouldAutomaticallyAddCubes = !this.shouldAutomaticallyAddCubes;
 	}
 
 	@Override

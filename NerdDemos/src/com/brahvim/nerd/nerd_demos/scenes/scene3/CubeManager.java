@@ -13,7 +13,8 @@ public class CubeManager {
 
 	// region Fields.
 	public int
-	/*   */ cubesPerClick = 7,
+	/*   */ cubesToAdd = 0,
+			cubesPerClick = 7,
 			cubesPerFrame = 2;
 
 	private final ArrayList<AnimatedCube> CUBES = new ArrayList<>();
@@ -22,7 +23,6 @@ public class CubeManager {
 
 	// private AlBuffer<?>[] popAudios;
 	private PShape cubeShape;
-	private int cubesToAdd;
 	// endregion
 
 	// region Constructors.

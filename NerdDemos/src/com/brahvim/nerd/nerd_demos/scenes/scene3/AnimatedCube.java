@@ -4,6 +4,7 @@ import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes
 import com.brahvim.nerd.math.easings_old.built_in_easings_old.NerdSineEaseOld;
 import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
+import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PShape;
 import processing.core.PVector;
@@ -148,6 +149,11 @@ public class AnimatedCube extends TestEulerBody {
 		g.translate(super.pos);
 		g.rotate(super.rot);
 		g.scale(this.size * this.PLOP_WAVE.get());
+
+		// p_shape.beginShape();
+		p_shape.setFill(super.SKETCH.color(255,
+				PApplet.map(this.lifetime, AnimatedCube.DEFAULT_LIFETIME, 0, 255, 0)));
+		// p_shape.endShape();
 
 		// Performance drop + doesn't work!:
 		// for (int i = 0; i < p_shape.getVertexCount(); i++)
