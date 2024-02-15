@@ -84,15 +84,7 @@ public class DemoScene3 extends AbstractDemoScene {
 		this.drawOverlay();
 	}
 
-	private void drawBackground() {
-		super.GRAPHICS.background(this.bgImage);
-	}
-
-	private void drawFaintBackground() {
-		this.addTint(super.GRAPHICS);
-		super.GRAPHICS.background(this.bgImage);
-	}
-
+	// region Extra drawing functions.
 	private void drawScreen() {
 		try (var a = super.GRAPHICS.new MatrixPush()) {
 			super.GRAPHICS.tint(255, PApplet.map(
@@ -114,8 +106,13 @@ public class DemoScene3 extends AbstractDemoScene {
 		}
 	}
 
-	protected void addTint(final NerdAbstractGraphics<?> p_graphics) {
-		p_graphics.tint(255, 50);
+	private void drawBackground() {
+		super.GRAPHICS.background(this.bgImage);
+	}
+
+	private void drawFaintBackground() {
+		this.addTint(super.GRAPHICS);
+		super.GRAPHICS.background(this.bgImage);
 	}
 
 	private PImage createBackgroundImage() {
@@ -142,6 +139,11 @@ public class DemoScene3 extends AbstractDemoScene {
 
 		toRet.updatePixels();
 		return toRet;
+	}
+	// endregion
+
+	protected void addTint(final NerdAbstractGraphics<?> p_graphics) {
+		p_graphics.tint(255, 50);
 	}
 
 	// region Event callbacks.

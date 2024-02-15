@@ -19,7 +19,8 @@ public class SmoothCamera extends NerdFlyCamera {
             DEFAULT_VEL_FRICT = 0.9f;
 
     public static final float
-    /*   */ SLOW_SPEED = 0.05f,
+    /*   */ FAST_SPEED = 0.9f,
+            SLOW_SPEED = 0.05f,
             DEFAULT_SPEED = 0.5f;
 
     public static final float
@@ -88,10 +89,9 @@ public class SmoothCamera extends NerdFlyCamera {
         this.accFrict = SmoothCamera.DEFAULT_ACC_FRICT;
         this.velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
 
-        // if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_CONTROL)) {
-        // accMultiplier = SmoothCamera.FAST_SPEED;
-        // } else
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
+        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_CONTROL)) {
+            accMultiplier = SmoothCamera.FAST_SPEED;
+        } else if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
             accMultiplier = SmoothCamera.SLOW_SPEED;
             this.accFrict = this.velFrict = 0.95f;
         } else {
