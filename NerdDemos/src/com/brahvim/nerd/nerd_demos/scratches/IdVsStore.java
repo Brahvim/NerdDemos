@@ -99,8 +99,8 @@ public class IdVsStore {
     public static final int ITR = 1_000_000;
 
     public static void main(final String[] p_args) {
-        // IdVsStore.testManager(new NullHandlingEntityManager());
-        IdVsStore.testManager(new IndexedFieldMappingEntityManager());
+        IdVsStore.testManager(new NullHandlingEntityManager()); // ~`60` ms.
+        IdVsStore.testManager(new IndexedFieldMappingEntityManager()); // ~`110` ms.
     }
 
     private static <EntityT> void testManager(final EntityManager<EntityT> p_entityMan) {

@@ -3,14 +3,28 @@ package com.brahvim.nerd.nerd_demos.scratches;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * ```bash
+ * `MultiMapManager` took: `537.399849` ms, using `1811939328` bytes.
+ * `InstanceDataManager` took: `86.243845` ms, using `0` bytes.
+ * ```
+ *
+ * ```bash
+ * `MultiMapManager` took: `638.996537` ms, using `1811939328` bytes.
+ * `InstanceDataManager` took: `33.883417` ms, using `0` bytes.
+ * ```
+ * 
+ * ..Yeah...
+ */
+
 // Moral of the story: DON'T blindly follow patterns. I wrote this example just to show that haha.
 public class MultiMapVsArrayId {
 
     public static final int ITR = 1_000_000;
 
     public static void main(final String[] p_args) {
-        MultiMapVsArrayId.testManager(new InstanceDataManager());
         MultiMapVsArrayId.testManager(new MultiMapManager());
+        MultiMapVsArrayId.testManager(new InstanceDataManager());
     }
 
     private static <EntityT> void testManager(final EntityManager<EntityT> p_entityMan) {
@@ -70,16 +84,16 @@ interface EntityManager<EntityIdT> {
 
 }
 
-class InstanceDataManager implements EntityManager<InstanceDataManager.EntityObject> {
+class InstanceDataManager implements EntityManager<InstanceDataManager.EntityInstance> {
 
-    static class EntityObject implements Entity {
+    static class EntityInstance implements Entity {
 
         private float float1;
         private float float2;
         private float float3;
         private String string;
 
-        protected EntityObject(
+        protected EntityInstance(
                 final float p_float1, final float p_float2, final float p_float3, final String p_string) {
             this.float1 = p_float1;
             this.float2 = p_float2;
@@ -92,47 +106,47 @@ class InstanceDataManager implements EntityManager<InstanceDataManager.EntityObj
     // private final List<EntityObject> entities = new ArrayList<>(0);
 
     @Override
-    public InstanceDataManager.EntityObject createEntity() {
-        return new EntityObject(0, 0, 0, "");
+    public InstanceDataManager.EntityInstance createEntity() {
+        return new InstanceDataManager.EntityInstance(0, 0, 0, "");
     }
 
     @Override
-    public float getFloat1(final InstanceDataManager.EntityObject p_entity) {
+    public float getFloat1(final InstanceDataManager.EntityInstance p_entity) {
         return p_entity.float1;
     }
 
     @Override
-    public void setFloat1(final InstanceDataManager.EntityObject p_entity, final float p_value) {
+    public void setFloat1(final InstanceDataManager.EntityInstance p_entity, final float p_value) {
         p_entity.float1 = p_value;
     }
 
     @Override
-    public float getFloat2(final InstanceDataManager.EntityObject p_entity) {
+    public float getFloat2(final InstanceDataManager.EntityInstance p_entity) {
         return p_entity.float2;
     }
 
     @Override
-    public void setFloat2(final InstanceDataManager.EntityObject p_entity, final float p_value) {
+    public void setFloat2(final InstanceDataManager.EntityInstance p_entity, final float p_value) {
         p_entity.float2 = p_value;
     }
 
     @Override
-    public float getFloat3(final InstanceDataManager.EntityObject p_entity) {
+    public float getFloat3(final InstanceDataManager.EntityInstance p_entity) {
         return p_entity.float3;
     }
 
     @Override
-    public void setFloat3(final InstanceDataManager.EntityObject p_entity, final float p_value) {
+    public void setFloat3(final InstanceDataManager.EntityInstance p_entity, final float p_value) {
         p_entity.float3 = p_value;
     }
 
     @Override
-    public String getString(final InstanceDataManager.EntityObject p_entity) {
+    public String getString(final InstanceDataManager.EntityInstance p_entity) {
         return p_entity.string;
     }
 
     @Override
-    public void setString(final InstanceDataManager.EntityObject p_entity, final String p_value) {
+    public void setString(final InstanceDataManager.EntityInstance p_entity, final String p_value) {
         p_entity.string = p_value;
     }
 
