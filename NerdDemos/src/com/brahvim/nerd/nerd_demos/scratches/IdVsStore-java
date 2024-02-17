@@ -1,0 +1,129 @@
+package com.brahvim.nerd.nerd_demos.scratches;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.brahvim.nerd.nerd_demos.scratches.IndexedFieldMappingEntityManager.EntityId;
+import com.brahvim.nerd.nerd_demos.scratches.NullHandlingEntityManager.EntityObject;
+
+interface Entity {
+
+}
+
+interface EntityManager<EntityT> {
+
+    public EntityT createEntity();
+
+    public Object getEntityAttachedData(final EntityT p_entity);
+
+    public void setEntityAttachedData(final EntityT p_entity, final Object p_value);
+
+}
+
+class NullHandlingEntityManager implements EntityManager<EntityObject> {
+
+    static class EntityObject implements Entity {
+
+        protected Object attached;
+
+        public EntityObject() {
+        }
+
+    }
+
+    @Override
+    public EntityObject createEntity() {
+        return new EntityObject();
+    }
+
+    @Override
+    public void setEntityAttachedData(final EntityObject p_entity, final Object p_value) {
+        if (p_entity == null)
+            return;
+
+        p_entity.attached = p_value;
+    }
+
+    @Override
+    public Object getEntityAttachedData(final EntityObject p_entity) {
+        if (p_entity == null)
+            return null;
+
+        return p_entity.attached;
+    }
+
+}
+
+// Almost twice as slow!
+// Of course it takes a lot more memory.
+class IndexedFieldMappingEntityManager implements EntityManager<EntityId> {
+
+    static class EntityId implements Entity {
+
+        public final int ID;
+
+        public EntityId(final int p_id) {
+            this.ID = p_id;
+        }
+
+    }
+
+    private final List<Object> DATA = new ArrayList<>(0);
+
+    @Override
+    public EntityId createEntity() {
+        final int id = this.DATA.size();
+        this.DATA.add(null);
+        return new EntityId(id);
+    }
+
+    @Override
+    public void setEntityAttachedData(final EntityId p_entity, final Object p_value) {
+        final int id = p_entity.ID;
+        if (id >= 0 && id < this.DATA.size())
+            this.DATA.set(id, p_value);
+    }
+
+    @Override
+    public Object getEntityAttachedData(final EntityId p_entity) {
+        final int id = p_entity.ID;
+        if (id >= 0 && id < this.DATA.size())
+            return this.DATA.get(id);
+        return null;
+    }
+
+}
+
+public class IdVsStore {
+
+    public static final int ITR = 1_000_000;
+
+    public static void main(final String[] p_args) {
+        // IdVsStore.testManager(new NullHandlingEntityManager());
+        IdVsStore.testManager(new IndexedFieldMappingEntityManager());
+    }
+
+    private static <EntityT> void testManager(final EntityManager<EntityT> p_entityMan) {
+        final long startMem = Runtime.getRuntime().totalMemory();
+        final long startTime = System.nanoTime();
+
+        for (int i = 0; i < IdVsStore.ITR; i++) {
+            final EntityT entityId = p_entityMan.createEntity();
+            p_entityMan.setEntityAttachedData(entityId, "SomeValue" + i);
+        }
+
+        for (int i = IdVsStore.ITR; i > 0; i--) {
+            final EntityT entityId = p_entityMan.createEntity();
+            p_entityMan.getEntityAttachedData(entityId);
+        }
+
+        final long endTime = System.nanoTime();
+        final long endMem = Runtime.getRuntime().totalMemory();
+
+        System.out.printf(
+                "`%s` took: `%s` ms, using `%s` bytes.%n",
+                p_entityMan.getClass().getSimpleName(),
+                (endTime - startTime) / 1e6, endMem - startMem);
+    }
+
+}
