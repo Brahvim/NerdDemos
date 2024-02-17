@@ -10,13 +10,13 @@ interface Entity {
 
 }
 
-interface EntityManager<EntityT> {
+interface EntityManager<EntityIdT> {
 
-    public EntityT createEntity();
+    public EntityIdT createEntity();
 
-    public Object getEntityAttachedData(final EntityT p_entity);
+    public Object getEntityAttachedData(final EntityIdT p_entity);
 
-    public void setEntityAttachedData(final EntityT p_entity, final Object p_value);
+    public void setEntityAttachedData(final EntityIdT p_entity, final Object p_value);
 
 }
 
