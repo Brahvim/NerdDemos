@@ -20,14 +20,13 @@ public class App {
                 .build(p_args);
     }
 
-    // Ye' Old Big TODOs!:
+    // Ye' old big TODOs!:
     /*
      * - OpenAL *enumerated* wrapper!
      * - The `NerdEasingFunction` rewrite.
+     * - Complete the ECS's networking API.
      * - Versioned serialization packets containing ECS components.
      * - Input mappings API like the other, 'real' engines using `Predicate`s.
-     * - Complete the ECS's networking API.
-     * - Stop screwing up with how to use `PGraphics`, cameras etc.
      * - Let JAR assets be in the `data` folder (each JAR carries a folder).
      *
      * Longer tasks:
