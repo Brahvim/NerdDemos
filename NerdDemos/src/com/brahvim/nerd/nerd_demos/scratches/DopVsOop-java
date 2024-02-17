@@ -44,6 +44,73 @@ import com.brahvim.nerd.utils.NerdReflectionUtils;
  * (I spent the whole day watching the GC kill performance.)
  *
  */
+
+/*
+ * Test results from 17 February, 2024 (`DopVsOop.callGcLikeCrazy()` actually called `System.gc()` 10 times).
+ * Not much has changed:
+ * ```bash
+ * ===========================================================================
+ * Test `OOP` ran for `10` iterations with `1000000` entities/iteration.
+ * - Average `Runtime::totalMemory()` increment with each test was `259837132.8` bytes.
+ *     - (Average before test: `29360128` bytes.)
+ *     - (Average after test: `289197260.8` bytes.)
+ * - Average time taken per iteration was `221046847.2` ns.
+ * Thank you.
+ * ===========================================================================
+ * 
+ * ===========================================================================
+ * Test `DOP_SINGLE_MAP` ran for `10` iterations with `1000000` entities/iteration.
+ * - Average `Runtime::totalMemory()` increment with each test was `266757734.4` bytes.
+ *     - (Average before test: `1789290086.4` bytes.)
+ *     - (Average after test: `2056047820.8` bytes.)
+ * - Average time taken per iteration was `289890009.2` ns.
+ * Thank you.
+ * ===========================================================================
+ * 
+ * ===========================================================================
+ * Test `DOP_MULTI_MAP` ran for `10` iterations with `1000000` entities/iteration.
+ * - Average `Runtime::totalMemory()` increment with each test was `195664281.6` bytes.
+ *     - (Average before test: `1328545792` bytes.)
+ *     - (Average after test: `1524210073.6` bytes.)
+ * - Average time taken per iteration was `175991901.2` ns.
+ * Thank you.
+ * ===========================================================================
+ * ```
+ */
+
+/*
+* Test results from the same day, using milliseconds instead:
+* Not much has changed:
+* ```bash
+* ===========================================================================
+* Test `OOP` ran for `10` iterations with `1000000` entities/iteration.
+* - Average `Runtime::totalMemory()` increment with each test was `271581184` bytes.
+*     - (Average before test: `20971520` bytes.)
+*     - (Average after test: `292552704` bytes.)
+* - Average time taken per iteration was `156.6` ms.
+* Thank you.
+* ===========================================================================
+* 
+* ===========================================================================
+* Test `DOP_SINGLE_MAP` ran for `10` iterations with `1000000` entities/iteration.
+* - Average `Runtime::totalMemory()` increment with each test was `250190233.6` bytes.
+*     - (Average before test: `1695757107.2` bytes.)
+*     - (Average after test: `1945947340.8` bytes.)
+* - Average time taken per iteration was `189.7` ms.
+* Thank you.
+* ===========================================================================
+* 
+* ===========================================================================
+* Test `DOP_MULTI_MAP` ran for `10` iterations with `1000000` entities/iteration.
+* - Average `Runtime::totalMemory()` increment with each test was `254384537.6` bytes.
+*     - (Average before test: `1342177280` bytes.)
+*     - (Average after test: `1596561817.6` bytes.)
+* - Average time taken per iteration was `136.1` ms.
+* Thank you.
+* ===========================================================================
+* ```
+*/
+
 public class DopVsOop {
 
     private enum Test {
@@ -53,7 +120,7 @@ public class DopVsOop {
     }
 
     public static final Random RANDOM = new Random();
-    public static final Test TEST = Test.DOP_MULTI_MAP;
+    public static final Test TEST = Test.OOP;
 
     public static final int NUM_ITERS = 10;
     public static final int ENTITIES_PER_ITER = 1_000_000;
@@ -118,7 +185,7 @@ public class DopVsOop {
                 - Average `Runtime::totalMemory()` increment with each test was `%s` bytes.
                     - (Average before test: `%s` bytes.)
                     - (Average after test: `%s` bytes.)
-                - Average time taken per iteration was `%s` ns.
+                - Average time taken per iteration was `%s` ms.
                 Thank you.
                 ===========================================================================
                 """,
@@ -132,8 +199,9 @@ public class DopVsOop {
     }
 
     public static void callGcLikeCrazy() {
-        // for (int i = 0; i < 10; i++) {
-        // System.gc();
+        for (int i = 0; i < 10; i++)
+            // {
+            System.gc();
         // try {
         // Thread.sleep(10);
         // } catch (final InterruptedException e) {
@@ -142,6 +210,7 @@ public class DopVsOop {
         // }
 
         // Thread.yield();
+        // System.out.println();
 
         // Nope! None of this code!
         // I set a breakpoint on the lne with the method's name
@@ -167,8 +236,7 @@ public class DopVsOop {
 
     private static long testOop() {
         final Map<Integer, Entity> map = new HashMap<>(DopVsOop.TOTAL_ENTITIES);
-
-        final long startTime = System.nanoTime();
+        final long startTime = System.currentTimeMillis();
 
         for (int i = 0; i < DopVsOop.ENTITIES_PER_ITER; i++) {
             final EntityObject entity = new EntityObject(
@@ -185,11 +253,11 @@ public class DopVsOop {
                 }
         }
 
-        return System.nanoTime() - startTime;
+        return System.currentTimeMillis() - startTime;
     }
 
     private static long testDopMultiMap() {
-        final long startTime = System.nanoTime();
+        final long startTimeMs = System.currentTimeMillis();
 
         for (int i = 0; i < DopVsOop.ENTITIES_PER_ITER; i++) {
             final long entity = SingleMapDataManager.addEntity(
@@ -208,11 +276,11 @@ public class DopVsOop {
                 }
         }
 
-        return System.nanoTime() - startTime;
+        return System.currentTimeMillis() - startTimeMs;
     }
 
     private static long testDopSingleMap() {
-        final long startTime = System.nanoTime();
+        final long startTimeMs = System.currentTimeMillis();
 
         for (int i = 0; i < DopVsOop.ENTITIES_PER_ITER; i++) {
             final long entity = MultiMapDataManager.addEntity(
@@ -231,7 +299,7 @@ public class DopVsOop {
                 }
         }
 
-        return System.nanoTime() - startTime;
+        return System.currentTimeMillis() - startTimeMs;
     }
 
 }
