@@ -20,7 +20,6 @@ public class AnimatedCubesManager {
 		public static final int DEFAULT_LIFETIME = 8_000;
 
 		protected float size = 40;
-		// protected AlSource popSrc;
 		protected PVector pos, vel, acc;
 		protected boolean visible = true;
 		protected int startTime, endTime;
@@ -40,8 +39,6 @@ public class AnimatedCubesManager {
 	private final List<AnimatedCube> CUBES = new ArrayList<>(6000);
 	private final NerdP3dSketch SKETCH;
 	private final NerdP3dScene SCENE;
-
-	// private AlBuffer<?>[] popAudios;
 	// endregion
 
 	// region Constructors.
@@ -101,9 +98,6 @@ public class AnimatedCubesManager {
 	protected void drawCube(final AnimatedCube p_cube) {
 		if (!p_cube.visible)
 			return;
-
-		// if (!p_cube.popSrc.isDisposed())
-		// p_cube.popSrc.setPosition(super.pos.array());
 
 		final float deltaTime = this.SKETCH.getFrameTime() * p_cube.dtCoef;
 
@@ -188,11 +182,9 @@ public class AnimatedCubesManager {
 
 	public void removeAll() {
 		this.CUBES.clear();
-		// this.cubesToRemove = this.CUBES.size() - 1; // I dunno how to do this.
 	}
 
 	public void emitCubes(final int p_howMany) {
-		// System.out.println("Emitting `" + p_howMany + "` cubes!");
 		this.cubesToAdd += p_howMany;
 	}
 	// endregion
