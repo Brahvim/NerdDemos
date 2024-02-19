@@ -13,6 +13,8 @@ import com.brahvim.nerd.processing_wrapper.sketches.NerdP3dSketch;
 import processing.core.PConstants;
 import processing.core.PVector;
 
+// TODO: Implement `PShape` batching and perhaps also culling.
+
 public class AnimatedCubesManager {
 
 	private class AnimatedCube {
