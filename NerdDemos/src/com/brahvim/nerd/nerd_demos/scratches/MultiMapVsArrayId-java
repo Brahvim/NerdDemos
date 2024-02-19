@@ -1,9 +1,16 @@
 package com.brahvim.nerd.nerd_demos.scratches;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.brahvim.nerd.nerd_demos.scratches.MultiMapVsArrayId.EntityId;
+import com.brahvim.nerd.nerd_demos.scratches.MultiMapVsArrayId.EntityInstance;
+
 /*
+ * Tests on 17 February, 2024:
+ *
  * ```bash
  * `MultiMapManager` took: `537.399849` ms, using `1811939328` bytes.
  * `InstanceDataManager` took: `86.243845` ms, using `0` bytes.
@@ -13,85 +20,130 @@ import java.util.Map;
  * `MultiMapManager` took: `638.996537` ms, using `1811939328` bytes.
  * `InstanceDataManager` took: `33.883417` ms, using `0` bytes.
  * ```
- * 
+ *
  * ..Yeah...
  */
 
-// Moral of the story: DON'T blindly follow patterns. I wrote this example just to show that haha.
+/*
+ * Test results from 18 February, 2024:
+ *
+ * ```bash
+ * `ArrayIdManager` took: `169.774597` ms, using `0` bytes.
+ * `MultiMapManager` took: `605.629465` ms, using `1157627904` bytes.
+ * `InstanceDataManager` took: `53.659112` ms, using `0` bytes.
+ * ```
+ *
+ * This shows that maps are inefficient with BOTH memory and cache use.
+ * Using an array to store data contiguously will be a bit faster for batched processing,
+ * though not perfectly efficient at storing it, or letting the GC deal with the allocations
+ * (we're in the JVM - allocations aren't in our hands!).
+ */
+
+/*
+ * Tests from 18 February 2024:
+ *
+ * # New test:
+ * ```bash
+ * `ArrayIdManager`'s creation loop took: `465661136` ns, modifying `0` bytes.
+ * `ArrayIdManager`'s update took: `291538365` ns, modifying `511705088` bytes.
+ * `ArrayIdManager`'s getters and removal took: `199013746` ns, modifying `0` bytes.
+ *
+ * `MultiMapManager`'s creation loop took: `962226290` ns, modifying `1052770304` bytes.
+ * `MultiMapManager`'s update took: `417937372` ns, modifying `0` bytes.
+ * `MultiMapManager`'s getters and removal took: `672120943` ns, modifying `576716800` bytes.
+ *
+ * `InstanceDataManager`'s creation loop took: `188149124` ns, modifying `0` bytes.
+ * `InstanceDataManager`'s update took: `105201257` ns, modifying `0` bytes.
+ * `InstanceDataManager`'s getters and removal test is taking longer than than 5 seconds after iterating for `976703` iterations modifying `0` bytes; skipping...
+ * ```
+ *
+ * ChatGPT's comment:
+ * """
+ * The profiling results provide valuable insights into the performance characteristics of your different data manager implementations in Java. Let's analyze the key observations:
+ *
+ * 1. **Creation Loop:**
+ *     - `InstanceDataManager` performs the fastest in creating entities, followed by `ArrayIdManager` and then `MultiMapManager`.
+ *     - This aligns with expectations, as the array-based approach (`ArrayIdManager`) tends to be faster due to contiguous memory access.
+ *
+ * 2. **Update (Modification) Loop:**
+ *     - `InstanceDataManager` is still the fastest in updating entities.
+ *     - `MultiMapManager` performs better than `ArrayIdManager` in the update loop, despite the overhead of using maps.
+ *
+ * 3. **Getters and Removal:**
+ *     - The getters and removal operations for `ArrayIdManager` are faster than those for `MultiMapManager`.
+ *     - `InstanceDataManager` does not have removal tests provided in the results.
+ *
+ * 4. **Memory Usage:**
+ *     - `ArrayIdManager` and `MultiMapManager` show varying memory consumption during different operations.
+ *
+ * 5. **Conclusion:**
+ *     - `InstanceDataManager` excels in creation and updating, demonstrating the efficiency of storing data directly in objects.
+ *     - `ArrayIdManager` performs well in creation and getters/removal, showcasing the benefits of contiguous memory.
+ *     - `MultiMapManager` has slower creation but competitive performance in updating, indicating some optimization in map-based access.
+ *
+ * 6. **Recommendation:**
+ *     - Choose the data manager based on the specific requirements of your application. If creation and updating are critical, `InstanceDataManager` or `ArrayIdManager` might be preferable.
+ *     - Continue profiling and consider additional factors such as code maintainability and scalability.
+ *
+ * Remember that these results are specific to the given test scenario, and real-world performance can be influenced by various factors. Profiling is a powerful tool for making informed decisions based on your application's specific needs and characteristics.
+ * """
+ *
+ * # Older test (`LinkedList`-backed `ArrayIdManager`):
+ * ```bash
+ * `ArrayIdManager`'s creation loop took: `606228192` ns, modifying `511705088` bytes.
+ * `ArrayIdManager`'s update test is taking longer than 5 seconds after iterating for `21081` iterations using `0` bytes; skipping...
+ * `ArrayIdManager`'s getters and removal test is taking longer than than 5 seconds after iterating for `959572` iterations using `0` bytes; skipping...
+ *
+ * `MultiMapManager`'s creation loop took: `374513794` ns, modifying `1300234240` bytes.
+ * `MultiMapManager`'s update took: `176399348` ns, modifying `0` bytes.
+ * `MultiMapManager` getters and removal took: `151182351` ns, modifying `780140544` bytes.
+ *
+ * `InstanceDataManager`'s creation loop took: `70279968` ns, modifying `0` bytes.
+ * `InstanceDataManager`'s update took: `38078620` ns, modifying `0` bytes.
+ * `InstanceDataManager`'s getters and removal test is taking longer than than 5 seconds after iterating for `972581` iterations using `0` bytes; skipping...
+ * ```
+ *
+ * ChatGPT's comment:
+ * """
+ * The updated results provide interesting insights into the performance of the `ArrayIdManager` when using `LinkedList` internally. Let's analyze the key observations:
+ *
+ * 1. **Creation Loop:**
+ *     - `ArrayIdManager` with `LinkedList` internal storage shows an increase in the time taken for the creation loop compared to the array-based approach.
+ *     - `InstanceDataManager` still excels in the creation loop, demonstrating the efficiency of storing data directly in objects.
+ *
+ * 2. **Update Loop:**
+ *     - `ArrayIdManager` using `LinkedList` internally experiences performance issues in the update loop, leading to the test being skipped.
+ *     - `MultiMapManager` performs well in the update loop, surpassing `ArrayIdManager` in this specific scenario.
+ *     - `InstanceDataManager` maintains a consistent performance in the update loop.
+ *
+ * 3. **Getters and Removal:**
+ *     - `ArrayIdManager` with `LinkedList` internal storage also experiences issues in the getters and removal test, leading to the test being skipped.
+ *     - `MultiMapManager` shows competitive performance in getters and removal.
+ *
+ * 4. **Conclusion:**
+ *     - The use of `LinkedList` internally in `ArrayIdManager` seems to negatively impact both the update and getters/removal operations in this specific scenario.
+ *
+ * 5. **Stability:**
+ *     - The map-based approach (`MultiMapManager`) demonstrates stability in performance across different operations.
+ *
+ * 6. **Recommendation:**
+ *     - Consider the trade-offs between different data structures and their impact on various operations.
+ *     - Depending on the specific use case, the stability of the map-based approach might make it a preferable choice.
+ *
+ * It's crucial to note that the performance of data structures can vary based on the specific workload and requirements of your application. Continue to profile and test with different scenarios to make informed decisions based on your application's needs.
+ * """
+ */
+
+// Moral of the story: DON'T blindly follow patterns. I wrote this example just to show that, haha!
 public class MultiMapVsArrayId {
 
-    public static final int ITR = 1_000_000;
-
-    public static void main(final String[] p_args) {
-        MultiMapVsArrayId.testManager(new MultiMapManager());
-        MultiMapVsArrayId.testManager(new InstanceDataManager());
-    }
-
-    private static <EntityT> void testManager(final EntityManager<EntityT> p_entityMan) {
-        final long startMem = Runtime.getRuntime().totalMemory();
-        final long startTime = System.nanoTime();
-
-        for (int i = 0; i < MultiMapVsArrayId.ITR; i++) {
-            final EntityT entityId = p_entityMan.createEntity();
-            p_entityMan.setFloat1(entityId, 0);
-            p_entityMan.setFloat2(entityId, 0);
-            p_entityMan.setFloat3(entityId, 0);
-            p_entityMan.setString(entityId, "");
-        }
-
-        for (int i = MultiMapVsArrayId.ITR; i > 0; i--) {
-            final EntityT entityId = p_entityMan.createEntity();
-            p_entityMan.getFloat1(entityId);
-            p_entityMan.getFloat2(entityId);
-            p_entityMan.getFloat3(entityId);
-            p_entityMan.getString(entityId);
-        }
-
-        final long endTime = System.nanoTime();
-        final long endMem = Runtime.getRuntime().totalMemory();
-
-        System.out.printf(
-                "`%s` took: `%s` ms, using `%s` bytes.%n",
-                p_entityMan.getClass().getSimpleName(),
-                (endTime - startTime) / 1e6, endMem - startMem);
-    }
-
-}
-
-interface Entity {
-
-}
-
-interface EntityManager<EntityIdT> {
-
-    public EntityIdT createEntity();
-
-    public float getFloat1(final EntityIdT p_entity);
-
-    public float getFloat2(final EntityIdT p_entity);
-
-    public float getFloat3(final EntityIdT p_entity);
-
-    public String getString(final EntityIdT p_entity);
-
-    public void setFloat1(final EntityIdT p_entity, final float p_value);
-
-    public void setFloat3(final EntityIdT p_entity, final float p_value);
-
-    public void setFloat2(final EntityIdT p_entity, final float p_value);
-
-    public void setString(final EntityIdT p_entity, final String p_value);
-
-}
-
-class InstanceDataManager implements EntityManager<InstanceDataManager.EntityInstance> {
-
+    // region Inner classes.
     static class EntityInstance implements Entity {
 
-        private float float1;
-        private float float2;
-        private float float3;
-        private String string;
+        protected float float1;
+        protected float float2;
+        protected float float3;
+        protected String string;
 
         protected EntityInstance(
                 final float p_float1, final float p_float2, final float p_float3, final String p_string) {
@@ -103,58 +155,7 @@ class InstanceDataManager implements EntityManager<InstanceDataManager.EntityIns
 
     }
 
-    // private final List<EntityObject> entities = new ArrayList<>(0);
-
-    @Override
-    public InstanceDataManager.EntityInstance createEntity() {
-        return new InstanceDataManager.EntityInstance(0, 0, 0, "");
-    }
-
-    @Override
-    public float getFloat1(final InstanceDataManager.EntityInstance p_entity) {
-        return p_entity.float1;
-    }
-
-    @Override
-    public void setFloat1(final InstanceDataManager.EntityInstance p_entity, final float p_value) {
-        p_entity.float1 = p_value;
-    }
-
-    @Override
-    public float getFloat2(final InstanceDataManager.EntityInstance p_entity) {
-        return p_entity.float2;
-    }
-
-    @Override
-    public void setFloat2(final InstanceDataManager.EntityInstance p_entity, final float p_value) {
-        p_entity.float2 = p_value;
-    }
-
-    @Override
-    public float getFloat3(final InstanceDataManager.EntityInstance p_entity) {
-        return p_entity.float3;
-    }
-
-    @Override
-    public void setFloat3(final InstanceDataManager.EntityInstance p_entity, final float p_value) {
-        p_entity.float3 = p_value;
-    }
-
-    @Override
-    public String getString(final InstanceDataManager.EntityInstance p_entity) {
-        return p_entity.string;
-    }
-
-    @Override
-    public void setString(final InstanceDataManager.EntityInstance p_entity, final String p_value) {
-        p_entity.string = p_value;
-    }
-
-}
-
-class MultiMapManager implements EntityManager<MultiMapManager.EntityId> {
-
-    static class EntityId {
+    static class EntityId implements Entity {
 
         public final int ID;
 
@@ -163,13 +164,249 @@ class MultiMapManager implements EntityManager<MultiMapManager.EntityId> {
         }
 
     }
+    // endregion
+
+    public static final int ITR = 1_000_000;
+
+    public static void main(final String[] p_args) {
+        MultiMapVsArrayId.testManager(new ArrayIdManager());
+        System.out.println();
+
+        MultiMapVsArrayId.testManager(new MultiMapManager());
+        System.out.println();
+
+        MultiMapVsArrayId.testManager(new InstanceDataManager());
+    }
+
+    protected static <EntityT> void testManager(final EntityManager<EntityT> p_entityMan) {
+        final List<EntityT> list = new ArrayList<>(0);
+        MultiMapVsArrayId.benchManagerEntityCreation(p_entityMan, list);
+        MultiMapVsArrayId.benchManagerUpdateLoop(p_entityMan, list);
+        MultiMapVsArrayId.benchEntityManagerGettersAndRemoval(p_entityMan, list);
+    }
+
+    // region Benchmarking functions.
+    protected static <EntityT> void benchEntityManagerGettersAndRemoval(final EntityManager<EntityT> p_entityMan,
+            final List<EntityT> p_list) {
+        final long startMem = Runtime.getRuntime().totalMemory();
+        final long startTime = System.nanoTime();
+        final double testLimit = startTime + 5e+09;
+
+        System.gc();
+
+        for (int i = p_list.size() - 1; i > 0; i--) {
+            final EntityT entityId = p_list.get(i);
+
+            p_entityMan.getFloat1(entityId);
+            p_entityMan.getFloat2(entityId);
+            p_entityMan.getFloat3(entityId);
+            p_entityMan.getString(entityId);
+            p_entityMan.removeEntity(entityId);
+
+            if (System.nanoTime() > testLimit) {
+                System.out.printf(
+                        "`%s`'s getters and removal test is taking longer than than 5 seconds after iterating for `%s` iterations modifying `%s` bytes; skipping...%n",
+                        p_entityMan.getClass().getSimpleName(), i, Runtime.getRuntime().totalMemory() - startMem);
+                return;
+            }
+        }
+
+        final long endTime = System.nanoTime();
+        final long endMem = Runtime.getRuntime().totalMemory();
+
+        System.out.printf(
+                "`%s`'s' getters and removal took: `%s` ns, modifying `%s` bytes.%n",
+                p_entityMan.getClass().getSimpleName(),
+                (endTime - startTime), endMem - startMem);
+    }
+
+    protected static <EntityT> void benchManagerEntityCreation(final EntityManager<EntityT> p_entityMan,
+            final List<EntityT> p_list) {
+        final long startMem = Runtime.getRuntime().totalMemory();
+        final long startTime = System.nanoTime();
+        final double testLimit = startTime + 5e+09;
+
+        for (int i = 0; i < MultiMapVsArrayId.ITR; i++) {
+            final EntityT entityId = p_entityMan.createEntity();
+            p_list.add(entityId);
+            p_entityMan.setFloat1(entityId, 0);
+            p_entityMan.setFloat2(entityId, 0);
+            p_entityMan.setFloat3(entityId, 0);
+            p_entityMan.setString(entityId, "");
+
+            if (System.nanoTime() > testLimit) {
+                System.out.printf(
+                        "`%s`'s creation test is taking longer than 5 seconds after iterating for `%s` iterations modifying `%s` bytes; skipping...%n",
+                        p_entityMan.getClass().getSimpleName(), i, Runtime.getRuntime().totalMemory() - startMem);
+                return;
+            }
+        }
+
+        final long endTime = System.nanoTime();
+        final long endMem = Runtime.getRuntime().totalMemory();
+
+        System.out.printf(
+                "`%s`'s creation loop took: `%s` ns, modifying `%s` bytes.%n",
+                p_entityMan.getClass().getSimpleName(),
+                (endTime - startTime), endMem - startMem);
+    }
+
+    protected static <EntityT> void benchManagerUpdateLoop(final EntityManager<EntityT> p_entityMan,
+            final List<EntityT> p_list) {
+        final long startMem = Runtime.getRuntime().totalMemory();
+        final long startTime = System.nanoTime();
+        final double testLimit = startTime + 5e+09;
+        int i = 0;
+
+        for (final EntityT e : p_list) {
+            i++;
+            p_entityMan.setFloat1(e, p_entityMan.getFloat1(e) + 1);
+            p_entityMan.setFloat2(e, p_entityMan.getFloat2(e) + 1);
+            p_entityMan.setFloat3(e, p_entityMan.getFloat3(e) + 1);
+
+            if (System.nanoTime() > testLimit) {
+                System.out.printf(
+                        "`%s`'s update test is taking longer than 5 seconds after iterating for `%s` iterations modifying `%s` bytes; skipping...%n",
+                        p_entityMan.getClass().getSimpleName(), i, Runtime.getRuntime().totalMemory() - startMem);
+                return;
+            }
+        }
+
+        final long endTime = System.nanoTime();
+        final long endMem = Runtime.getRuntime().totalMemory();
+
+        System.out.printf(
+                "`%s`'s update took: `%s` ns, modifying `%s` bytes.%n",
+                p_entityMan.getClass().getSimpleName(),
+                (endTime - startTime), endMem - startMem);
+    }
+
+    protected static <EntityT> void benchManagerBatchedUpdateLoop(final EntityManager<EntityT> p_entityMan) {
+        final long startMem = Runtime.getRuntime().totalMemory();
+        final long startTime = System.nanoTime();
+        p_entityMan.incrementFloats(); // THE DECIDING ONE!
+        final long endTime = System.nanoTime();
+        final long endMem = Runtime.getRuntime().totalMemory();
+
+        System.out.printf(
+                "`%s`'s update took: `%s` ns, modifying `%s` bytes.%n",
+                p_entityMan.getClass().getSimpleName(),
+                (endTime - startTime), endMem - startMem);
+    }
+    // endregion
+
+}
+
+// region Interfaces.
+interface Entity {
+
+}
+
+interface EntityManager<EntityIdT> {
+
+    public EntityIdT createEntity();
+
+    public void removeEntity(EntityIdT entity);
+
+    public void incrementFloats();
+
+    public float getFloat1(final EntityIdT entity);
+
+    public float getFloat2(final EntityIdT entity);
+
+    public float getFloat3(final EntityIdT entity);
+
+    public String getString(final EntityIdT entity);
+
+    public void setFloat1(final EntityIdT entity, final float value);
+
+    public void setFloat3(final EntityIdT entity, final float value);
+
+    public void setFloat2(final EntityIdT entity, final float value);
+
+    public void setString(final EntityIdT entity, final String value);
+
+}
+// endregion
+
+// region `EntityManager` implementations.
+class InstanceDataManager implements EntityManager<EntityInstance> {
+
+    private final List<EntityInstance> ENTITIES = new ArrayList<>(0);
+
+    @Override
+    public EntityInstance createEntity() {
+        final EntityInstance toRet = new EntityInstance(0, 0, 0, "");
+        this.ENTITIES.add(toRet);
+        return toRet;
+    }
+
+    @Override
+    public void removeEntity(final EntityInstance p_entity) {
+        this.ENTITIES.remove(p_entity);
+    }
+
+    @Override
+    public void incrementFloats() {
+        for (final EntityInstance e : this.ENTITIES) {
+            e.float1++;
+            e.float2++;
+            e.float3++;
+        }
+    }
+
+    @Override
+    public float getFloat1(final EntityInstance p_entity) {
+        return p_entity.float1;
+    }
+
+    @Override
+    public void setFloat1(final EntityInstance p_entity, final float p_value) {
+        p_entity.float1 = p_value;
+    }
+
+    @Override
+    public float getFloat2(final EntityInstance p_entity) {
+        return p_entity.float2;
+    }
+
+    @Override
+    public void setFloat2(final EntityInstance p_entity, final float p_value) {
+        p_entity.float2 = p_value;
+    }
+
+    @Override
+    public float getFloat3(final EntityInstance p_entity) {
+        return p_entity.float3;
+    }
+
+    @Override
+    public void setFloat3(final EntityInstance p_entity, final float p_value) {
+        p_entity.float3 = p_value;
+    }
+
+    @Override
+    public String getString(final EntityInstance p_entity) {
+        return p_entity.string;
+    }
+
+    @Override
+    public void setString(final EntityInstance p_entity, final String p_value) {
+        p_entity.string = p_value;
+    }
+
+}
+
+// `IdentityHashMap`s suck around here.
+// `LinkedHashMap`s are slightly faster!
+class MultiMapManager implements EntityManager<EntityId> {
 
     private static int lastId = 0;
-    private static final float FLOAT_ZERO = Float.parseFloat("0");
-    private final Map<Integer, Float> FLOAT_1_MAP = new HashMap<>();
-    private final Map<Integer, Float> FLOAT_2_MAP = new HashMap<>();
-    private final Map<Integer, Float> FLOAT_3_MAP = new HashMap<>();
-    private final Map<Integer, String> STRINGS_MAP = new HashMap<>();
+    private static final Float FLOAT_ZERO = Float.valueOf(0.0f);
+    private final Map<Integer, Float> FLOAT_1_MAP = new HashMap<>(0);
+    private final Map<Integer, Float> FLOAT_2_MAP = new HashMap<>(0);
+    private final Map<Integer, Float> FLOAT_3_MAP = new HashMap<>(0);
+    private final Map<Integer, String> STRINGS_MAP = new HashMap<>(0);
 
     @Override
     public synchronized EntityId createEntity() {
@@ -181,6 +418,39 @@ class MultiMapManager implements EntityManager<MultiMapManager.EntityId> {
         this.STRINGS_MAP.put(entityId, "");
 
         return new EntityId(entityId);
+    }
+
+    @Override
+    public void removeEntity(final EntityId p_entity) {
+        this.FLOAT_1_MAP.remove(p_entity.ID);
+        this.FLOAT_2_MAP.remove(p_entity.ID);
+        this.FLOAT_3_MAP.remove(p_entity.ID);
+        this.STRINGS_MAP.remove(p_entity.ID);
+    }
+
+    @Override
+    public void incrementFloats() {
+        // @SuppressWarnings("unchecked")
+        // final Entry<Integer, Float>[] typeInfoArray = (Entry<Integer, Float>[]) new
+        // Entry<?, ?>[0];
+        // final var entrySet1 = this.FLOAT_1_MAP.entrySet().toArray(typeInfoArray);
+        // final var entrySet2 = this.FLOAT_2_MAP.entrySet().toArray(typeInfoArray);
+        // final var entrySet3 = this.FLOAT_3_MAP.entrySet().toArray(typeInfoArray);
+        //
+        // for (int i = 0; i < entrySet3.length; i++) {
+        // entrySet1[i].setValue(entrySet1[i].getValue() + 1);
+        // entrySet2[i].setValue(entrySet2[i].getValue() + 1);
+        // entrySet3[i].setValue(entrySet3[i].getValue() + 1);
+        // }
+
+        for (final var e : this.FLOAT_1_MAP.entrySet())
+            e.setValue(e.getValue() + 1);
+
+        for (final var e : this.FLOAT_2_MAP.entrySet())
+            e.setValue(e.getValue() + 1);
+
+        for (final var e : this.FLOAT_3_MAP.entrySet())
+            e.setValue(e.getValue() + 1);
     }
 
     @Override
@@ -224,3 +494,107 @@ class MultiMapManager implements EntityManager<MultiMapManager.EntityId> {
     }
 
 }
+
+class ArrayIdManager implements EntityManager<EntityId> {
+
+    private static final Float FLOAT_ZERO = Float.valueOf(0.0f);
+    private final List<Integer> FREE_IDS = new ArrayList<>(0); // Initial idea was to use a "virt layer map" LOL.
+    private final List<Float> FLOAT_1_LIST = new ArrayList<>(0);
+    private final List<Float> FLOAT_2_LIST = new ArrayList<>(0);
+    private final List<Float> FLOAT_3_LIST = new ArrayList<>(0);
+    private final List<String> STRINGS_LIST = new ArrayList<>(0);
+
+    private int numEntities = 0;
+
+    @Override
+    public synchronized EntityId createEntity() {
+        final int numFreeIds = this.FREE_IDS.size();
+        final int entityId;
+
+        if (numFreeIds == 0) {
+            assert this.FLOAT_1_LIST.size() == this.STRINGS_LIST.size()
+                    && this.FLOAT_2_LIST.size() == this.STRINGS_LIST.size()
+                    && this.FLOAT_3_LIST.size() == this.STRINGS_LIST.size();
+
+            entityId = this.STRINGS_LIST.size();
+            this.FLOAT_1_LIST.add(ArrayIdManager.FLOAT_ZERO);
+            this.FLOAT_2_LIST.add(ArrayIdManager.FLOAT_ZERO);
+            this.FLOAT_3_LIST.add(ArrayIdManager.FLOAT_ZERO);
+            this.STRINGS_LIST.add("");
+        } else {
+            entityId = this.FREE_IDS.get(0); // Something must be free!
+            this.FREE_IDS.remove(entityId); // Report that we took it.
+
+            // Initialize!:
+            this.FLOAT_1_LIST.set(entityId, ArrayIdManager.FLOAT_ZERO);
+            this.FLOAT_2_LIST.set(entityId, ArrayIdManager.FLOAT_ZERO);
+            this.FLOAT_3_LIST.set(entityId, ArrayIdManager.FLOAT_ZERO);
+            this.STRINGS_LIST.set(entityId, "");
+        }
+
+        this.numEntities++;
+
+        return new EntityId(entityId);
+    }
+
+    @Override
+    public synchronized void removeEntity(final EntityId p_entity) {
+        this.numEntities--;
+        this.FREE_IDS.add(p_entity.ID); // Report that it's been freed!
+    }
+
+    @Override
+    public void incrementFloats() {
+        for (int i = 0; i < this.numEntities; i++) {
+
+            // if (i % 1000 == 0)
+            // System.out.println(i);
+
+            this.FLOAT_1_LIST.set(i, this.FLOAT_1_LIST.get(i) + 1);
+            this.FLOAT_2_LIST.set(i, this.FLOAT_2_LIST.get(i) + 1);
+            this.FLOAT_3_LIST.set(i, this.FLOAT_3_LIST.get(i) + 1);
+        }
+    }
+
+    @Override
+    public float getFloat1(final EntityId p_entity) {
+        return this.FLOAT_1_LIST.get(p_entity.ID);
+    }
+
+    @Override
+    public float getFloat2(final EntityId p_entity) {
+        return this.FLOAT_2_LIST.get(p_entity.ID);
+    }
+
+    @Override
+    public float getFloat3(final EntityId p_entity) {
+        return this.FLOAT_3_LIST.get(p_entity.ID);
+    }
+
+    @Override
+    public String getString(final EntityId p_entity) {
+        return this.STRINGS_LIST.get(p_entity.ID);
+    }
+
+    @Override
+    public void setFloat1(final EntityId p_entity, final float p_value) {
+        this.FLOAT_1_LIST.set(p_entity.ID, p_value);
+    }
+
+    @Override
+    public void setFloat2(final EntityId p_entity, final float p_value) {
+        this.FLOAT_2_LIST.set(p_entity.ID, p_value);
+    }
+
+    @Override
+    public void setFloat3(final EntityId p_entity, final float p_value) {
+        this.FLOAT_3_LIST.set(p_entity.ID, p_value);
+    }
+
+    @Override
+    public void setString(final EntityId p_entity, final String p_value) {
+        this.STRINGS_LIST.set(p_entity.ID, p_value);
+    }
+
+}
+// endregion

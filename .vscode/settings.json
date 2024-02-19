@@ -1,4 +1,5 @@
 {
+    "java.debug.settings.vmArgs": "-XX:+UseShenandoahGC -Xms500M -Xmx1G",
     "java.project.referencedLibraries": [
         "Dependencies/**/*.jar",
         "Dependencies/libraries/**/*.jar"
@@ -9,7 +10,7 @@
         "NerdExtraModules/ScenesAndLayers",
         "NerdExtraModules/ECS"
     ],
-    "java.cleanup.actionsOnSave": [
+    "java.cleanup.actions": [
         "addOverride",
         "invertEquals",
         "addDeprecated",
@@ -21,7 +22,6 @@
         "instanceofPatternMatch",
         "stringConcatToTextBlock",
     ],
-    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms128M -Xmx1024M",
     "cSpell.words": [
         "ARGB",
         "brah",

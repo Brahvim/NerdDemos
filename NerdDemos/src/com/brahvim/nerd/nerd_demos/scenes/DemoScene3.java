@@ -7,7 +7,7 @@ import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.effect_layers.DemoCinematicBarsLayer;
-import com.brahvim.nerd.nerd_demos.scenes.scene3.CubeManager;
+import com.brahvim.nerd.nerd_demos.scenes.scene3.AnimatedCubesManager;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 import com.brahvim.nerd.processing_wrapper.NerdAbstractGraphics;
 import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
@@ -24,7 +24,7 @@ public class DemoScene3 extends AbstractDemoScene {
 
 	// region Fields.
 	private PImage bgImage;
-	private CubeManager cubeMan;
+	private AnimatedCubesManager cubeMan;
 	private SmoothCamera camera;
 	private NerdAmbientLight light;
 	private boolean shouldAutomaticallyAddCubes = true;
@@ -54,7 +54,7 @@ public class DemoScene3 extends AbstractDemoScene {
 		this.camera.fov = PApplet.radians(75);
 		this.camera.far = 100_000_000.0f;
 
-		this.cubeMan = new CubeManager(this);
+		this.cubeMan = new AnimatedCubesManager(this);
 		this.light = new NerdAmbientLight(
 				super.GRAPHICS, this.camera.POSITION,
 				// new PVector(255, 255, 0), // Yellow.

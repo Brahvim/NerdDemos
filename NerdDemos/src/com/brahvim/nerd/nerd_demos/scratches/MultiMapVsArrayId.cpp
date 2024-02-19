@@ -5,6 +5,7 @@
 
 #define ITR 1'000'000
 
+#pragma region // Interfaces.
 class IEntity { };
 
 template <typename EntityIdT>
@@ -22,7 +23,9 @@ public:
     virtual void setString(EntityIdT entity, const std::string &value) = 0;
     virtual ~IEntityManager() = default;
 };
+#pragma endregion
 
+#pragma region // `InstanceDataManager`.
 class EntityObject : public IEntity {
 public:
     float float1;
@@ -90,10 +93,12 @@ public:
     }
 
 };
+#pragma endregion
 
+#pragma region // `MultiMapManager`.
 class EntityId : IEntity {
 public:
-    int id;
+    const int id;
 
     EntityId(int p_id): id(p_id) { }
 
@@ -165,17 +170,97 @@ public:
 };
 
 int MultiMapManager::lastId = 0;
+#pragma endregion
+
+#pragma region // `ArrayIdManager`.
+class ArrayIdManager : public IEntityManager<EntityId> {
+public: // private:
+    std::vector<int> FREE_IDS;
+    std::vector<float> FLOAT_1_MAP;
+    std::vector<float> FLOAT_2_MAP;
+    std::vector<float> FLOAT_3_MAP;
+    std::vector<std::string> STRINGS_MAP;
+
+public:
+    ArrayIdManager() { }
+
+    EntityId createEntity() override {
+        const int numFreeIds = this->FREE_IDS.size();
+        int entityId;
+
+        if (numFreeIds == 0) {
+            // assert(this->FLOAT_1_MAP.size() == this->STRINGS_MAP.size()
+            //     && this->FLOAT_2_MAP.size() == this->STRINGS_MAP.size()
+            //     && this->FLOAT_3_MAP.size() == this->STRINGS_MAP.size());
+
+            entityId = this->STRINGS_MAP.size();
+            this->FLOAT_1_MAP.push_back(0);
+            this->FLOAT_2_MAP.push_back(0);
+            this->FLOAT_3_MAP.push_back(0);
+            this->STRINGS_MAP.push_back("");
+        } else {
+            entityId = this->FREE_IDS[0]; // Something must be free!
+            this->FREE_IDS.erase(this->FREE_IDS.begin());
+
+            // Initialize!:
+            this->FLOAT_1_MAP[entityId] = 0;
+            this->FLOAT_2_MAP[entityId] = 0;
+            this->FLOAT_3_MAP[entityId] = 0;
+            this->STRINGS_MAP[entityId] = "";
+        }
+
+        return EntityId(entityId);
+    }
+
+    void destroyEntity(EntityId p_entity) override {
+        this->FREE_IDS.push_back(p_entity.id);
+    }
+
+    float getFloat1(EntityId p_entity) override {
+        return this->FLOAT_1_MAP[p_entity.id];
+    }
+
+    float getFloat2(EntityId p_entity) override {
+        return this->FLOAT_2_MAP[p_entity.id];
+    }
+
+    float getFloat3(EntityId p_entity) override {
+        return this->FLOAT_3_MAP[p_entity.id];
+    }
+
+    std::string getString(EntityId p_entity) override {
+        return this->STRINGS_MAP[p_entity.id];
+    }
+
+    void setFloat1(EntityId p_entity, float p_value) override {
+        this->FLOAT_1_MAP[p_entity.id] = p_value;
+    }
+
+    void setFloat2(EntityId p_entity, float p_value) override {
+        this->FLOAT_2_MAP[p_entity.id] = p_value;
+    }
+
+    void setFloat3(EntityId p_entity, float p_value) override {
+        this->FLOAT_3_MAP[p_entity.id] = p_value;
+    }
+
+    void setString(EntityId p_entity, const std::string& p_value) override {
+        this->STRINGS_MAP[p_entity.id] = p_value;
+    }
+
+};
+#pragma endregion
 
 template<class EntityIdT>
 void testManager(IEntityManager<EntityIdT> &p_entityMan) {
     const auto startTime = std::chrono::high_resolution_clock::now();
 
-    std::vector<EntityIdT> array;
+    std::vector<EntityIdT> entities;
 
     // Make some entities:
     for (int i = 0; i < ITR; i++) {
         EntityIdT entityId = p_entityMan.createEntity();
-        array.push_back(entityId);
+        entities.push_back(entityId);
         p_entityMan.setFloat1(entityId, 0);
         p_entityMan.setFloat2(entityId, 0);
         p_entityMan.setFloat3(entityId, 0);
@@ -183,8 +268,8 @@ void testManager(IEntityManager<EntityIdT> &p_entityMan) {
     }
 
     // "Get" the data and destroy them:
-    for (int i = ITR; i > 0; i--) {
-        EntityIdT entityId = array[i];
+    for (int i = ITR - 1; i > 0; i--) {
+        EntityIdT entityId = entities[i];
         p_entityMan.getFloat1(entityId);
         p_entityMan.getFloat2(entityId);
         p_entityMan.getFloat3(entityId);
@@ -204,4 +289,7 @@ int main() {
 
     MultiMapManager man2; // ~`1600` ms.
     testManager(man2);
+
+    ArrayIdManager man3; // ~`230` ms.
+    testManager(man3);
 }
