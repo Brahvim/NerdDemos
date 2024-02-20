@@ -9,6 +9,7 @@ import java.util.Queue;
 
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.math.easings_old.built_in_easings_old.NerdSineEaseOld;
+import com.brahvim.nerd.processing_wrapper.NerdSketch;
 import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 import com.brahvim.nerd.processing_wrapper.sketches.NerdP3dSketch;
 
@@ -21,15 +22,36 @@ public class AnimatedCubesManager {
 
 	private class AnimatedCube {
 
-		public static final int DEFAULT_LIFETIME = 8_000;
+		protected static final int
+		/*   */ DEFAULT_SIZE = 40,
+				DEFAULT_FRICTION = 1,
+				DEFAULT_LIFETIME = 8_000,
+				DEFAULT_ROTATIONAL_FRICTION = 1;
 
-		protected float size = 40;
-		protected PVector pos, vel, acc;
-		protected boolean visible = true;
-		protected int startTime, endTime;
-		protected NerdSineEaseOld plopWave;
-		protected PVector rot, rotVel, rotAcc;
-		protected float frict = 1, rotFrict = 1, dtCoef = 0.1f;
+		protected static final boolean DEFAULT_VISIBILITY = true;
+		protected static final float DEFAULT_DT_COEFFICIENT = 0.1f;
+
+		protected final NerdSineEaseOld PLOP_WAVE;
+		protected final PVector
+		/*   */ POSITION = new PVector(),
+				VELOCITY = new PVector(),
+				ROTATION = new PVector(),
+				ACCELERATION = new PVector(),
+				ROTATION_VELOCITY = new PVector(),
+				ROTATIONAL_ACCELERATION = new PVector();
+
+		protected int endTime;
+		protected boolean visible = AnimatedCube.DEFAULT_VISIBILITY;
+		protected float
+		/*   */ size = AnimatedCube.DEFAULT_SIZE,
+				frict = AnimatedCube.DEFAULT_FRICTION,
+				dtCoef = AnimatedCube.DEFAULT_DT_COEFFICIENT,
+				rotFrict = AnimatedCube.DEFAULT_ROTATIONAL_FRICTION;
+
+		public AnimatedCube(final NerdSketch<?> p_sketch) {
+			this.PLOP_WAVE = new NerdSineEaseOld(p_sketch);
+			this.PLOP_WAVE.inactValue = 1;
+		}
 
 	}
 
@@ -39,8 +61,8 @@ public class AnimatedCubesManager {
 			cubesPerClick = 7,
 			cubesPerFrame = 2;
 
-	private final Queue<AnimatedCube> FREE_CUBES = new ArrayDeque<>(6000);
-	private final List<AnimatedCube> CUBES = new ArrayList<>(6000);
+	private final Queue<AnimatedCube> FREE_CUBES = new ArrayDeque<>(3000);
+	private final List<AnimatedCube> CUBES = new ArrayList<>(3000);
 	private final NerdP3dSketch SKETCH;
 	private final NerdP3dScene SCENE;
 	// endregion
@@ -57,44 +79,40 @@ public class AnimatedCubesManager {
 		final AnimatedCube toRet;
 
 		if (this.FREE_CUBES.isEmpty())
-			toRet = new AnimatedCube();
+			toRet = new AnimatedCube(this.SKETCH);
 		else {
 			toRet = this.FREE_CUBES.poll();
 			this.FREE_CUBES.remove(toRet);
 		}
 
 		this.CUBES.add(toRet);
-		toRet.startTime = this.SKETCH.millis();
-		toRet.endTime = toRet.startTime + AnimatedCube.DEFAULT_LIFETIME;
+
+		final int cubeStartTime = this.SKETCH.millis();
+		toRet.endTime = cubeStartTime + AnimatedCube.DEFAULT_LIFETIME;
 
 		final PVector cameraPos = this.SCENE.GRAPHICS.getCurrentCamera().POSITION;
 
-		toRet.vel = new PVector();
-
-		toRet.rotVel = new PVector();
-
-		toRet.pos = new PVector(
+		toRet.POSITION.set(
 				cameraPos.x + this.SKETCH.random(-this.SKETCH.GENERIC_WINDOW.cx, this.SKETCH.GENERIC_WINDOW.cx),
 				cameraPos.y + this.SKETCH.random(-this.SKETCH.GENERIC_WINDOW.cy, this.SKETCH.GENERIC_WINDOW.cy),
 				cameraPos.z + this.SKETCH.random(-600, 600));
 
-		toRet.acc = new PVector(
+		toRet.ACCELERATION.set(
 				this.SKETCH.random(-0.01f, 0.01f),
 				this.SKETCH.random(-0.01f, 0.01f),
 				this.SKETCH.random(-0.01f, 0.01f));
 
-		toRet.rot = new PVector(
+		toRet.ROTATION.set(
 				this.SKETCH.random(PConstants.TAU),
 				this.SKETCH.random(PConstants.TAU),
 				this.SKETCH.random(PConstants.TAU));
 
-		toRet.rotAcc = new PVector(
+		toRet.ROTATIONAL_ACCELERATION.set(
 				this.SKETCH.random(-0.0001f, 0.0001f),
 				this.SKETCH.random(-0.0001f, 0.0001f),
 				this.SKETCH.random(-0.0001f, 0.0001f));
 
-		toRet.plopWave = new NerdSineEaseOld(this.SKETCH);
-		toRet.plopWave.inactValue = 1;
+		// toRet.PLOP_WAVE.resetSettings();
 
 		return toRet;
 	}
@@ -106,17 +124,17 @@ public class AnimatedCubesManager {
 		final float deltaTime = this.SKETCH.getFrameTime() * p_cube.dtCoef;
 
 		// Physics calculations:
-		p_cube.vel.add(p_cube.acc);
-		p_cube.rotVel.add(p_cube.rotAcc);
-		p_cube.pos.add(PVector.mult(p_cube.vel, p_cube.frict + deltaTime));
-		p_cube.rot.add(PVector.mult(p_cube.rotVel, p_cube.rotFrict + deltaTime));
+		p_cube.VELOCITY.add(p_cube.ACCELERATION);
+		p_cube.ROTATION_VELOCITY.add(p_cube.ROTATIONAL_ACCELERATION);
+		p_cube.POSITION.add(PVector.mult(p_cube.VELOCITY, p_cube.frict + deltaTime));
+		p_cube.ROTATION.add(PVector.mult(p_cube.ROTATION_VELOCITY, p_cube.rotFrict + deltaTime));
 
 		final NerdP3dGraphics g = this.SCENE.GRAPHICS;
 
 		try (var a = g.new Push()) {
-			g.translate(p_cube.pos);
-			g.rotate(p_cube.rot);
-			g.scale(p_cube.size * p_cube.plopWave.get());
+			g.translate(p_cube.POSITION);
+			g.rotate(p_cube.ROTATION);
+			g.scale(p_cube.size * p_cube.PLOP_WAVE.get());
 			g.box(1);
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -125,14 +143,14 @@ public class AnimatedCubesManager {
 
 	protected AnimatedCube beginCubePlopIn(final AnimatedCube p_cube) {
 		p_cube.visible = true;
-		p_cube.plopWave.parameterCoef = 0.015f;
-		p_cube.plopWave.endWhenAngleIncrementsBy(PConstants.HALF_PI).start();
+		p_cube.PLOP_WAVE.parameterCoef = 0.015f;
+		p_cube.PLOP_WAVE.endWhenAngleIncrementsBy(PConstants.HALF_PI).start();
 		return p_cube;
 	}
 
 	protected AnimatedCube beginCubePlopOut(final AnimatedCube p_cube) {
-		p_cube.plopWave.parameterCoef = 0.00001f;
-		p_cube.plopWave.endWhenAngleIncrementsBy(PConstants.HALF_PI)
+		p_cube.PLOP_WAVE.parameterCoef = 0.00001f;
+		p_cube.PLOP_WAVE.endWhenAngleIncrementsBy(PConstants.HALF_PI)
 				.start(270, () -> p_cube.visible = false);
 
 		return p_cube;

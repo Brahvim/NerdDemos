@@ -15,6 +15,7 @@ import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.event.MouseEvent;
@@ -45,7 +46,7 @@ public class DemoScene3 extends AbstractDemoScene {
 		super.addLayer(DemoCinematicBarsLayer.class);
 		super.addLayer(DemoDebugFpsGizmoLayer.class);
 
-		this.bgImage = this.createBackgroundImage();
+		this.bgImage = this.createBackgroundImageUsingPGraphics();
 		this.camera = super.GRAPHICS.setCurrentCamera(
 				new SmoothCamera(super.GRAPHICS));
 
@@ -56,7 +57,7 @@ public class DemoScene3 extends AbstractDemoScene {
 
 		this.cubeMan = new AnimatedCubesManager(this);
 		this.light = new NerdAmbientLight(
-				super.GRAPHICS, this.camera.POSITION,
+				super.GRAPHICS, this.camera.POSITION.copy(),
 				// new PVector(255, 255, 0), // Yellow.
 				// new PVector(224, 152, 27), // The orange at the top.
 				// new PVector(228, 117, 111), // The color in the middle.
@@ -88,7 +89,7 @@ public class DemoScene3 extends AbstractDemoScene {
 	private void drawScreen() {
 		try (var a = super.GRAPHICS.new MatrixPush()) {
 			super.GRAPHICS.tint(255, PApplet.map(
-					this.camera.POSITION.magSq(), this.camera.near, this.camera.far, 150, 0));
+					this.camera.POSITION.magSq(), this.camera.near, this.camera.far, 200, 0));
 			super.GRAPHICS.rotateY(PConstants.HALF_PI + PConstants.PI);
 			super.GRAPHICS.image(super.GRAPHICS);
 		} catch (final Exception e) {
@@ -110,16 +111,19 @@ public class DemoScene3 extends AbstractDemoScene {
 		super.GRAPHICS.background(this.bgImage);
 	}
 
+	@SuppressWarnings("unused")
 	private void drawFaintBackground() {
 		this.addTint(super.GRAPHICS);
 		super.GRAPHICS.background(this.bgImage);
 	}
 
+	@SuppressWarnings("unused")
 	private PImage createBackgroundImage() {
 		final int
 		/*   */ color1 = super.SKETCH.color(224, 152, 27),
 				color2 = super.SKETCH.color(232, 81, 194);
 
+		// TODO: Figure out why this breaks LOL.
 		final NerdP3dGraphics toRet = new NerdP3dGraphics(
 				super.SKETCH, super.GRAPHICS.width, super.GRAPHICS.height); // .getUnderlyingBuffer();
 
@@ -131,12 +135,33 @@ public class DemoScene3 extends AbstractDemoScene {
 					/*   */ = super.SKETCH.lerpColor(
 							color1, color2, // ...Linearly-interpolate b/w these colors,
 							PApplet.map(y, 0, toRet.height, 0, 1)); // ...by this amount! :D!
-
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
+		toRet.endDraw();
+
 		return toRet.getUnderlyingBuffer();
+	}
+
+	private PImage createBackgroundImageUsingPGraphics() {
+		final int
+		/*   */ color1 = super.SKETCH.color(224, 152, 27),
+				color2 = super.SKETCH.color(232, 81, 194);
+
+		final PGraphics toRet = super.SKETCH.createGraphics();
+
+		toRet.loadPixels();
+		for (int y = 0; y < toRet.height; y++)
+			for (int x = 0; x < toRet.width; x++)
+				/////////////////////////////////
+				toRet.pixels[x + y * toRet.width]
+				/*   */ = super.SKETCH.lerpColor(
+						color1, color2, // ...Linearly-interpolate b/w these colors,
+						PApplet.map(y, 0, toRet.height, 0, 1)); // ...by this amount! :D!
+		toRet.updatePixels();
+
+		return toRet;
 	}
 	// endregion
 
