@@ -2,6 +2,7 @@ package com.brahvim.nerd.nerd_demos.scenes;
 
 import java.awt.event.KeyEvent;
 
+import com.brahvim.nerd.framework.cameras.NerdAbstractCamera;
 import com.brahvim.nerd.framework.lights.NerdAmbientLight;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
@@ -14,7 +15,6 @@ import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.event.MouseEvent;
@@ -120,25 +120,23 @@ public class DemoScene3 extends AbstractDemoScene {
 		/*   */ color1 = super.SKETCH.color(224, 152, 27),
 				color2 = super.SKETCH.color(232, 81, 194);
 
-		final PGraphics toRet = new NerdP3dGraphics(super.SKETCH).getUnderlyingBuffer();
-		// new NerdP3dGraphics(super.SKETCH,
-		// super.SKETCH.createGraphics(
-		// this.DISPLAY.displayWidth, this.DISPLAY.displayHeight);
-		// );
+		final NerdP3dGraphics toRet = new NerdP3dGraphics(
+				super.SKETCH, super.GRAPHICS.width, super.GRAPHICS.height); // .getUnderlyingBuffer();
 
-		toRet.loadPixels();
-		// this.addTint(toRet);
+		try (var a = toRet.new PixelOperation()) {
+			for (int y = 0; y < toRet.height; y++)
+				for (int x = 0; x < toRet.width; x++)
+					/////////////////////////////////
+					a.PIXELS[x + y * toRet.width]
+					/*   */ = super.SKETCH.lerpColor(
+							color1, color2, // ...Linearly-interpolate b/w these colors,
+							PApplet.map(y, 0, toRet.height, 0, 1)); // ...by this amount! :D!
 
-		for (int y = 0; y < toRet.height; y++)
-			for (int x = 0; x < toRet.width; x++)
-				/////////////////////////////////
-				toRet.pixels[x + y * toRet.width]
-				/*   */ = super.SKETCH.lerpColor(
-						color1, color2, // ...Linearly-interpolate between these two colors,
-						PApplet.map(y, 0, toRet.height, 0, 1)); // ...by this amount!
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 
-		toRet.updatePixels();
-		return toRet;
+		return toRet.getUnderlyingBuffer();
 	}
 	// endregion
 
@@ -169,7 +167,10 @@ public class DemoScene3 extends AbstractDemoScene {
 	@Override
 	public void mouseClicked() {
 		switch (super.INPUT.mouseButton) {
-			case PConstants.CENTER -> this.camera.setRoll(0);
+			case PConstants.CENTER -> {
+				this.camera.setRoll(0);
+				this.camera.fov = NerdAbstractCamera.DEFAULT_FOV;
+			}
 			// case PConstants.LEFT -> this.cubeMan.emitCubes(this.cubeMan.cubesPerClick);
 		}
 	}

@@ -1,9 +1,11 @@
 package com.brahvim.nerd.nerd_demos.scenes.scene3;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.Queue;
 
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.math.easings_old.built_in_easings_old.NerdSineEaseOld;
@@ -37,7 +39,7 @@ public class AnimatedCubesManager {
 			cubesPerClick = 7,
 			cubesPerFrame = 2;
 
-	private final List<AnimatedCube> FREE_CUBES = new ArrayList<>(6000);
+	private final Queue<AnimatedCube> FREE_CUBES = new ArrayDeque<>(6000);
 	private final List<AnimatedCube> CUBES = new ArrayList<>(6000);
 	private final NerdP3dSketch SKETCH;
 	private final NerdP3dScene SCENE;
@@ -57,7 +59,7 @@ public class AnimatedCubesManager {
 		if (this.FREE_CUBES.isEmpty())
 			toRet = new AnimatedCube();
 		else {
-			toRet = this.FREE_CUBES.get(0);
+			toRet = this.FREE_CUBES.poll();
 			this.FREE_CUBES.remove(toRet);
 		}
 
@@ -115,8 +117,6 @@ public class AnimatedCubesManager {
 			g.translate(p_cube.pos);
 			g.rotate(p_cube.rot);
 			g.scale(p_cube.size * p_cube.plopWave.get());
-			g.strokeWeight(0.018f);
-			g.fill(255);
 			g.box(1);
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -142,12 +142,7 @@ public class AnimatedCubesManager {
 	public void draw() {
 		this.addCubesInLimit();
 
-		for (final AnimatedCube cube : this.CUBES)
-			if (this.FREE_CUBES.contains(cube))
-				System.out.println(cube);
-
 		final ListIterator<AnimatedCube> it = this.CUBES.listIterator();
-
 		while (it.hasNext()) {
 			final AnimatedCube cube = it.next();
 
@@ -162,6 +157,8 @@ public class AnimatedCubesManager {
 			}
 
 			// Draw the cube!:
+			this.SCENE.GRAPHICS.strokeWeight(0.018f);
+			this.SCENE.GRAPHICS.fill(255);
 			this.drawCube(cube);
 		}
 	}
