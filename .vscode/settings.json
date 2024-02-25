@@ -23,9 +23,12 @@
         "stringConcatToTextBlock",
     ],
     "cSpell.words": [
+        "alloc",
         "ARGB",
         "brah",
         "curr",
+        "dealloc",
+        "doin",
         "fovy",
         "FRICT",
         "Javacpp",

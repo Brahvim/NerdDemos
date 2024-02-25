@@ -258,7 +258,7 @@ public class MultiMapVsArrayId {
         final double testLimit = startTime + 5e+09;
         int i = 0;
 
-        for (final EntityT e : p_list) {
+        for (final var e : p_list) {
             i++;
             p_entityMan.setFloat1(e, p_entityMan.getFloat1(e) + 1);
             p_entityMan.setFloat2(e, p_entityMan.getFloat2(e) + 1);
@@ -348,7 +348,7 @@ class InstanceDataManager implements EntityManager<EntityInstance> {
 
     @Override
     public void incrementFloats() {
-        for (final EntityInstance e : this.ENTITIES) {
+        for (final var e : this.ENTITIES) {
             e.float1++;
             e.float2++;
             e.float3++;
@@ -443,14 +443,14 @@ class MultiMapManager implements EntityManager<EntityId> {
         // entrySet3[i].setValue(entrySet3[i].getValue() + 1);
         // }
 
-        for (final var e : this.FLOAT_1_MAP.entrySet())
-            e.setValue(e.getValue() + 1);
+        for (final var entry : this.FLOAT_1_MAP.entrySet())
+            entry.setValue(entry.getValue() + 1);
 
-        for (final var e : this.FLOAT_2_MAP.entrySet())
-            e.setValue(e.getValue() + 1);
+        for (final var entry : this.FLOAT_2_MAP.entrySet())
+            entry.setValue(entry.getValue() + 1);
 
-        for (final var e : this.FLOAT_3_MAP.entrySet())
-            e.setValue(e.getValue() + 1);
+        for (final var entry : this.FLOAT_3_MAP.entrySet())
+            entry.setValue(entry.getValue() + 1);
     }
 
     @Override
