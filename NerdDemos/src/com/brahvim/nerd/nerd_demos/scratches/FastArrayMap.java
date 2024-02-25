@@ -1,22 +1,143 @@
 package com.brahvim.nerd.nerd_demos.scratches;
 
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.processing.SupportedAnnotationTypes;
+import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.brahvim.nerd.utils.NerdBufferUtils;
 
-public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, ValueT>> {
+public class FastArrayMap<KeyT, ValueT> implements Iterable<FastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> {
 
-    public static void main(final String[] p_args) {
-        // final HashMap<String, String> hashMap = new HashMap<>(1, 1);
-        // final FastArrayMap<String, String> arrayMap = new FastArrayMap<>();
+    public static class MapBenchmark {
+
+        public static void main(final String[] args) {
+            final int iterations = 10_00_000;
+
+            // Benchmark `HashMap`:
+            final long hashMapGetTime = MapBenchmark.benchmarkHashMapGet(iterations);
+            System.out.println("`HashMap` get time: " + hashMapGetTime + " ms");
+
+            final long hashMapInsertTime = MapBenchmark.benchmarkHashMapInsert(iterations);
+            System.out.println("`HashMap` insertion time: " + hashMapInsertTime + " ms");
+
+            final long hashMapRemovalTime = MapBenchmark.benchmarkHashMapRemoval(iterations);
+            System.out.println("`HashMap` removal time: " + hashMapRemovalTime + " ms");
+
+            System.out.println();
+
+            // Benchmark `FastArrayMap`:
+            final long arrayMapGetTime = MapBenchmark.benchmarkFastArrayMapGet(iterations);
+            System.out.println("`FastArrayMap` get time: " + arrayMapGetTime + " ms");
+
+            final long arrayMapInsertTime = MapBenchmark.benchmarkFastArrayMapInsert(iterations);
+            System.out.println("`FastArrayMap` insertion time: " + arrayMapInsertTime + " ms");
+
+            final long arrayMapRemovalTime = MapBenchmark.benchmarkFastArrayMapRemoval(iterations);
+            System.out.println("`FastArrayMap` removal time: " + arrayMapRemovalTime + " ms");
+        }
+
+        private static long benchmarkHashMapGet(final int p_iterations) {
+            final HashMap<String, String> hashMap = new HashMap<>();
+            for (int i = 0; i < p_iterations; i++) {
+                hashMap.put("Key" + i, "Value" + i);
+            }
+
+            final long startTime = System.currentTimeMillis();
+
+            for (int i = 0; i < p_iterations; i++) {
+                hashMap.get("Key" + i);
+            }
+
+            return System.currentTimeMillis() - startTime;
+        }
+
+        private static long benchmarkHashMapInsert(final int p_iterations) {
+            final long startTime = System.currentTimeMillis();
+
+            final HashMap<String, String> hashMap = new HashMap<>();
+            for (int i = 0; i < p_iterations; i++) {
+                hashMap.put("Key" + i, "Value" + i);
+            }
+
+            return System.currentTimeMillis() - startTime;
+        }
+
+        private static long benchmarkHashMapRemoval(final int p_iterations) {
+            final HashMap<String, String> hashMap = new HashMap<>();
+            for (int i = 0; i < p_iterations; i++) {
+                hashMap.put("Key" + i, "Value" + i);
+            }
+
+            final long startTime = System.currentTimeMillis();
+
+            // Remove elements from the map
+            for (int i = 0; i < hashMap.size(); i++) {
+                hashMap.remove("Key" + i);
+            }
+
+            return System.currentTimeMillis() - startTime;
+        }
+
+        private static long benchmarkFastArrayMapGet(final int p_iterations) {
+            final FastArrayMap<String, String> arrayMap = new FastArrayMap<>();
+            for (int i = 0; i < p_iterations; i++) {
+                arrayMap.put("Key" + i, "Value" + i);
+            }
+
+            final long startTime = System.currentTimeMillis();
+
+            for (int i = 0; i < p_iterations; i++) {
+                arrayMap.get("Key" + i);
+            }
+
+            return System.currentTimeMillis() - startTime;
+        }
+
+        private static long benchmarkFastArrayMapInsert(final int p_iterations) {
+            final long startTime = System.currentTimeMillis();
+
+            final FastArrayMap<String, String> arrayMap = new FastArrayMap<>();
+            for (int i = 0; i < p_iterations; i++) {
+                arrayMap.put("Key" + i, "Value" + i);
+            }
+
+            return System.currentTimeMillis() - startTime;
+        }
+
+        private static long benchmarkFastArrayMapRemoval(final int p_iterations) {
+            final FastArrayMap<String, String> arrayMap = new FastArrayMap<>();
+            for (int i = 0; i < p_iterations; i++) {
+                arrayMap.put("Key" + i, "Value" + i);
+            }
+
+            final long startTime = System.currentTimeMillis();
+
+            // Remove elements from the map
+            for (int i = 0; i < arrayMap.size(); i++) {
+                arrayMap.remove("Key" + i);
+            }
+
+            return System.currentTimeMillis() - startTime;
+        }
+
+    }
+
+    public class Entry<EntryKeyT, EntryValueT> {
+
+        EntryKeyT key;
+        EntryValueT value;
+
+        public Entry(final EntryKeyT p_key, final EntryValueT p_value) {
+            this.key = p_key;
+            this.value = p_value;
+        }
+
     }
 
     public static final int DEFAULT_CAPACITY = 16;
-    public static final float DEFAULT_ALLOCATION_FACTOR = 0.75f;
+    public static final float DEFAULT_ALLOCATION_MULTIPLIER = 2;
 
     // region Instance fields.
     protected int size, initialCapacity;
@@ -27,12 +148,12 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
     protected Object[] entries;
 
     // How filled is the array that we should de-allocate?
-    protected float allocMult = FastArrayMap.DEFAULT_ALLOCATION_FACTOR;
+    protected float allocMult = FastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER;
     // endregion
 
     // region Constructors.
     public FastArrayMap() {
-        this(FastArrayMap.DEFAULT_CAPACITY, FastArrayMap.DEFAULT_ALLOCATION_FACTOR);
+        this(FastArrayMap.DEFAULT_CAPACITY, FastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER);
     }
 
     public FastArrayMap(final float p_allocationMultiplier) {
@@ -40,7 +161,7 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
     }
 
     public FastArrayMap(final int p_initialCapacity) {
-        this(p_initialCapacity, FastArrayMap.DEFAULT_ALLOCATION_FACTOR);
+        this(p_initialCapacity, FastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER);
     }
 
     public FastArrayMap(final int p_initialCapacity, final float p_allocationMultiplier) {
@@ -63,7 +184,7 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
         // if ((this.entries.length - this.size) * 0.01f < this.allocFact)
         // return;
 
-        if (this.entries.length != this.size)
+        if (this.entries.length - 2 != this.size)
             return;
 
         final int newSize = (int) (this.size * this.allocMult);
@@ -92,8 +213,10 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
     }
 
     public boolean containsKey(final KeyT p_key) {
+        assert this.size % 2 == 0;
+
         for (int i = 0; i < this.size; i += 2)
-            if (this.entries[i] == p_key)
+            if (this.entries[i].equals(p_key))
                 return true;
 
         return false;
@@ -101,7 +224,7 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
 
     public boolean containsValue(final ValueT p_value) {
         for (int i = 1; i < this.size; i += 2)
-            if (this.entries[i] == p_value)
+            if (this.entries[i].equals(p_value))
                 return true;
 
         return false;
@@ -110,7 +233,7 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
     @SuppressWarnings("unchecked")
     public KeyT getKeyForValue(final ValueT p_value) {
         for (int i = 1; i < this.size; i += 2)
-            if (this.entries[i] == p_value)
+            if (this.entries[i].equals(p_value))
                 return (KeyT) this.entries[i - 1];
 
         return null;
@@ -118,8 +241,10 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
 
     @SuppressWarnings("unchecked")
     public ValueT get(final KeyT p_key) {
+        assert this.size % 2 == 0;
+
         for (int i = 0; i < this.size; i += 2)
-            if (this.entries[i] == p_key)
+            if (this.entries[i].equals(p_key))
                 return (ValueT) this.entries[i + 1];
 
         return null;
@@ -127,32 +252,43 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
 
     public ValueT put(final KeyT p_key, final ValueT p_value) {
         this.expandArrayIfNeeded();
+
         this.entries[this.size] = p_key;
         this.entries[this.size + 1] = p_value;
+
+        this.size += 2;
 
         return p_value;
     }
 
     @SuppressWarnings("unchecked")
     public ValueT remove(final KeyT p_key) {
-        int keyId = -1, valueId = -1;
+        int keyId = 0, valueId = -1;
         ValueT toRet = null;
 
         for (; keyId < this.size; keyId += 2)
-            if (this.entries[keyId] == p_key) {
+            if (this.entries[keyId].equals(p_key)) { // Not having a `continue` is faster haha.
                 valueId = keyId + 1;
+
+                this.entries[valueId] = this.entries[this.size - 1];
                 toRet = (ValueT) this.entries[valueId];
+
+                this.entries[keyId] = this.entries[this.size - 2];
+
+                this.size -= 2; // Pop!
+                break;
             }
 
         if (valueId == -1)
             return null;
 
-        // Swap the removed item with one that we'll put out of bounds!:
-        this.entries[valueId] = this.entries[this.size];
-        this.entries[keyId] = this.entries[this.size - 1];
-        --this.size; // Pop!
-
         return toRet;
+    }
+
+    protected void remove(final int p_keyId) {
+        this.entries[p_keyId + 1] = this.entries[this.size];
+        this.entries[p_keyId] = this.entries[this.size - 1];
+        --this.size; // Pop!
     }
 
     // public void putAll(final Map<? extends KeyT, ? extends ValueT> m) { }
@@ -161,37 +297,68 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<Map.Entry<KeyT, Valu
         this.size = 0;
         // I've benchmarked this before. **It's faster**.
         // Java loops are a not fast enough for a `memset()`!
-        this.entries = NerdBufferUtils.arrayCopy(this.entries, new Object[this.size]);
+        // this.entries = NerdBufferUtils.arrayCopy(this.entries, new
+        // Object[this.size]);
     }
     // endregion
 
     // region Custom iteration helpers.
+    @SuppressWarnings("unchecked")
+    public void forEachKey(final Consumer<KeyT> p_action) {
+        assert this.size % 2 == 0;
+
+        for (int i = 0; i < this.size; i += 2)
+            p_action.accept((KeyT) this.entries[i]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void forEachValue(final Consumer<ValueT> p_action) {
+        for (int i = 1; i < this.size; i += 2)
+            p_action.accept((ValueT) this.entries[i + 1]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void forEach(final BiConsumer<KeyT, ValueT> p_action) {
+        assert this.size % 2 == 0;
+
+        for (int i = 0; i < this.size; i += 2)
+            p_action.accept(
+                    (KeyT) this.entries[i],
+                    (ValueT) this.entries[i + 1]);
+    }
+
     @Override
-    public Iterator<Entry<KeyT, ValueT>> iterator() {
-        return new Iterator<Map.Entry<KeyT, ValueT>>() {
+    public Iterator<FastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> iterator() {
+        return new Iterator<>() {
+
+            protected int currentId;
 
             @Override
             public boolean hasNext() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+                return this.currentId != FastArrayMap.this.size;
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public Entry<KeyT, ValueT> next() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'next'");
+                if (this.currentId == FastArrayMap.this.size)
+                    throw new NoSuchElementException();
+
+                return FastArrayMap.this.new Entry<>(
+                        (KeyT) FastArrayMap.this.entries[this.currentId],
+                        (ValueT) FastArrayMap.this.entries[this.currentId + 1]);
             }
 
             @Override
             public void remove() {
-
+                FastArrayMap.this.remove(this.currentId);
             }
 
         };
     }
 
     public Iterable<KeyT> keysIterator() {
-        return () -> new Iterator<KeyT>() {
+        return () -> new Iterator<>() {
 
             @Override
             public boolean hasNext() {
