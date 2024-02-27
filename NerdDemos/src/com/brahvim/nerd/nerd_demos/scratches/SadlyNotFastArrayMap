@@ -8,7 +8,9 @@ import java.util.function.Consumer;
 
 import com.brahvim.nerd.utils.NerdBufferUtils;
 
-public class FastArrayMap<KeyT, ValueT> implements Iterable<FastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> {
+// TODO: Add hashing for speed (it's too easy LOL)!
+public class SadlyNotFastArrayMap<KeyT, ValueT>
+        implements Iterable<SadlyNotFastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> {
 
     public static class MapBenchmark {
 
@@ -81,7 +83,7 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<FastArrayMap<KeyT, V
         }
 
         private static long benchmarkFastArrayMapGet(final int p_iterations) {
-            final FastArrayMap<String, String> arrayMap = new FastArrayMap<>();
+            final SadlyNotFastArrayMap<String, String> arrayMap = new SadlyNotFastArrayMap<>();
             for (int i = 0; i < p_iterations; i++) {
                 arrayMap.put("Key" + i, "Value" + i);
             }
@@ -98,7 +100,7 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<FastArrayMap<KeyT, V
         private static long benchmarkFastArrayMapInsert(final int p_iterations) {
             final long startTime = System.currentTimeMillis();
 
-            final FastArrayMap<String, String> arrayMap = new FastArrayMap<>();
+            final SadlyNotFastArrayMap<String, String> arrayMap = new SadlyNotFastArrayMap<>();
             for (int i = 0; i < p_iterations; i++) {
                 arrayMap.put("Key" + i, "Value" + i);
             }
@@ -107,7 +109,7 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<FastArrayMap<KeyT, V
         }
 
         private static long benchmarkFastArrayMapRemoval(final int p_iterations) {
-            final FastArrayMap<String, String> arrayMap = new FastArrayMap<>();
+            final SadlyNotFastArrayMap<String, String> arrayMap = new SadlyNotFastArrayMap<>();
             for (int i = 0; i < p_iterations; i++) {
                 arrayMap.put("Key" + i, "Value" + i);
             }
@@ -148,23 +150,23 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<FastArrayMap<KeyT, V
     protected Object[] entries;
 
     // How filled is the array that we should de-allocate?
-    protected float allocMult = FastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER;
+    protected float allocMult = SadlyNotFastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER;
     // endregion
 
     // region Constructors.
-    public FastArrayMap() {
-        this(FastArrayMap.DEFAULT_CAPACITY, FastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER);
+    public SadlyNotFastArrayMap() {
+        this(SadlyNotFastArrayMap.DEFAULT_CAPACITY, SadlyNotFastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER);
     }
 
-    public FastArrayMap(final float p_allocationMultiplier) {
-        this(FastArrayMap.DEFAULT_CAPACITY, p_allocationMultiplier);
+    public SadlyNotFastArrayMap(final float p_allocationMultiplier) {
+        this(SadlyNotFastArrayMap.DEFAULT_CAPACITY, p_allocationMultiplier);
     }
 
-    public FastArrayMap(final int p_initialCapacity) {
-        this(p_initialCapacity, FastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER);
+    public SadlyNotFastArrayMap(final int p_initialCapacity) {
+        this(p_initialCapacity, SadlyNotFastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER);
     }
 
-    public FastArrayMap(final int p_initialCapacity, final float p_allocationMultiplier) {
+    public SadlyNotFastArrayMap(final int p_initialCapacity, final float p_allocationMultiplier) {
         // Check everything. Just like `HashMap` does:
         if (p_initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " + p_initialCapacity);
@@ -328,30 +330,30 @@ public class FastArrayMap<KeyT, ValueT> implements Iterable<FastArrayMap<KeyT, V
     }
 
     @Override
-    public Iterator<FastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> iterator() {
+    public Iterator<SadlyNotFastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> iterator() {
         return new Iterator<>() {
 
             protected int currentId;
 
             @Override
             public boolean hasNext() {
-                return this.currentId != FastArrayMap.this.size;
+                return this.currentId != SadlyNotFastArrayMap.this.size;
             }
 
             @Override
             @SuppressWarnings("unchecked")
             public Entry<KeyT, ValueT> next() {
-                if (this.currentId == FastArrayMap.this.size)
+                if (this.currentId == SadlyNotFastArrayMap.this.size)
                     throw new NoSuchElementException();
 
-                return FastArrayMap.this.new Entry<>(
-                        (KeyT) FastArrayMap.this.entries[this.currentId],
-                        (ValueT) FastArrayMap.this.entries[this.currentId + 1]);
+                return SadlyNotFastArrayMap.this.new Entry<>(
+                        (KeyT) SadlyNotFastArrayMap.this.entries[this.currentId],
+                        (ValueT) SadlyNotFastArrayMap.this.entries[this.currentId + 1]);
             }
 
             @Override
             public void remove() {
-                FastArrayMap.this.remove(this.currentId);
+                SadlyNotFastArrayMap.this.remove(this.currentId);
             }
 
         };
