@@ -1,131 +1,66 @@
 package com.brahvim.nerd.nerd_demos.scratches;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 import com.brahvim.nerd.utils.NerdBufferUtils;
 
 // TODO: Add hashing for speed (it's too easy LOL)!
-public class SadlyNotFastArrayMap<KeyT, ValueT>
-        implements Iterable<SadlyNotFastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> {
+public class SadlyNotFastArrayMap<KeyT, ValueT> {
+    // implements Iterable<SadlyNotFastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> {
 
     public static class MapBenchmark {
 
-        public static void main(final String[] args) {
-            final int iterations = 1;
+        public static void main(final String[] p_args) {
+            final int iterations = 1_000_000;
+
+            final HashMap<String, String> hashMap = new HashMap<>(iterations);
+            final SadlyNotFastArrayMap<String, String> arrayMap = new SadlyNotFastArrayMap<>(iterations);
 
             // Benchmark `HashMap`:
-            final long hashMapGetTime = MapBenchmark.benchmarkHashMapGet(iterations);
-            System.out.println("`HashMap` get time: " + hashMapGetTime + " ms");
-
-            final long hashMapInsertTime = MapBenchmark.benchmarkHashMapInsert(iterations);
+            final long hashMapInsertTime = MapBenchmark.benchmark(
+                    iterations, i -> hashMap.put("Key" + i, "Value" + i));
             System.out.println("`HashMap` insertion time: " + hashMapInsertTime + " ms");
 
-            final long hashMapRemovalTime = MapBenchmark.benchmarkHashMapRemoval(iterations);
+            final long hashMapGetTime = MapBenchmark.benchmark(
+                    iterations, i -> hashMap.get("Key" + i));
+            System.out.println("`HashMap` get time: " + hashMapGetTime + " ms");
+
+            final long hashMapRemovalTime = MapBenchmark.benchmark(
+                    iterations, i -> hashMap.remove("Key" + i));
             System.out.println("`HashMap` removal time: " + hashMapRemovalTime + " ms");
 
             System.out.println();
 
-            // Benchmark `FastArrayMap`:
-            final long arrayMapGetTime = MapBenchmark.benchmarkFastArrayMapGet(iterations);
-            System.out.println("`FastArrayMap` get time: " + arrayMapGetTime + " ms");
-
-            final long arrayMapInsertTime = MapBenchmark.benchmarkFastArrayMapInsert(iterations);
+            // Benchmark `SadlyNotFastArrayMap`:
+            final long arrayMapInsertTime = MapBenchmark.benchmark(
+                    iterations, i -> arrayMap.put("Key" + i, "Value" + i));
             System.out.println("`FastArrayMap` insertion time: " + arrayMapInsertTime + " ms");
 
-            final long arrayMapRemovalTime = MapBenchmark.benchmarkFastArrayMapRemoval(iterations);
+            final long arrayMapGetTime = MapBenchmark.benchmark(
+                    iterations, i -> arrayMap.get("Key" + i));
+            System.out.println("`FastArrayMap` get time: " + arrayMapGetTime + " ms");
+
+            final long arrayMapRemovalTime = MapBenchmark.benchmark(
+                    iterations, i -> arrayMap.remove("Key" + i));
             System.out.println("`FastArrayMap` removal time: " + arrayMapRemovalTime + " ms");
         }
 
-        private static long benchmarkHashMapGet(final int p_iterations) {
-            final HashMap<String, String> hashMap = new HashMap<>();
-            for (int i = 0; i < p_iterations; i++) {
-                hashMap.put("Key" + i, "Value" + i);
-            }
-
+        // Not an efficient way to do a benchmark, but anyway:
+        private static long benchmark(final int p_iterations, final IntConsumer p_runnable) {
             final long startTime = System.currentTimeMillis();
 
-            for (int i = 0; i < p_iterations; i++) {
-                hashMap.get("Key" + i);
-            }
-
-            return System.currentTimeMillis() - startTime;
-        }
-
-        private static long benchmarkHashMapInsert(final int p_iterations) {
-            final long startTime = System.currentTimeMillis();
-
-            final HashMap<String, String> hashMap = new HashMap<>();
-            for (int i = 0; i < p_iterations; i++) {
-                hashMap.put("Key" + i, "Value" + i);
-            }
-
-            return System.currentTimeMillis() - startTime;
-        }
-
-        private static long benchmarkHashMapRemoval(final int p_iterations) {
-            final HashMap<String, String> hashMap = new HashMap<>();
-            for (int i = 0; i < p_iterations; i++) {
-                hashMap.put("Key" + i, "Value" + i);
-            }
-
-            final long startTime = System.currentTimeMillis();
-
-            // Remove elements from the map
-            for (int i = 0; i < hashMap.size(); i++) {
-                hashMap.remove("Key" + i);
-            }
-
-            return System.currentTimeMillis() - startTime;
-        }
-
-        private static long benchmarkFastArrayMapGet(final int p_iterations) {
-            final SadlyNotFastArrayMap<String, String> arrayMap = new SadlyNotFastArrayMap<>();
-            for (int i = 0; i < p_iterations; i++) {
-                arrayMap.put("Key" + i, "Value" + i);
-            }
-
-            final long startTime = System.currentTimeMillis();
-
-            for (int i = 0; i < p_iterations; i++) {
-                arrayMap.get("Key" + i);
-            }
-
-            return System.currentTimeMillis() - startTime;
-        }
-
-        private static long benchmarkFastArrayMapInsert(final int p_iterations) {
-            final long startTime = System.currentTimeMillis();
-
-            final SadlyNotFastArrayMap<String, String> arrayMap = new SadlyNotFastArrayMap<>();
-            for (int i = 0; i < p_iterations; i++) {
-                arrayMap.put("Key" + i, "Value" + i);
-            }
-
-            return System.currentTimeMillis() - startTime;
-        }
-
-        private static long benchmarkFastArrayMapRemoval(final int p_iterations) {
-            final SadlyNotFastArrayMap<String, String> arrayMap = new SadlyNotFastArrayMap<>();
-            for (int i = 0; i < p_iterations; i++) {
-                arrayMap.put("Key" + i, "Value" + i);
-            }
-
-            final long startTime = System.currentTimeMillis();
-
-            // Remove elements from the map
-            for (int i = 0; i < arrayMap.size(); i++) {
-                arrayMap.remove("Key" + i);
-            }
+            for (int i = 0; i < p_iterations; i++)
+                p_runnable.accept(i);
 
             return System.currentTimeMillis() - startTime;
         }
 
     }
 
+    // These could be cached by each map using them and then be reused.
+    // ...or just be stored in a `static` array (per thread...?) and then be reused
+    // as needed haha:
     public class Entry<EntryKeyT, EntryValueT> {
 
         EntryKeyT key;
@@ -142,12 +77,12 @@ public class SadlyNotFastArrayMap<KeyT, ValueT>
     public static final float DEFAULT_ALLOCATION_MULTIPLIER = 2;
 
     // region Instance fields.
-    protected int size, initialCapacity;
-
     // ...
     // "Store key-value pairs!~", they said.
     // ...Why stress the JIT!? I'm not doin' that, people!:
-    protected Object[] entries;
+    protected Object[][] entries;
+
+    protected int size, initialCapacity;
 
     // How filled is the array that we should de-allocate?
     protected float allocMult = SadlyNotFastArrayMap.DEFAULT_ALLOCATION_MULTIPLIER;
@@ -177,11 +112,15 @@ public class SadlyNotFastArrayMap<KeyT, ValueT>
         // We're free now!:
         this.allocMult = p_allocationMultiplier;
         this.initialCapacity = p_initialCapacity;
-        this.entries = new Object[2 * this.initialCapacity];
+        this.entries = new Object[2 * this.initialCapacity][0];
     }
     // endregion
 
-    // region Array-checking methods.
+    // region Internal methods.
+    public void trimToSize() {
+        this.entries = NerdBufferUtils.arrayCopy(this.entries, new Object[this.size][0], l -> new Object[l]);
+    }
+
     protected void expandArrayIfNeeded() {
         // if ((this.entries.length - this.size) * 0.01f < this.allocFact)
         // return;
@@ -194,14 +133,19 @@ public class SadlyNotFastArrayMap<KeyT, ValueT>
         if (newSize < this.size)
             throw new IllegalStateException("This `FastArrayMap` is already `Integer.MAX_VALUE` large!");
 
-        this.entries = NerdBufferUtils.arrayCopy(this.entries, new Object[newSize]);
+        this.entries = NerdBufferUtils.arrayCopy(this.entries, new Object[newSize][0], l -> new Object[l]);
     }
 
-    public void removeDuplicates() {
+    protected int hashKey(final KeyT p_key) {
+        return p_key == null ? 0 : p_key.hashCode();
     }
 
-    public void trimToSize() {
-        this.entries = NerdBufferUtils.arrayCopy(this.entries, new Object[this.size]);
+    protected int getKeyId(final KeyT p_key) {
+        return this.hashKey(p_key) % this.size;
+    }
+
+    protected int getHashId(final int p_hash) {
+        return p_hash % this.size;
     }
     // endregion
 
@@ -255,8 +199,8 @@ public class SadlyNotFastArrayMap<KeyT, ValueT>
     public ValueT put(final KeyT p_key, final ValueT p_value) {
         this.expandArrayIfNeeded();
 
-        this.entries[this.size] = p_key;
-        this.entries[this.size + 1] = p_value;
+        this.entries[this.size][0] = p_key;
+        this.entries[this.size + 1][0] = p_value;
 
         this.size += 2;
 
@@ -305,151 +249,155 @@ public class SadlyNotFastArrayMap<KeyT, ValueT>
     // endregion
 
     // region Custom iteration helpers.
-    @SuppressWarnings("unchecked")
-    public void forEachKey(final Consumer<KeyT> p_action) {
-        assert this.size % 2 == 0;
-
-        for (int i = 0; i < this.size; i += 2)
-            p_action.accept((KeyT) this.entries[i]);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void forEachValue(final Consumer<ValueT> p_action) {
-        for (int i = 1; i < this.size; i += 2)
-            p_action.accept((ValueT) this.entries[i + 1]);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void forEach(final BiConsumer<KeyT, ValueT> p_action) {
-        assert this.size % 2 == 0;
-
-        for (int i = 0; i < this.size; i += 2)
-            p_action.accept(
-                    (KeyT) this.entries[i],
-                    (ValueT) this.entries[i + 1]);
-    }
-
-    @Override
-    public Iterator<SadlyNotFastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>> iterator() {
-        return new Iterator<>() {
-
-            protected int currentId;
-
-            @Override
-            public boolean hasNext() {
-                return this.currentId != SadlyNotFastArrayMap.this.size;
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public Entry<KeyT, ValueT> next() {
-                if (this.currentId == SadlyNotFastArrayMap.this.size)
-                    throw new NoSuchElementException();
-
-                return SadlyNotFastArrayMap.this.new Entry<>(
-                        (KeyT) SadlyNotFastArrayMap.this.entries[this.currentId],
-                        (ValueT) SadlyNotFastArrayMap.this.entries[this.currentId + 1]);
-            }
-
-            @Override
-            public void remove() {
-                SadlyNotFastArrayMap.this.remove(this.currentId);
-            }
-
-        };
-    }
-
-    public Iterable<KeyT> keysIterator() {
-        return () -> new Iterator<>() {
-
-            @Override
-            public boolean hasNext() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
-            }
-
-            @Override
-            public KeyT next() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'next'");
-            }
-
-            @Override
-            public void remove() {
-
-            }
-
-        };
-    }
-
-    public Iterable<ValueT> valuesIterator() {
-        return () -> new Iterator<ValueT>() {
-
-            @Override
-            public boolean hasNext() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
-            }
-
-            @Override
-            public ValueT next() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'next'");
-            }
-
-            @Override
-            public void remove() {
-
-            }
-
-        };
-    }
-
-    public Iterable<ValueT> keysIteratorBackwards() {
-        return () -> new Iterator<ValueT>() {
-
-            @Override
-            public boolean hasNext() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
-            }
-
-            @Override
-            public ValueT next() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'next'");
-            }
-
-            @Override
-            public void remove() {
-
-            }
-
-        };
-    }
-
-    public Iterable<ValueT> valuesIteratorBackwards() {
-        return () -> new Iterator<ValueT>() {
-
-            @Override
-            public boolean hasNext() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
-            }
-
-            @Override
-            public ValueT next() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'next'");
-            }
-
-            @Override
-            public void remove() {
-
-            }
-
-        };
-    }
+    /*
+     * @SuppressWarnings("unchecked")
+     * public void forEachKey(final Consumer<KeyT> p_action) {
+     * assert this.size % 2 == 0;
+     *
+     * for (int i = 0; i < this.size; i += 2)
+     * p_action.accept((KeyT) this.entries[i]);
+     * }
+     *
+     * @SuppressWarnings("unchecked")
+     * public void forEachValue(final Consumer<ValueT> p_action) {
+     * for (int i = 1; i < this.size; i += 2)
+     * p_action.accept((ValueT) this.entries[i + 1]);
+     * }
+     *
+     * @SuppressWarnings("unchecked")
+     * public void forEach(final BiConsumer<KeyT, ValueT> p_action) {
+     * assert this.size % 2 == 0;
+     *
+     * for (int i = 0; i < this.size; i += 2)
+     * p_action.accept(
+     * (KeyT) this.entries[i],
+     * (ValueT) this.entries[i + 1]);
+     * }
+     *
+     * @Override
+     * public Iterator<SadlyNotFastArrayMap<KeyT, ValueT>.Entry<KeyT, ValueT>>
+     * iterator() {
+     * return new Iterator<>() {
+     *
+     * protected int currentId;
+     *
+     * @Override
+     * public boolean hasNext() {
+     * return this.currentId != SadlyNotFastArrayMap.this.size;
+     * }
+     *
+     * @Override
+     *
+     * @SuppressWarnings("unchecked")
+     * public Entry<KeyT, ValueT> next() {
+     * if (this.currentId == SadlyNotFastArrayMap.this.size)
+     * throw new NoSuchElementException();
+     *
+     * return SadlyNotFastArrayMap.this.new Entry<>(
+     * (KeyT) SadlyNotFastArrayMap.this.entries[this.currentId],
+     * (ValueT) SadlyNotFastArrayMap.this.entries[this.currentId + 1]);
+     * }
+     *
+     * @Override
+     * public void remove() {
+     * SadlyNotFastArrayMap.this.remove(this.currentId);
+     * }
+     *
+     * };
+     * }
+     *
+     * public Iterable<KeyT> keysIterator() {
+     * return () -> new Iterator<>() {
+     *
+     * @Override
+     * public boolean hasNext() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+     * }
+     *
+     * @Override
+     * public KeyT next() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'next'");
+     * }
+     *
+     * @Override
+     * public void remove() {
+     *
+     * }
+     *
+     * };
+     * }
+     *
+     * public Iterable<ValueT> valuesIterator() {
+     * return () -> new Iterator<ValueT>() {
+     *
+     * @Override
+     * public boolean hasNext() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+     * }
+     *
+     * @Override
+     * public ValueT next() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'next'");
+     * }
+     *
+     * @Override
+     * public void remove() {
+     *
+     * }
+     *
+     * };
+     * }
+     *
+     * public Iterable<ValueT> keysIteratorBackwards() {
+     * return () -> new Iterator<ValueT>() {
+     *
+     * @Override
+     * public boolean hasNext() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+     * }
+     *
+     * @Override
+     * public ValueT next() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'next'");
+     * }
+     *
+     * @Override
+     * public void remove() {
+     *
+     * }
+     *
+     * };
+     * }
+     *
+     * public Iterable<ValueT> valuesIteratorBackwards() {
+     * return () -> new Iterator<ValueT>() {
+     *
+     * @Override
+     * public boolean hasNext() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+     * }
+     *
+     * @Override
+     * public ValueT next() {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'next'");
+     * }
+     *
+     * @Override
+     * public void remove() {
+     *
+     * }
+     *
+     * };
+     * }
+     */
     // endregion
 
 }
