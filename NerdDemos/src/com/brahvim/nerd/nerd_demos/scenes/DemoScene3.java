@@ -37,7 +37,7 @@ public class DemoScene3 extends AbstractDemoScene {
 
 	// @Override
 	// protected synchronized void preload() {
-	// for (int i = 1; i != 5; i++)
+	// for (int i = 1; i != 5; ++i)
 	// super.ASSETS.addAsset(new OggBufferDataAsset("data/Pops/Pop" + i + ".ogg"));
 	// }
 
@@ -77,8 +77,8 @@ public class DemoScene3 extends AbstractDemoScene {
 		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
 		// (Max possible is `144`, the refresh rate).
 
-		// this.drawFaintBackground();
-		this.drawBackground();
+		this.drawFaintBackground();
+		// this.drawBackground();
 		this.light.apply();
 		this.cubeMan.draw();
 		this.drawScreen();

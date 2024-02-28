@@ -89,7 +89,7 @@ public class TcpDemoScene extends NerdAbstractGraphicsScene { // extends NerdJav
 		super.GRAPHICS.text(TcpDemoScene.MESSAGE, 0, 0);
 
 		final int numLines = this.NET_TEST_LOGS.size();
-		for (int i = 0; i < numLines; i++)
+		for (int i = 0; i < numLines; ++i)
 			super.GRAPHICS.text(this.NET_TEST_LOGS.get(i),
 					0, this.logsBeginY + (i * this.textHeight));
 	}
@@ -134,7 +134,7 @@ public class TcpDemoScene extends NerdAbstractGraphicsScene { // extends NerdJav
 
 			// Now, we start 5 clients to connect to the server!
 
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 5; ++i)
 				new NerdTcpNoSslClient(
 						// Info on the server to connect to:
 						"127.0.0.1", 8080,

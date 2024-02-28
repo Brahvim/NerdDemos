@@ -2,8 +2,8 @@ package com.brahvim.nerd.nerd_demos.scenes.scene3;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Queue;
 
@@ -14,6 +14,7 @@ import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 import com.brahvim.nerd.processing_wrapper.sketches.NerdP3dSketch;
 
 import processing.core.PConstants;
+import processing.core.PShape;
 import processing.core.PVector;
 
 // TODO: Implement `PShape` batching and perhaps also culling.
@@ -22,14 +23,15 @@ public class AnimatedCubesManager {
 
 	private class AnimatedCube {
 
+		// region `static` constants:
 		protected static final int
 		/*   */ DEFAULT_SIZE = 40,
 				DEFAULT_FRICTION = 1,
 				DEFAULT_LIFETIME = 8_000,
 				DEFAULT_ROTATIONAL_FRICTION = 1;
-
 		protected static final boolean DEFAULT_VISIBILITY = true;
 		protected static final float DEFAULT_DT_COEFFICIENT = 0.1f;
+		// endregion
 
 		protected final NerdSineEaseOld PLOP_WAVE;
 		protected final PVector
@@ -58,21 +60,21 @@ public class AnimatedCubesManager {
 	// region Fields.
 	public int
 	/*   */ cubesToAdd = 0,
-			cubesPerClick = 7,
-			cubesPerFrame = 2;
+			cubesPerClick = 30,
+			cubesPerFrame = 12;
 
 	private final Queue<AnimatedCube> FREE_CUBES = new ArrayDeque<>(3000);
 	private final List<AnimatedCube> CUBES = new ArrayList<>(3000);
 	private final NerdP3dSketch SKETCH;
 	private final NerdP3dScene SCENE;
+	private final PShape CUBE_SHAPE;
 	// endregion
 
-	// region Constructors.
 	public AnimatedCubesManager(final NerdP3dScene p_scene) {
 		this.SCENE = Objects.requireNonNull(p_scene);
 		this.SKETCH = (NerdP3dSketch) this.SCENE.getSketch();
+		this.CUBE_SHAPE = this.SKETCH.createShape(PConstants.BOX, 1);
 	}
-	// endregion
 
 	// region Cube methods.
 	private AnimatedCube createAnimatedCube() {
@@ -91,6 +93,12 @@ public class AnimatedCubesManager {
 		toRet.endTime = cubeStartTime + AnimatedCube.DEFAULT_LIFETIME;
 
 		final PVector cameraPos = this.SCENE.GRAPHICS.getCurrentCamera().POSITION;
+
+		toRet.visible = true;
+		toRet.size = AnimatedCube.DEFAULT_SIZE;
+		toRet.frict = AnimatedCube.DEFAULT_FRICTION;
+		toRet.dtCoef = AnimatedCube.DEFAULT_DT_COEFFICIENT;
+		toRet.rotFrict = AnimatedCube.DEFAULT_ROTATIONAL_FRICTION;
 
 		toRet.POSITION.set(
 				cameraPos.x + this.SKETCH.random(-this.SKETCH.GENERIC_WINDOW.cx, this.SKETCH.GENERIC_WINDOW.cx),
@@ -112,7 +120,7 @@ public class AnimatedCubesManager {
 				this.SKETCH.random(-0.0001f, 0.0001f),
 				this.SKETCH.random(-0.0001f, 0.0001f));
 
-		// toRet.PLOP_WAVE.resetSettings();
+		toRet.PLOP_WAVE.resetSettings();
 
 		return toRet;
 	}
@@ -121,6 +129,24 @@ public class AnimatedCubesManager {
 		if (!p_cube.visible)
 			return;
 
+		final NerdP3dGraphics g = this.SCENE.GRAPHICS;
+
+		try (var a = g.new Push()) {
+			g.translate(p_cube.POSITION);
+			g.rotate(p_cube.ROTATION);
+			g.scale(p_cube.size * p_cube.PLOP_WAVE.get());
+
+			g.strokeWeight(0.018f);
+			g.fill(255);
+
+			g.shape(this.CUBE_SHAPE);
+			// g.box(1);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void updateCube(final AnimatedCube p_cube) {
 		final float deltaTime = this.SKETCH.getFrameTime() * p_cube.dtCoef;
 
 		// Physics calculations:
@@ -128,17 +154,6 @@ public class AnimatedCubesManager {
 		p_cube.ROTATION_VELOCITY.add(p_cube.ROTATIONAL_ACCELERATION);
 		p_cube.POSITION.add(PVector.mult(p_cube.VELOCITY, p_cube.frict + deltaTime));
 		p_cube.ROTATION.add(PVector.mult(p_cube.ROTATION_VELOCITY, p_cube.rotFrict + deltaTime));
-
-		final NerdP3dGraphics g = this.SCENE.GRAPHICS;
-
-		try (var a = g.new Push()) {
-			g.translate(p_cube.POSITION);
-			g.rotate(p_cube.ROTATION);
-			g.scale(p_cube.size * p_cube.PLOP_WAVE.get());
-			g.box(1);
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	protected AnimatedCube beginCubePlopIn(final AnimatedCube p_cube) {
@@ -160,24 +175,35 @@ public class AnimatedCubesManager {
 	public void draw() {
 		this.addCubesInLimit();
 
-		final ListIterator<AnimatedCube> it = this.CUBES.listIterator();
+		final int millis = this.SKETCH.millis();
+		final Iterator<AnimatedCube> it = this.CUBES.iterator();
+
 		while (it.hasNext()) {
 			final AnimatedCube cube = it.next();
 
 			// Is the cube's lifetime over? Play the plop-out animation!:
-			if (cube.endTime - this.SKETCH.millis() < 0)
+			if (cube.endTime - millis < 0)
 				this.beginCubePlopOut(cube);
 
 			// If it actually isn't visible anymore, remove it:
-			if (!cube.visible) {
-				it.remove();
-				this.FREE_CUBES.add(cube);
-			}
+			// if (!cube.visible) {
+			// it.remove();
+			// this.FREE_CUBES.add(cube);
+			// }
 
 			// Draw the cube!:
-			this.SCENE.GRAPHICS.strokeWeight(0.018f);
-			this.SCENE.GRAPHICS.fill(255);
+			this.updateCube(cube);
 			this.drawCube(cube);
+		}
+
+		for (int i = this.CUBES.size(); i > -1; --i) {
+			final AnimatedCube cube = this.CUBES.get(i);
+
+			if (cube.visible)
+				continue;
+
+			this.CUBES.remove(i);
+			this.FREE_CUBES.add(cube);
 		}
 	}
 
@@ -187,9 +213,16 @@ public class AnimatedCubesManager {
 
 		for (int i = 0; //
 				i <= this.cubesPerFrame || this.cubesToAdd == 0; //
-				i++, --this.cubesToAdd) { // Yes, two things at once! Not just a C++ feature!
+				++i, --this.cubesToAdd) // Yes, two things at once! Not just a C++ feature!
 			this.beginCubePlopIn(this.createAnimatedCube());
-		}
+
+		// if (this.cubesToAdd != 0)
+		// for (int i = 0; i != this.cubesPerFrame; ++i) {
+		// if (--this.cubesToAdd == 0)
+		// break;
+
+		// this.beginCubePlopIn(this.createAnimatedCube());
+		// }
 	}
 
 	// region Cube-collection queries.
