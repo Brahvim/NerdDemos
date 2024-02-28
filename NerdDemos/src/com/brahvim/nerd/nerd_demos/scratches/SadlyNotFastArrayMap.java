@@ -15,7 +15,7 @@ public class SadlyNotFastArrayMap<KeyT, ValueT>
     public static class MapBenchmark {
 
         public static void main(final String[] args) {
-            final int iterations = 10_00_000;
+            final int iterations = 1;
 
             // Benchmark `HashMap`:
             final long hashMapGetTime = MapBenchmark.benchmarkHashMapGet(iterations);
