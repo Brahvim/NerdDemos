@@ -2,14 +2,12 @@ package com.brahvim.nerd.nerd_demos.scenes.scene3;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
 import com.brahvim.nerd.math.easings_old.built_in_easings_old.NerdSineEaseOld;
-import com.brahvim.nerd.processing_wrapper.NerdSketch;
 import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 import com.brahvim.nerd.processing_wrapper.sketches.NerdP3dSketch;
 
@@ -173,13 +171,15 @@ public class AnimatedCubesManager {
 	public void draw() {
 		this.addCubesInLimit();
 
+		final List<AnimatedCube> cubesToRemove = new ArrayList<>();
+
 		final int millis = this.SKETCH.millis();
-		final Iterator<AnimatedCube> it = this.CUBES.iterator();
-
-		while (it.hasNext()) {
-			final AnimatedCube cube = it.next();
-
+		for (final var cube : this.CUBES) {
 			// Is the cube's lifetime over? Play the plop-out animation!:
+
+			if (!cube.visible)
+				cubesToRemove.add(cube);
+
 			if (cube.endTime - millis < 0)
 				this.beginCubePlopOut(cube);
 
@@ -188,16 +188,10 @@ public class AnimatedCubesManager {
 			this.drawCube(cube);
 		}
 
-		// Removing these later so we're still friends with the cache!
-		// It might also be faster!
-		for (int i = this.CUBES.size() - 1; i > -1; --i) {
-			final AnimatedCube cube = this.CUBES.get(i);
-
-			if (cube.visible)
-				continue;
-
+		// Batched removal:
+		for (final var cube : cubesToRemove) {
 			this.FREE_CUBES.offer(cube);
-			this.CUBES.remove(i);
+			this.CUBES.remove(cube);
 		}
 	}
 

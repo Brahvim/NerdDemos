@@ -67,7 +67,7 @@ public class UdpDemoScene extends NerdJava2dScene {
 
 	@SuppressWarnings("all")
 	private static NerdUdpSocket createUdpSocketLoggingTheName(final String p_name) {
-		return new NerdUdpSocket() { // NOSONAR This thing is closed later on!
+		return new NerdUdpSocket() { // NOSONAR! This thing is closed later on!
 
 			@Override
 			protected void onStart() {
