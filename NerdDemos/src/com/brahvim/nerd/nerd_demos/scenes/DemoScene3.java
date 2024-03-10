@@ -77,8 +77,8 @@ public class DemoScene3 extends AbstractDemoScene {
 		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
 		// (Max possible is `144`, the refresh rate).
 
-		this.drawFaintBackground();
-		// this.drawBackground();
+		// this.drawFaintBackground();
+		this.drawBackground();
 		this.light.apply();
 		this.cubeMan.draw();
 		this.drawScreen();
@@ -107,11 +107,11 @@ public class DemoScene3 extends AbstractDemoScene {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void drawBackground() {
 		super.GRAPHICS.background(this.bgImage);
 	}
 
+	@SuppressWarnings("unused")
 	private void drawFaintBackground() {
 		this.addTint(super.GRAPHICS);
 		super.GRAPHICS.background(this.bgImage);
