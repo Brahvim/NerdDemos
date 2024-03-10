@@ -1,11 +1,11 @@
 package com.brahvim.nerd.nerd_demos.scenes;
 
 import com.brahvim.nerd.framework.cameras.NerdBasicCamera;
+import com.brahvim.nerd.framework.graphics_backends.NerdP3dGraphics;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
 import com.brahvim.nerd.nerd_demos.effect_layers.DemoCinematicBarsLayer;
-import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PConstants;
 import processing.core.PImage;

@@ -3,6 +3,7 @@ package com.brahvim.nerd.nerd_demos.scenes;
 import java.awt.event.KeyEvent;
 
 import com.brahvim.nerd.framework.cameras.NerdAbstractCamera;
+import com.brahvim.nerd.framework.graphics_backends.NerdP3dGraphics;
 import com.brahvim.nerd.framework.lights.NerdAmbientLight;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
@@ -11,7 +12,6 @@ import com.brahvim.nerd.nerd_demos.effect_layers.DemoCinematicBarsLayer;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.AnimatedCubesManager;
 import com.brahvim.nerd.nerd_demos.scenes.scene3.SmoothCamera;
 import com.brahvim.nerd.processing_wrapper.NerdAbstractGraphics;
-import com.brahvim.nerd.processing_wrapper.graphics_backends.NerdP3dGraphics;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
