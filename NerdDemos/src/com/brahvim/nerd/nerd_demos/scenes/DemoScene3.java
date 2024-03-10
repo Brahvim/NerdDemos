@@ -107,11 +107,11 @@ public class DemoScene3 extends AbstractDemoScene {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void drawBackground() {
 		super.GRAPHICS.background(this.bgImage);
 	}
 
-	@SuppressWarnings("unused")
 	private void drawFaintBackground() {
 		this.addTint(super.GRAPHICS);
 		super.GRAPHICS.background(this.bgImage);
