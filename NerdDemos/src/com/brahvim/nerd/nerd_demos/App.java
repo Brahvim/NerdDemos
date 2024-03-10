@@ -4,8 +4,8 @@ import com.brahvim.nerd.framework.ecs.NerdEcsModule;
 import com.brahvim.nerd.framework.ecs.NerdEcsModuleSettings;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModuleSettings;
+import com.brahvim.nerd.framework.sketch_builders.NerdP3dSketchBuilder;
 import com.brahvim.nerd.nerd_demos.scenes.DemoScene1;
-import com.brahvim.nerd.processing_wrapper.sketch_builders.NerdP3dSketchBuilder;
 
 public class App {
 

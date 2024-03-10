@@ -8,8 +8,8 @@ import java.util.Queue;
 
 import com.brahvim.nerd.framework.graphics_backends.NerdP3dGraphics;
 import com.brahvim.nerd.framework.scene_layer_api.renderer_specific_impls.scenes.NerdP3dScene;
+import com.brahvim.nerd.framework.sketches.NerdP3dSketch;
 import com.brahvim.nerd.math.easings_old.built_in_easings_old.NerdSineEaseOld;
-import com.brahvim.nerd.processing_wrapper.sketches.NerdP3dSketch;
 
 import processing.core.PConstants;
 import processing.core.PShape;
