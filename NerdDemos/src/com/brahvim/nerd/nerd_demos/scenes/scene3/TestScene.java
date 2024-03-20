@@ -8,26 +8,26 @@ import processing.core.PGraphics;
 
 public class TestScene extends NerdAbstractGraphicsScene {
 
-    // private float sineWave;
+	// private float sineWave;
 
-    protected TestScene(final NerdScenesModule<PGraphics> p_sceneMan) {
-        super(p_sceneMan);
-    }
+	protected TestScene(final NerdScenesModule<PGraphics> p_sceneMan) {
+		super(p_sceneMan);
+	}
 
-    @Override
-    protected void setup(final NerdSceneState p_state) {
-        super.SKETCH.frameRate(144);
-        super.WINDOW.setSize(640, 480);
-    }
+	@Override
+	protected void setup(final NerdSceneState p_state) {
+		super.SKETCH.frameRate(144);
+		super.WINDOW.setSize(640, 480);
+	}
 
-    @Override
-    protected void draw() {
-        super.GRAPHICS.clear();
+	@Override
+	protected void draw() {
+		super.GRAPHICS.clear();
 
-        System.out.println(super.SKETCH.frameRate);
-        // super.GRAPHICS.text(super.SKETCH.frameRate,
-        // super.WINDOW.cx,
-        // super.WINDOW.cy);
-    }
+		System.out.println(super.SKETCH.frameRate);
+		// super.GRAPHICS.text(super.SKETCH.frameRate,
+		// super.WINDOW.cx,
+		// super.WINDOW.cy);
+	}
 
 }

@@ -8,21 +8,21 @@ import processing.opengl.PGraphics3D;
 
 public class DemoScene1 extends AbstractDemoScene {
 
-    protected DemoScene1(final NerdScenesModule<PGraphics3D> p_sceneMan) {
-        super(p_sceneMan);
-    }
+	protected DemoScene1(final NerdScenesModule<PGraphics3D> p_sceneMan) {
+		super(p_sceneMan);
+	}
 
-    @Override
-    protected void setup(final NerdSceneState p_state) {
-        super.addLayer(DemoDebugFpsGizmoLayer.class);
-        super.GRAPHICS.setCurrentCameraToDefault();
-    }
+	@Override
+	protected void setup(final NerdSceneState p_state) {
+		super.addLayer(DemoDebugFpsGizmoLayer.class);
+		super.GRAPHICS.setCurrentCameraToDefault();
+	}
 
-    @Override
-    protected void drawImpl() {
-        super.GRAPHICS.clear();
-        super.GRAPHICS.text(super.SKETCH.frameRate);
-        super.GRAPHICS.text(super.INPUT.getHeldKeysDebugString(), super.GENERIC_WINDOW.q3x, super.GENERIC_WINDOW.qy);
-    }
+	@Override
+	protected void drawImpl() {
+		super.GRAPHICS.clear();
+		super.GRAPHICS.text(super.SKETCH.frameRate);
+		super.GRAPHICS.text(super.INPUT.getHeldKeysDebugString(), super.GENERIC_WINDOW.q3x, super.GENERIC_WINDOW.qy);
+	}
 
 }

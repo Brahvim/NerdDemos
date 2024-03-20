@@ -13,171 +13,171 @@ import processing.opengl.PGraphics3D;
 
 public class SmoothCamera extends NerdFlyCamera {
 
-    // region Fields.
-    public static final float
-    /*   */ DEFAULT_ACC_FRICT = 0.9f,
-            DEFAULT_VEL_FRICT = 0.9f;
+	// region Fields.
+	public static final float
+	/*   */ DEFAULT_ACC_FRICT = 0.9f,
+			DEFAULT_VEL_FRICT = 0.9f;
 
-    public static final float
-    /*   */ FAST_SPEED = 0.9f,
-            SLOW_SPEED = 0.05f,
-            DEFAULT_SPEED = 0.5f;
+	public static final float
+	/*   */ FAST_SPEED = 0.9f,
+			SLOW_SPEED = 0.05f,
+			DEFAULT_SPEED = 0.5f;
 
-    public static final float
-    /*   */ ROLL_MAX = 5,
-            ROLL_SPEED = 0.1f;
+	public static final float
+	/*   */ ROLL_MAX = 5,
+			ROLL_SPEED = 0.1f;
 
-    public float
-    /*   */ accFrict = SmoothCamera.DEFAULT_ACC_FRICT,
-            velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
+	public float
+	/*   */ accFrict = SmoothCamera.DEFAULT_ACC_FRICT,
+			velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
 
-    private final NerdInputModule<PGraphics3D> INPUT;
+	private final NerdInputModule<PGraphics3D> INPUT;
 
-    private PVector circumAmbPos = new PVector();
-    private PVector accVec = new PVector(), velVec = new PVector();
-    // endregion
+	private PVector circumAmbPos = new PVector();
+	private PVector accVec = new PVector(), velVec = new PVector();
+	// endregion
 
-    // region Construction.
-    public SmoothCamera(final NerdP3dGraphics p_graphics) {
-        super(p_graphics);
-        this.INPUT = super.SKETCH.getNerdInputModule();
-    }
+	// region Construction.
+	public SmoothCamera(final NerdP3dGraphics p_graphics) {
+		super(p_graphics);
+		this.INPUT = super.SKETCH.getNerdInputModule();
+	}
 
-    public SmoothCamera(final NerdP3dGraphics p_graphics, final PVector p_defaultFront) {
-        super(p_graphics, p_defaultFront);
-        this.INPUT = super.SKETCH.getNerdInputModule();
-    }
-    // endregion
+	public SmoothCamera(final NerdP3dGraphics p_graphics, final PVector p_defaultFront) {
+		super(p_graphics, p_defaultFront);
+		this.INPUT = super.SKETCH.getNerdInputModule();
+	}
+	// endregion
 
-    // region Getters and setters.
-    public PVector getVelVec() {
-        return this.velVec;
-    }
+	// region Getters and setters.
+	public PVector getVelVec() {
+		return this.velVec;
+	}
 
-    public PVector getAccVec() {
-        return this.accVec;
-    }
+	public PVector getAccVec() {
+		return this.accVec;
+	}
 
-    public PVector setVelVec(final PVector p_vec) {
-        return this.velVec = Objects.requireNonNull(p_vec);
-    }
+	public PVector setVelVec(final PVector p_vec) {
+		return this.velVec = Objects.requireNonNull(p_vec);
+	}
 
-    public PVector setAccVec(final PVector p_vec) {
-        return this.accVec = Objects.requireNonNull(p_vec);
-    }
+	public PVector setAccVec(final PVector p_vec) {
+		return this.accVec = Objects.requireNonNull(p_vec);
+	}
 
-    public PVector getCircumAmbPos() {
-        return this.circumAmbPos;
-    }
+	public PVector getCircumAmbPos() {
+		return this.circumAmbPos;
+	}
 
-    public PVector setCircumAmbPos(final PVector p_vec) {
-        return this.circumAmbPos = p_vec;
-    }
-    // endregion
+	public PVector setCircumAmbPos(final PVector p_vec) {
+		return this.circumAmbPos = p_vec;
+	}
+	// endregion
 
-    @Override
-    public void apply() {
-        this.controlCamera();
-        super.apply();
-    }
+	@Override
+	public void apply() {
+		this.controlCamera();
+		super.apply();
+	}
 
-    private void controlCamera() {
-        // Increase speed when holding `Ctrl`:
-        final float accMultiplier;
+	private void controlCamera() {
+		// Increase speed when holding `Ctrl`:
+		final float accMultiplier;
 
-        // Reset these so holding `ALT` changes them:
-        this.accFrict = SmoothCamera.DEFAULT_ACC_FRICT;
-        this.velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
+		// Reset these so holding `ALT` changes them:
+		this.accFrict = SmoothCamera.DEFAULT_ACC_FRICT;
+		this.velFrict = SmoothCamera.DEFAULT_VEL_FRICT;
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_CONTROL)) {
-            accMultiplier = SmoothCamera.FAST_SPEED;
-        } else if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
-            accMultiplier = SmoothCamera.SLOW_SPEED;
-            this.accFrict = this.velFrict = 0.95f;
-        } else {
-            accMultiplier = SmoothCamera.DEFAULT_SPEED;
-        }
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_CONTROL)) {
+			accMultiplier = SmoothCamera.FAST_SPEED;
+		} else if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_ALT)) {
+			accMultiplier = SmoothCamera.SLOW_SPEED;
+			this.accFrict = this.velFrict = 0.95f;
+		} else {
+			accMultiplier = SmoothCamera.DEFAULT_SPEED;
+		}
 
-        // region Roll.
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
-            super.ORIENTATION.z += SmoothCamera.ROLL_SPEED * 0.5f;
+		// region Roll.
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Z))
+			super.ORIENTATION.z += SmoothCamera.ROLL_SPEED * 0.5f;
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
-            super.ORIENTATION.z -= SmoothCamera.ROLL_SPEED * 0.5f;
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_C))
+			super.ORIENTATION.z -= SmoothCamera.ROLL_SPEED * 0.5f;
 
-        // TODO: Set the camera roll's boundary!
-        // if (super.ORIENTATION.z > ROLL_MAX)
-        // super.ORIENTATION.z = -ROLL_MAX;
+		// TODO: Set the camera roll's boundary!
+		// if (super.ORIENTATION.z > ROLL_MAX)
+		// super.ORIENTATION.z = -ROLL_MAX;
 
-        // if (super.ORIENTATION.z < -ROLL_MAX)
-        // super.ORIENTATION.z = ROLL_MAX;
+		// if (super.ORIENTATION.z < -ROLL_MAX)
+		// super.ORIENTATION.z = ROLL_MAX;
 
-        // if (super.up.x > PConstants.TAU || super.up.x < -PConstants.TAU)
-        // super.up.x -= super.up.x;
-        // endregion
+		// if (super.up.x > PConstants.TAU || super.up.x < -PConstants.TAU)
+		// super.up.x -= super.up.x;
+		// endregion
 
-        // region Elevation.
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_SPACE))
-            this.accVec.y += -accMultiplier;
+		// region Elevation.
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_SPACE))
+			this.accVec.y += -accMultiplier;
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_SHIFT))
-            this.accVec.y += accMultiplier;
-        // endregion
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_SHIFT))
+			this.accVec.y += accMultiplier;
+		// endregion
 
-        // region Circumambulation, id est "moving in circles".
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Q))
+		// region Circumambulation, id est "moving in circles".
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_Q))
 
-        {
-            if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_Q))
-                this.circumAmbPos.set(super.FRONT); // PVector.sub(super.front, super.pos));
+		{
+			if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_Q))
+				this.circumAmbPos.set(super.FRONT); // PVector.sub(super.front, super.pos));
 
-            // super.front.set(this.circumAmbPos);
+			// super.front.set(this.circumAmbPos);
 
-            super.POSITION.x += PApplet.sin(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.POSITION.z += PApplet.cos(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+			super.POSITION.x += PApplet.sin(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+			super.POSITION.z += PApplet.cos(this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
 
-            super.FRONT.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.FRONT.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-        }
+			super.FRONT.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+			super.FRONT.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+		}
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_E)) {
-            if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_E))
-                this.circumAmbPos.set(super.FRONT); // PVector.sub(super.front, super.pos));
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_E)) {
+			if (!this.INPUT.keyGivenWasPressed(KeyEvent.VK_E))
+				this.circumAmbPos.set(super.FRONT); // PVector.sub(super.front, super.pos));
 
-            // super.front.set(this.circumAmbPos);
+			// super.front.set(this.circumAmbPos);
 
-            super.POSITION.x += PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.POSITION.z += PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+			super.POSITION.x += PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+			super.POSITION.z += PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
 
-            super.FRONT.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-            super.FRONT.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
-        }
-        // endregion
+			super.FRONT.x = PApplet.sin(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+			super.FRONT.z = PApplet.cos(-this.SKETCH.millis() * 0.01f * accMultiplier) * 50;
+		}
+		// endregion
 
-        // region `W`-`A`-`S`-`D` controls.
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_W))
-            this.accVec.z += -accMultiplier;
+		// region `W`-`A`-`S`-`D` controls.
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_W))
+			this.accVec.z += -accMultiplier;
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_A))
-            this.accVec.x += -accMultiplier;
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_A))
+			this.accVec.x += -accMultiplier;
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_S))
-            this.accVec.z += accMultiplier;
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_S))
+			this.accVec.z += accMultiplier;
 
-        if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_D))
-            this.accVec.x += accMultiplier;
-        // endregion
+		if (this.INPUT.keyGivenIsPressed(KeyEvent.VK_D))
+			this.accVec.x += accMultiplier;
+		// endregion
 
-        this.accVec.mult(this.accFrict);
-        this.velVec.add(this.accVec);
-        this.velVec.mult(this.velFrict);
+		this.accVec.mult(this.accFrict);
+		this.velVec.add(this.accVec);
+		this.velVec.mult(this.velFrict);
 
-        final float deltaTime = super.SKETCH.getFrameTime() * 0.15f;
-        // this.velVec.mult(deltaTime);
+		final float deltaTime = super.SKETCH.getFrameTime() * 0.15f;
+		// this.velVec.mult(deltaTime);
 
-        super.moveX(this.velVec.x * deltaTime);
-        super.moveY(this.velVec.y * deltaTime);
-        super.moveZ(this.velVec.z * deltaTime);
-    }
+		super.moveX(this.velVec.x * deltaTime);
+		super.moveY(this.velVec.y * deltaTime);
+		super.moveZ(this.velVec.z * deltaTime);
+	}
 
 }
