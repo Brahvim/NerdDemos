@@ -57,12 +57,15 @@ public class DemoScene3 extends AbstractDemoScene {
 
 		this.cubeMan = new AnimatedCubesManager(this);
 		this.light = new NerdAmbientLight(
-				super.GRAPHICS, this.camera.POSITION.copy(),
 				// new PVector(255, 255, 0), // Yellow.
 				// new PVector(224, 152, 27), // The orange at the top.
-				// new PVector(228, 117, 111), // The color in the middle.
-				new PVector(232, 81, 194) // The pink at the bottom.
-		);
+				new PVector(228, 117, 111), // The color in the middle.
+				// new PVector(232, 81, 194), // The pink at the bottom.
+				this.camera.POSITION);
+
+		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.ONE, this.light);
+		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.TWO, this.light);
+		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.THREE, this.light);
 	}
 
 	@Override
@@ -79,7 +82,7 @@ public class DemoScene3 extends AbstractDemoScene {
 
 		// this.drawFaintBackground();
 		this.drawBackground();
-		this.light.apply();
+		// this.light.apply();
 		this.cubeMan.draw();
 		this.drawScreen();
 		this.drawOverlay();

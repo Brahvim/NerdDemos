@@ -17,7 +17,7 @@ public class NerdObjectPoolTest {
 
 		// Display the demoted stuff:
 		System.out.println("Demoted Objects:");
-		for (final Float demoted : floatsPool.allDemoted()) {
+		for (final var demoted : floatsPool.allDemoted()) {
 			System.out.print(demoted + " ");
 		}
 		System.out.println();
@@ -45,7 +45,7 @@ public class NerdObjectPoolTest {
 
 		// Display the promoted objects!:
 		System.out.println("Promoted Objects:");
-		for (final Float promoted : floatsPool.allPromoted()) {
+		for (final var promoted : floatsPool.allPromoted()) {
 			System.out.print(promoted + " ");
 		}
 		System.out.println();
