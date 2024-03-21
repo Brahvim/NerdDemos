@@ -50,8 +50,6 @@ public class DemoScene3 extends AbstractDemoScene {
 		this.camera = super.GRAPHICS.setCurrentCamera(
 				new SmoothCamera(super.GRAPHICS));
 
-		// super.GRAPHICS.setClearImage(this.bgImage);
-
 		this.camera.fov = PApplet.radians(75);
 		this.camera.far = 100_000_000.0f;
 
@@ -91,7 +89,6 @@ public class DemoScene3 extends AbstractDemoScene {
 
 		// this.drawFaintBackground();
 		this.drawBackground();
-		// this.light.apply();
 		this.cubeMan.draw();
 		this.drawScreen();
 		this.drawOverlay();
