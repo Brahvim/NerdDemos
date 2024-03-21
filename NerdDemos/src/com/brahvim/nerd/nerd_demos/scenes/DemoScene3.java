@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import com.brahvim.nerd.framework.cameras.NerdAbstractCamera;
 import com.brahvim.nerd.framework.graphics_backends.NerdP3dGraphics;
 import com.brahvim.nerd.framework.lights.NerdAmbientLight;
+import com.brahvim.nerd.framework.lights.NerdPointLightQueue.NerdPointLight;
 import com.brahvim.nerd.framework.scene_layer_api.NerdSceneState;
 import com.brahvim.nerd.framework.scene_layer_api.NerdScenesModule;
 import com.brahvim.nerd.nerd_demos.debug_layers.DemoDebugFpsGizmoLayer;
@@ -25,9 +26,8 @@ public class DemoScene3 extends AbstractDemoScene {
 
 	// region Fields.
 	private PImage bgImage;
-	private AnimatedCubesManager cubeMan;
 	private SmoothCamera camera;
-	private NerdAmbientLight light;
+	private AnimatedCubesManager cubeMan;
 	private boolean shouldAutomaticallyAddCubes = true;
 	// endregion
 
@@ -56,16 +56,24 @@ public class DemoScene3 extends AbstractDemoScene {
 		this.camera.far = 100_000_000.0f;
 
 		this.cubeMan = new AnimatedCubesManager(this);
-		this.light = new NerdAmbientLight(
+		final var ptLight = new NerdPointLight(
+				// new PVector(255, 255, 0), // Yellow.
+				// new PVector(224, 152, 27), // The orange at the top.
+				// new PVector(228, 117, 111), // The color in the middle.
+				new PVector(232, 81, 194), // The pink at the bottom.
+				this.camera.POSITION);
+
+		final var ambLight = new NerdAmbientLight(
 				// new PVector(255, 255, 0), // Yellow.
 				// new PVector(224, 152, 27), // The orange at the top.
 				new PVector(228, 117, 111), // The color in the middle.
 				// new PVector(232, 81, 194), // The pink at the bottom.
-				this.camera.POSITION);
+				// this.camera.POSITION
+				new PVector());
 
-		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.ONE, this.light);
-		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.TWO, this.light);
-		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.THREE, this.light);
+		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.ONE, ambLight);
+		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.TWO, ambLight);
+		super.GRAPHICS.setLightSlotObject(NerdP3dGraphics.NerdLightSlot.THREE, ptLight);
 	}
 
 	@Override
@@ -78,7 +86,8 @@ public class DemoScene3 extends AbstractDemoScene {
 
 		// Nearly `1,000` cubes at once after sufficient time!
 		// (`125` FPS at minimum for me! It's `60` without the JIT kicking in, though.)
-		// (Max possible is `144`, the refresh rate).
+		// (Max possible is `144`, the refresh rate.)
+		// (`3,000` cubes take it down to `100` FPS.)
 
 		// this.drawFaintBackground();
 		this.drawBackground();
