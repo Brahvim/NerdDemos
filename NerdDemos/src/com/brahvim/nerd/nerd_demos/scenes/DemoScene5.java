@@ -30,12 +30,17 @@ public class DemoScene5 extends AbstractDemoScene {
 		super.GRAPHICS.background(0x006699, PApplet.sin(super.getMillisSinceStart()));
 
 		try (var a = super.GRAPHICS.new TwoDimensionalPush()) {
+
 			super.GRAPHICS.scale(2);
 			super.GRAPHICS.fill(233);
-			super.GRAPHICS.translateFromCenter();
-			super.GRAPHICS.text(this.TEXT);
+			super.GRAPHICS.textSize(24);
+			super.GRAPHICS.translateY(20);
+			super.GRAPHICS.centeredText(this.TEXT);
+
 		} catch (final Exception e) {
+
 			e.printStackTrace();
+
 		}
 	}
 

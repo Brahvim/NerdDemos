@@ -1,14 +1,14 @@
 {
     "java.debug.settings.vmArgs": "-XX:+UseShenandoahGC -Xms500M -Xmx1G",
     "java.project.referencedLibraries": [
+        "Dependencies/libraries/**/*.jar",
         "Dependencies/**/*.jar",
-        "Dependencies/libraries/**/*.jar"
     ],
     "java.project.sourcePaths": [
         "Nerd/src",
         "NerdDemos/src",
+        "NerdExtraModules/ECS",
         "NerdExtraModules/ScenesAndLayers",
-        "NerdExtraModules/ECS"
     ],
     "java.cleanup.actions": [
         "addOverride",
